@@ -15,13 +15,13 @@ const HeroSection = () => {
                     <TypeAnimation
                         sequence={[
                             'Koda',
-                            1000, 
+                            2000, 
                             'A Computer Science Student',
-                            1000,
+                            2000,
                             'A Software Developer',
-                            1000,
+                            2000,
                             'A Fitness Enthusiast',
-                            1000
+                            2000
                         ]}
                         wrapper="span"
                         speed={150}
