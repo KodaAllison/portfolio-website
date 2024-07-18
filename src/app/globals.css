@@ -31,3 +31,32 @@ body {
     text-wrap: balance;
   }
 }
+
+
+
+.timer-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.timer-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.timer-label {
+  margin-top: 10px;
+  font-size: 1.2em;
+  color: #ffffff;
+}
+
+.timer-text {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ffffff;
+}
