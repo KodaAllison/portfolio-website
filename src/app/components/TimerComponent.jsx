@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useState, useEffect } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 
 const calculateTimeLeft = () => {
-  const marathonDate = new Date("2025-03-16T00:00:00");
+  const marathonDate = new Date("2025-03-16T08:30:00");
   const currentTime = new Date();
   const difference = marathonDate - currentTime;
 
@@ -35,7 +37,7 @@ const TimerComponent = () => {
   }, []);
 
   if (!isMounted) {
-    return null; // Render a placeholder until the component mounts
+    return null;
   }
 
   const { totalSeconds, days, hours, minutes, seconds } = timeLeft;

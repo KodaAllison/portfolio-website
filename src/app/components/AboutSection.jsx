@@ -1,4 +1,5 @@
-'use client'
+'use client';
+
 import React, {useTransition, useState} from 'react';
 import TimerComponent from './TimerComponent';
 import TabButton from './TabButton';
@@ -23,7 +24,7 @@ const TAB_DATA = [
         id: "education",
         content: (
             <ul className='list-disc pl-2'>
-                <li>Newcastle University - BSc Computer Science (Software Engineering) - First Class Honours</li>
+                <li>Newcastle University - BSc Computer Science (Software Engineering) - On Track for First Class Honours</li>
             </ul>
         ),
 
@@ -33,7 +34,8 @@ const TAB_DATA = [
         id: "other",
         content: (
             <ul className='list-disc pl-2'>
-                
+                <li>Forage - J.P Morgan Job Simulation</li>
+                <li>Started for University American Football team</li>
             </ul>
         ),
 
@@ -51,41 +53,49 @@ const AboutSection = () => {
 
   return (
     <section className='text-white'>
-        <div id='column-1' className='md:grid md:grid-cols-2 gap-8 items-center py-8 px-4 xl:gap16 sm:py-16 xl:px-16'>
-            <div>
+    <div className='md:flex md:justify-between gap-8 items-start py-8 px-4 xl:gap-16 sm:py-16 xl:px-16'>
+        <div className='md:w-1/3'>
+            <div className='py-4 sticky top-0'>
                 <h2 className='text-center font-bold'>Countdown To My First Marathon - Barcelona 2025</h2>
-            <TimerComponent />
+                <TimerComponent />
             </div>
-            <div id='column-2' className=' mt-4 md:mt-0 flex flex-col h-full text-left'>
+        </div>
+        <div className='md:w-2/3'>
+            <div className='flex flex-col h-full text-left'>
                 <h2 className='text-4xl font-bold mt-2 md:mt-0 mb-4'>About me</h2>
                 <p className='text-base lg:text-lg'>
-                    I am currently in my final year of studying Computer Science at Newcastle University, specialising in Software Engineering. My dad has 15 years plus experience as a software engineer and this played a role in starting my passion for learning technology. Outside of tech I enjoy dedicating time to the gym, nutrition and running. I take pride and gain satisfaction in closely tracking my progress in these areas in great detail.  
+                    I am currently in my final year studying Computer Science at Newcastle University, specializing in Software Engineering. Growing up with my dad, a software engineer with over 15 years of experience, I inherited his passion for tech.
+                    During my academic journey, I have primarily used Python and Java. Recently, I had the opportunity to work on a group project where we built an app aligned with one of the United Nations climate change goals. This experience allowed me to familiarize myself with all stages of the software development cycle.
+                    Outside of academics, I have delved deeper into technologies such as React and NextJS. These technologies have expanded my understanding and passion for creating intuitive user interfaces.
+                    Beyond coding, I prioritize my fitness and health, I enjoy being consistent in the gym, with my nutrition, and currently training for a marathon. I take pleasure in setting ambitious goals and tracking my progress, whether in software development or personal endeavors.
                 </p>
                 <div className='flex flex-row mt-8'>
                     <TabButton 
-                    selectTab={() => handleTabChange("skills")}
-                    active={tab=== "skills"} > 
-                    {" "} Skills {" "}
+                        selectTab={() => handleTabChange("skills")}
+                        active={tab === "skills"} > 
+                        {" "} Skills {" "}
                     </TabButton>
                     <TabButton 
-                    selectTab={() => handleTabChange("education")}
-                    active={tab=== "education"} > 
-                    {" "} Education {" "}
+                        selectTab={() => handleTabChange("education")}
+                        active={tab === "education"} > 
+                        {" "} Education {" "}
                     </TabButton>
                     <TabButton 
-                    selectTab={() => handleTabChange("other")}
-                    active={tab=== "other"} > 
-                    {" "} Other {" "}
+                        selectTab={() => handleTabChange("other")}
+                        active={tab === "other"} > 
+                        {" "} Other {" "}
                     </TabButton>
-                 
-                    
                 </div>
                 <div className='mt-6'>
                     {TAB_DATA.find((t) => t.id === tab).content}
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
+
+
+
   )
 }
 
