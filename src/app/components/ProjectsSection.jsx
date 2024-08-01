@@ -7,14 +7,14 @@ const PROJECTS_DATA = [
   {
     id: 1,
     title: "WeatherApp",
-    description: "Description",
+    description: "Basic NextJS app, uses Weather API to fetch data and stores users favourite locations in LocalStorage ",
     image: "/weather.png",
     link: "https://github.com/KodaAllison/weatherapp",
   },
   {
     id: 2,
     title: "FiveSomewhere",
-    description: "Description",
+    description: "React App uses MongoDB to store data on various gloabal locations. Only returns locations where it is 5pm in the world",
     image: "/five.png",
     link: "https://github.com/KodaAllison/five-somewhere",
   },
