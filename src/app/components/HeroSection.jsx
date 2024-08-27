@@ -37,11 +37,23 @@ const HeroSection = () => {
                     Ready for the next stage of my career
                 </p>
                 <div className='py-4'>
-                    <button className=' px-6 py-3 rounded-full w-full sm:w-fit mr-4 bg-gradient-to-br from-[#DA291C] to-[#FBE122] hover:bg-slate-300 text-white'>Contact Me</button>
-                    <button className=' px-1 py-1 rounded-full w-full sm:w-fit mr-4 bg-gradient-to-br from-[#DA291C] to-[#FBE122] hover:bg-white text-white  mt-3'>
-                        <span className='block bg-[#121212] hover:bg-slate-800 rounded-full px-5 py-2'>Download CV{" "}</span>
-                    </button>
+                    <a
+                        href="#contact"
+                        className='px-6 py-3 rounded-full w-full sm:w-fit mr-4 bg-gradient-to-br from-[#DA291C] to-[#FBE122] hover:bg-slate-300 text-white block text-center'
+                    >
+                        Contact Me
+                    </a>
+                    <a
+                        href="/CV.pdf"
+                        download
+                        className='px-1 py-1 rounded-full w-full sm:w-fit mr-4 bg-gradient-to-br from-[#DA291C] to-[#FBE122] hover:bg-white text-white mt-3 block text-center'
+                    >
+                        <span className='block bg-[#121212] hover:bg-slate-800 rounded-full px-5 py-2'>
+                        Download CV
+                        </span>
+                    </a>
                 </div>
+
             </motion.div>
             <motion.div 
             initial={{opacity: 0, scale:0.5}} 
