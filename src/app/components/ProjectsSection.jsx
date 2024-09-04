@@ -18,6 +18,13 @@ const PROJECTS_DATA = [
     image: "/five.png",
     link: "https://github.com/KodaAllison/five-somewhere",
   },
+  {
+    id: 2,
+    title: "Start-Bench-Sell",
+    description: "A NextJS app mainly built by my dad but I have offered some assistance and regularly nag him to explain how the code works. The app Generates 3 players daily and users pick which one to Start, Bench and Sell",
+    image: "/sbs.png",
+    link: "https://start-bench-sell.vercel.app",
+  },
 ];
 
 export const ProjectsSection = () => {

@@ -11,7 +11,7 @@ const HeroSection = () => {
             <motion.div 
             initial={{opacity: 0}} 
             animate={{opacity: 1}} 
-            transition={{duration: 0.5}} 
+            transition={{duration: 1}} 
             className='col-span-7 place-self-center text-center sm:text-left '>
                 <h1 className='text-white mb-4 text-4xl sm:text-5xl lg:text-6xl font-extrabold'>
                     <span className='text-transparent bg-clip-text bg-gradient-to-br from-[#DA291C] to-[#FBE122]'>
@@ -20,13 +20,13 @@ const HeroSection = () => {
                     <TypeAnimation
                         sequence={[
                             'Koda',
-                            2000, 
+                            3000, 
                             'A Computer Science Student',
-                            2000,
+                            3000,
                             'A Software Developer',
-                            2000,
+                            3000,
                             'A Fitness Enthusiast',
-                            2000
+                            3000
                         ]}
                         wrapper="span"
                         speed={150}

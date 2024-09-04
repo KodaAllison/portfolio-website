@@ -10,9 +10,13 @@ const TAB_DATA = [
         id: "skills",
         content: (
             <ul className='list-disc pl-2'>
+                <li>Software Development Cycle - Mainly Agile</li>
                 <li>Python</li>
                 <li>Java</li>
-                <li>NextJS</li>
+                <li>HTML</li>
+                <li>CSS & TailwindCSS</li>
+                <li>Git & GitHub</li>
+                <li>React & NextJS</li>
                 <li>MongoDB</li>
                 <li>SQL</li>
             </ul>
@@ -35,6 +39,7 @@ const TAB_DATA = [
         content: (
             <ul className='list-disc pl-2'>
                 <li>Forage - J.P Morgan Job Simulation</li>
+                <li>Co-founded IT & Coding Club in Sixth Form</li>
                 <li>Started for University American Football team</li>
             </ul>
         ),
