@@ -41,7 +41,7 @@ const EmailSection = () => {
                 <h5 className='text-xl font-bold text-white my-2 '>Contact Me</h5>
                 <p className='text-[#ADB7BE] max-w-md mb-4'>
                     {" "}
-                    Currently looking for the next stage in my career post graduation
+                    Set to graduate in Summer 2025, feel free to contact me on linked in or my email <strong>kodaallison@icloud.com</strong> about any opportunities or feedback you may have. 
                 </p>
                 <div className='socials flex flex-row gap-2'>
                     <Link href='https://github.com/KodaAllison'>
