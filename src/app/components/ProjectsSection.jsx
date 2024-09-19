@@ -19,11 +19,18 @@ const PROJECTS_DATA = [
     link: "https://github.com/KodaAllison/five-somewhere",
   },
   {
-    id: 2,
+    id: 3,
     title: "Start-Bench-Sell",
     description: "A NextJS app mainly built by my dad but I have offered some assistance and regularly nag him to explain how the code works. The app Generates 3 players daily and users pick which one to Start, Bench and Sell",
     image: "/sbs.png",
     link: "https://start-bench-sell.vercel.app",
+  },
+  {
+    id: 4,
+    title: "CC-Centre",
+    description: "Redesigned entire website from scratch for a local community centre. Allows them to showcase their events and facilities also uses SendGrid Email API for a contact form. Got experience using all areas of software development cycle and talking to an actual client.",
+    image: "/CC-Logo.JPEG",
+    link: "https://cc-centre.org",
   },
 ];
 
