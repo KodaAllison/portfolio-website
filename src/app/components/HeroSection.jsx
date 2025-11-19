@@ -33,9 +33,7 @@ const HeroSection = () => {
                         repeat={Infinity}
                         />
                 </h1>
-                <p className='text-[#ADb7BE] text-base sm:text-lg lg:text-xl pb-4'>
-                    Ready for the next stage of my career
-                </p>
+
                 <div className='py-4'>
                     <a
                         href="#contact"

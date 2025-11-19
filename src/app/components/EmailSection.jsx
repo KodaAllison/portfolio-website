@@ -39,10 +39,6 @@ const EmailSection = () => {
         <section id="contact" className='grid md:grid-cols-2 my-12 py-24 gap-4'>
             <div>
                 <h5 className='text-xl font-bold text-white my-2 '>Contact Me</h5>
-                <p className='text-[#ADB7BE] max-w-md mb-4'>
-                    {" "}
-                    Set to graduate in Summer 2025, feel free to contact me on linked in or my email <strong>kodaallison@icloud.com</strong> about any opportunities or feedback you may have. 
-                </p>
                 <div className='socials flex flex-row gap-2'>
                     <Link href='https://github.com/KodaAllison'>
                         <Image src="/github-icon.svg" alt="github" height={30} width={30} />
