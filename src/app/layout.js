@@ -5,8 +5,25 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "Koda Allison Portfolio",
-  description: "Koda Allison Portfolio Website",
+  title: "Koda Allison | Web Developer & Computer Science Graduate",
+  description: "First Class Computer Science Graduate with a passion for web development and a keen interest in fitness. Proficient in TypeScript, JavaScript, Tailwind CSS, and Git. Technical Graduate with Virgin Money.",
+  keywords: [
+    "Koda Allison",
+    "Web Developer",
+    "Software Developer",
+    "Computer Science Graduate",
+    "TypeScript",
+    "JavaScript",
+    "React",
+    "Next.js",
+    "Tailwind CSS",
+    "Portfolio",
+    "Full Stack Developer",
+    "Virgin Money"
+  ],
+  authors: [{ name: "Koda Allison" }],
+  creator: "Koda Allison",
+  publisher: "Koda Allison",
 };
 
 export default function RootLayout({ children }) {
