@@ -1,7 +1,7 @@
-'use client'
-import Link from 'next/link'
-import React, { useState } from 'react'
-import Image from 'next/image'
+"use client";
+import Link from "next/link";
+import React, { useState } from "react";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 const EmailSection = () => {
     const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -38,13 +38,13 @@ const EmailSection = () => {
     return (
         <section id="contact" className='grid md:grid-cols-2 my-12 py-24 gap-4'>
             <div>
-                <h5 className='text-xl font-bold text-white my-2 '>Contact Me</h5>
-                <div className='socials flex flex-row gap-2'>
-                    <Link href='https://github.com/KodaAllison'>
-                        <Image src="/github-icon.svg" alt="github" height={30} width={30} />
+                <h5 className="text-xl font-bold my-2 text-black dark:text-white">Contact Me</h5>
+                <div className="socials flex flex-row gap-3 text-black dark:text-white">
+                    <Link href="https://github.com/KodaAllison" aria-label="GitHub profile">
+                        <FaGithub className="h-8 w-8 hover:opacity-80 transition-opacity" />
                     </Link>
-                    <Link href="https://linkedin.com/in/koda-allison/">
-                        <Image src="/linkedin-icon.svg" alt="linkedin" height={30} width={30} />
+                    <Link href="https://linkedin.com/in/koda-allison/" aria-label="LinkedIn profile">
+                        <FaLinkedin className="h-8 w-8 hover:opacity-80 transition-opacity" />
                     </Link>
                 </div>
             </div>
