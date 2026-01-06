@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import NavLink from "./Navlink";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import MenuOverlay from "./MenuOverlay";
-import { useTheme } from "../ThemeProvider";
+import { useTheme } from "next-themes";
 
 const navLinks = [
   {
@@ -23,7 +23,14 @@ const navLinks = [
 
 const Navbar = () => {
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme, systemTheme } = useTheme();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
     <nav className="fixed mx-auto border border-slate-200 dark:border-[#33353F] top-0 left-0 right-0 z-10 bg-white/80 dark:bg-[#121212] backdrop-blur-sm transition-colors duration-300">
@@ -35,17 +42,21 @@ const Navbar = () => {
           Koda Allison
         </Link>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="mr-2 hidden rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 md:inline-flex items-center gap-1 transition-colors duration-200"
-            aria-label="Toggle theme"
-          >
-            <span>{theme === "dark" ? "☾" : "☼"}</span>
-            <span className="hidden sm:inline">
-              {theme === "dark" ? "Dark" : "Light"} mode
-            </span>
-          </button>
+          {mounted && (
+            <button
+              type="button"
+              onClick={() =>
+                setTheme(currentTheme === "dark" ? "light" : "dark")
+              }
+              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 inline-flex items-center gap-1 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              <span>{currentTheme === "dark" ? "☾" : "☼"}</span>
+              <span className="hidden sm:inline">
+                {currentTheme === "dark" ? "Dark" : "Light"} mode
+              </span>
+            </button>
+          )}
           <div className="mobile-menu block md:hidden">
             {!navbarOpen ? (
               <button

@@ -56,7 +56,7 @@ const AboutSection = () => {
     }
 
   return (
-    <section className='text-white'>
+    <section className='text-black dark:text-white'>
     <div className='md:flex md:justify-between gap-8 items-start py-8 px-4 xl:gap-16 sm:py-16 xl:px-16'>
        
         <div className='md:w-2/3'>

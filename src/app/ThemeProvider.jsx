@@ -1,64 +1,20 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-
-const ThemeContext = createContext({
-  theme: "dark",
-  toggleTheme: () => {},
-});
+import React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("dark");
-  const [mounted, setMounted] = useState(false);
-
-  // Read initial preference from localStorage / system
-  useEffect(() => {
-    try {
-      const storedTheme = window.localStorage.getItem("theme");
-      if (storedTheme === "light" || storedTheme === "dark") {
-        setTheme(storedTheme);
-      } else {
-        const prefersDark = window.matchMedia &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches;
-        setTheme(prefersDark ? "dark" : "light");
-      }
-    } catch {
-      setTheme("dark");
-    }
-    setMounted(true);
-  }, []);
-
-  // Apply theme to <html> element
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-
-    try {
-      window.localStorage.setItem("theme", theme);
-    } catch {
-      // ignore
-    }
-  }, [theme, mounted]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {/* Avoid hydration mismatch flash */}
-      <div style={{ visibility: mounted ? "visible" : "hidden" }}>{children}</div>
-    </ThemeContext.Provider>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      {children}
+    </NextThemesProvider>
   );
 };
-
-export const useTheme = () => useContext(ThemeContext);
 
 export default ThemeProvider;
 
