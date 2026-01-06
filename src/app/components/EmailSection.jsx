@@ -38,7 +38,7 @@ const EmailSection = () => {
     return (
         <section id="contact" className='grid md:grid-cols-2 my-12 py-24 gap-4'>
             <div>
-                <h5 className='text-xl font-bold text-white my-2 '>Contact Me</h5>
+                <h5 className='text-xl font-bold my-2 text-slate-900 dark:text-white'>Contact Me</h5>
                 <div className='socials flex flex-row gap-2'>
                     <Link href='https://github.com/KodaAllison'>
                         <Image src="/github-icon.svg" alt="github" height={30} width={30} />

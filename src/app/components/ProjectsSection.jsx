@@ -44,7 +44,7 @@ export const ProjectsSection = () => {
 
   return (
     <section id='projects' ref={ref}>
-      <h2 className='text-center text-3xl text-white font-bold m-4 '>My Projects</h2>
+      <h2 className='text-center text-3xl font-bold m-4 text-slate-900 dark:text-white'>My Projects</h2>
       <ul className='grid md:grid-cols-3 gap-8 md:gap-12'>
         {PROJECTS_DATA.map((project) => (
           <motion.li variants={cardVariants} initial="inital" animate={isInView ? "animate" : "inital"} transition={{duration: 0.3, delay: project.id*0.4}}  key={project.id}>
