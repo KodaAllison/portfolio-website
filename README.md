@@ -43,9 +43,7 @@ While creating this I was able to take a deeper dive into designing responsive a
 **Vercel**
 ## Acknowledgements
 
- - Linkedin and GitHub icons created by riajulislam - Flaticon
  - [Inspired by webdecoded](https://www.youtube.com/watch?v=Kb1f5bvF6f4s)
-
 
 
 ## Roadmap
