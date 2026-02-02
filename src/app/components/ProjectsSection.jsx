@@ -7,30 +7,32 @@ const PROJECTS_DATA = [
   {
     id: 1,
     title: "WeatherApp",
-    description: "Basic NextJS app, uses Weather API to fetch data and stores users favourite locations in LocalStorage ",
-    image: "/weather.png",
+    description: "NextJS app using Weather API to fetch data and stores user's favourite locations in LocalStorage.",
     link: "https://github.com/KodaAllison/weatherapp",
   },
   {
     id: 2,
     title: "FiveSomewhere",
-    description: "React App uses MongoDB to store data on various gloabal locations. Only returns locations where it is 5pm in the world",
-    image: "/five.png",
+    description: "React app with MongoDB that finds global locations where it's currently 5pm.",
     link: "https://github.com/KodaAllison/five-somewhere",
   },
   {
     id: 3,
     title: "Start-Bench-Sell",
-    description: "A NextJS app mainly built by my dad but I have offered some assistance and regularly nag him to explain how the code works. The app Generates 3 players daily and users pick which one to Start, Bench and Sell",
-    image: "/sbs.png",
+    description: "NextJS app that generates 3 football players daily where users decide which to Start, Bench, and Sell. Built with my dad's help.",
     link: "https://start-bench-sell.vercel.app",
   },
   {
     id: 4,
     title: "CC-Centre",
-    description: "Redesigned entire website from scratch for a local community centre. Allows them to showcase their events and facilities also uses SendGrid Email API for a contact form. Got experience using all areas of software development cycle and talking to an actual client.",
-    image: "/CC-Logo.JPEG",
+    description: "Complete website redesign for a local community centre with SendGrid Email API integration. Full development cycle experience working with a real client.",
     link: "https://cc-centre.org",
+  },
+  {
+    id: 5,
+    title: "SwiftPlan",
+    description: "Full-stack Next.js app for teachers to generate AI-powered lesson plans. Built for my dissertation with NextAuth, Prisma/PostgreSQL, and OpenAI integration.",
+    link: "https://github.com/KodaAllison/SwiftPlan",
   },
 ];
 
@@ -51,11 +53,7 @@ export const ProjectsSection = () => {
             <ProjectCard  
             title={project.title} 
             description={project.description} 
-            imgUrl={project.image} 
             gitUrl={project.link}/>
-
-
-
           </motion.li>
         ))} 
           
