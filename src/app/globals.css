@@ -3,56 +3,42 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 15, 23, 42; /* slate-900 */
-  --background-start-rgb: 248, 250, 252; /* slate-50 */
-  --background-end-rgb: 241, 245, 249; /* slate-100 */
+  --background: #020617;
+  --surface: #0f1419;
+  --on-surface: #dee3ea;
+  --terminal: #00ffc2;
+  --signal: #ffe600;
+  --cyan: #22d3ee;
 }
 
-.dark {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 0, 0, 0;
-}
-
+html,
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: var(--background);
+  color: var(--on-surface);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
 
-.timer-container {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
-}
+  .terminal-shadow {
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  }
 
-.timer-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+  .blink-cursor::after {
+    content: "_";
+    animation: blink 1s step-end infinite;
+    color: var(--terminal);
+  }
 
-.timer-label {
-  margin-top: 10px;
-  font-size: 1.2em;
-  color: #ffffff;
-}
-
-.timer-text {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #ffffff;
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
 }

@@ -1,91 +1,102 @@
 "use client";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import NavLink from "./Navlink";
+import { usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import MenuOverlay from "./MenuOverlay";
-import { useTheme } from "next-themes";
 
-const navLinks = [
-  {
-    title: "About",
-    path: "#about",
-  },
-  {
-    title: "Projects",
-    path: "#projects",
-  },
-  {
-    title: "Contact",
-    path: "#contact",
-  },
+const NAV_LINKS = [
+  { title: "about", path: "/" },
+  { title: "projects", path: "/projects" },
+  { title: "run", path: "/run" },
+  { title: "contact", path: "/contact" },
 ];
 
 const Navbar = () => {
+  const pathname = usePathname();
   const [navbarOpen, setNavbarOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme, systemTheme } = useTheme();
 
+  // close the overlay whenever the route changes
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setNavbarOpen(false);
+  }, [pathname]);
 
-  const currentTheme = theme === "system" ? systemTheme : theme;
+  const isActive = (path) =>
+    path === "/" ? pathname === "/" : pathname?.startsWith(path);
 
   return (
-    <nav className="fixed mx-auto border border-slate-200 dark:border-[#33353F] top-0 left-0 right-0 z-10 bg-white/80 dark:bg-[#121212] backdrop-blur-sm transition-colors duration-300">
-      <div className="flex container lg:py-4 flex-wrap items-center justify-between mx-auto px-4 py-2">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-outline-variant bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex h-12 max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
+        {/* left — system label */}
         <Link
-          href={"/"}
-          className="text-2xl md:text-3xl font-semibold text-slate-900 dark:text-white"
+          href="/"
+          className="flex items-center gap-2 font-mono text-label-md font-bold text-terminal hover:text-terminal-dim transition-colors"
         >
-          Koda Allison
+          <span className="text-signal">~/</span>
+          <span>kodaallison.dev</span>
         </Link>
-        <div className="flex items-center gap-2">
-          {mounted && (
-            <button
-              type="button"
-              onClick={() =>
-                setTheme(currentTheme === "dark" ? "light" : "dark")
-              }
-              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 inline-flex items-center gap-1 transition-colors duration-200"
-              aria-label="Toggle theme"
-            >
-              <span>{currentTheme === "dark" ? "☾" : "☼"}</span>
-              <span className="hidden sm:inline">
-                {currentTheme === "dark" ? "Dark" : "Light"} mode
-              </span>
-            </button>
-          )}
-          <div className="mobile-menu block md:hidden">
+
+        {/* center — desktop nav */}
+        <ul className="hidden md:flex items-center gap-1 font-mono text-label-sm uppercase tracking-widest">
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link.path);
+            return (
+              <li key={link.path}>
+                <Link
+                  href={link.path}
+                  className={[
+                    "px-3 py-1.5 transition-colors",
+                    active
+                      ? "text-terminal"
+                      : "text-on-surface-variant hover:text-terminal",
+                  ].join(" ")}
+                >
+                  {active ? (
+                    <>
+                      <span className="text-outline">[</span>
+                      <span className="px-1">{link.title}</span>
+                      <span className="text-outline">]</span>
+                    </>
+                  ) : (
+                    <>/{link.title}</>
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* right — status + mobile menu trigger */}
+        <div className="flex items-center gap-3">
+          <span className="hidden md:inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">
+            <span className="h-2 w-2 rounded-full bg-terminal animate-pulse" aria-hidden />
+            online
+          </span>
+          <div className="md:hidden">
             {!navbarOpen ? (
               <button
                 onClick={() => setNavbarOpen(true)}
-                className="flex items-center px-3 py-2 border rounded border-slate-300 text-slate-700 hover:text-slate-900 hover:border-slate-400 dark:border-slate-200 dark:text-slate-200 dark:hover:text-white dark:hover:border-white"
+                aria-label="open menu"
+                className="flex items-center justify-center h-9 w-9 border border-outline-variant text-on-surface-variant hover:text-terminal hover:border-terminal transition-colors"
               >
                 <Bars3Icon className="h-5 w-5" />
               </button>
             ) : (
               <button
                 onClick={() => setNavbarOpen(false)}
-                className="flex items-center px-3 py-2 border rounded border-slate-300 text-slate-700 hover:text-slate-900 hover:border-slate-400 dark:border-slate-200 dark:text-slate-200 dark:hover:text-white dark:hover:border-white"
+                aria-label="close menu"
+                className="flex items-center justify-center h-9 w-9 border border-outline-variant text-terminal hover:border-terminal transition-colors"
               >
                 <XMarkIcon className="h-5 w-5" />
               </button>
             )}
           </div>
         </div>
-        <div className="menu hidden md:block md:w-auto" id="navbar">
-          <ul className="flex p-4 md:p-0 md:flex-row md:space-x-8 mt-0">
-            {navLinks.map((link, index) => (
-              <li key={index}>
-                <NavLink href={link.path} title={link.title} />
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
-      {navbarOpen ? <MenuOverlay links={navLinks} /> : null}
+
+      {navbarOpen ? (
+        <MenuOverlay links={NAV_LINKS} pathname={pathname} onClose={() => setNavbarOpen(false)} />
+      ) : null}
     </nav>
   );
 };
