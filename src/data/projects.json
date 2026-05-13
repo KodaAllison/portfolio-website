@@ -1,0 +1,116 @@
+[
+  {
+    "id": "swiftplan",
+    "slug": "swiftplan",
+    "title": "SwiftPlan",
+    "file": "swiftplan.tsx",
+    "path": "~/projects/swiftplan.tsx",
+    "permissions": "-rw-r--r--",
+    "size": "248k",
+    "stars": 12,
+    "category": "web",
+    "status": "featured",
+    "tagline": "AI lesson-plan generator. NextAuth, Prisma, OpenAI. Dissertation.",
+    "description": "Full-stack Next.js app for teachers to generate AI-powered lesson plans. Built for my dissertation with NextAuth authentication, Prisma/PostgreSQL persistence, and OpenAI integration for generation.",
+    "tags": [
+      { "label": "typescript", "color": "cyan", "variant": "flag" },
+      { "label": "next-js", "color": "terminal", "variant": "flag" },
+      { "label": "tailwind", "color": "cyan", "variant": "flag" },
+      { "label": "prisma", "color": "muted", "variant": "flag" },
+      { "label": "openai", "color": "signal", "variant": "flag" }
+    ],
+    "image": null,
+    "gitUrl": "https://github.com/KodaAllison/SwiftPlan",
+    "previewUrl": null
+  },
+  {
+    "id": "cc-centre",
+    "slug": "cc-centre",
+    "title": "CC-Centre",
+    "file": "cc-centre.tsx",
+    "path": "~/projects/cc-centre.tsx",
+    "permissions": "-rw-r--r--",
+    "size": "412k",
+    "stars": 3,
+    "category": "web",
+    "status": "live",
+    "tagline": "Community-centre rebuild. SendGrid mail flow. First real client.",
+    "description": "Complete website redesign for a local community centre with SendGrid Email API integration. Full development cycle experience working with a real client, from discovery through launch and maintenance.",
+    "tags": [
+      { "label": "next-js", "color": "terminal", "variant": "flag" },
+      { "label": "sendgrid", "color": "cyan", "variant": "flag" },
+      { "label": "tailwind", "color": "cyan", "variant": "flag" },
+      { "label": "client-work", "color": "signal", "variant": "flag" }
+    ],
+    "image": "/CC-Logo.JPEG",
+    "gitUrl": null,
+    "previewUrl": "https://cc-centre.org"
+  },
+  {
+    "id": "start-bench-sell",
+    "slug": "start-bench-sell",
+    "title": "Start-Bench-Sell",
+    "file": "start-bench-sell.tsx",
+    "path": "~/projects/start-bench-sell.tsx",
+    "permissions": "-rw-r--r--",
+    "size": "156k",
+    "stars": 5,
+    "category": "web",
+    "status": "live",
+    "tagline": "Daily football decision game. Vercel cron. Built with my dad.",
+    "description": "Next.js app that generates 3 football players daily where users decide which to Start, Bench, and Sell. Built collaboratively with my dad as a side project — daily generation runs on a Vercel cron job.",
+    "tags": [
+      { "label": "next-js", "color": "terminal", "variant": "flag" },
+      { "label": "vercel-cron", "color": "cyan", "variant": "flag" },
+      { "label": "tailwind", "color": "cyan", "variant": "flag" },
+      { "label": "side-project", "color": "muted", "variant": "flag" }
+    ],
+    "image": "/sbs.png",
+    "gitUrl": null,
+    "previewUrl": "https://start-bench-sell.vercel.app"
+  },
+  {
+    "id": "five-somewhere",
+    "slug": "five-somewhere",
+    "title": "FiveSomewhere",
+    "file": "five-somewhere.jsx",
+    "path": "~/projects/five-somewhere.jsx",
+    "permissions": "-rw-r--r--",
+    "size": "98k",
+    "stars": 2,
+    "category": "web",
+    "status": "archived",
+    "tagline": "It's 5pm somewhere — Mongo-backed timezone party finder.",
+    "description": "React app with MongoDB that finds global locations where it's currently 5pm. A small joke app that turned into a fun timezone-math exercise.",
+    "tags": [
+      { "label": "react", "color": "cyan", "variant": "flag" },
+      { "label": "mongodb", "color": "terminal", "variant": "flag" },
+      { "label": "timezones", "color": "muted", "variant": "flag" }
+    ],
+    "image": "/five-somewhere.png",
+    "gitUrl": "https://github.com/KodaAllison/five-somewhere",
+    "previewUrl": null
+  },
+  {
+    "id": "weatherapp",
+    "slug": "weatherapp",
+    "title": "WeatherApp",
+    "file": "weatherapp.jsx",
+    "path": "~/projects/weatherapp.jsx",
+    "permissions": "-rw-r--r--",
+    "size": "76k",
+    "stars": 1,
+    "category": "web",
+    "status": "archived",
+    "tagline": "Weather API wrapper. LocalStorage favourites.",
+    "description": "Next.js app using a Weather API to fetch live forecasts and storing user's favourite locations in LocalStorage. An early Next.js learning project.",
+    "tags": [
+      { "label": "next-js", "color": "terminal", "variant": "flag" },
+      { "label": "weather-api", "color": "cyan", "variant": "flag" },
+      { "label": "localstorage", "color": "muted", "variant": "flag" }
+    ],
+    "image": "/weather.png",
+    "gitUrl": "https://github.com/KodaAllison/weatherapp",
+    "previewUrl": null
+  }
+]
