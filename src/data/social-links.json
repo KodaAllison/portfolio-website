@@ -1,0 +1,18 @@
+{
+  "github": {
+    "handle": "KodaAllison",
+    "url": "https://github.com/KodaAllison",
+    "host": "github.com",
+    "tagline": "--explore-repositories --view-commits"
+  },
+  "linkedin": {
+    "handle": "koda-allison",
+    "url": "https://linkedin.com/in/koda-allison/",
+    "host": "linkedin.com",
+    "tagline": "--get-resume --network-connect"
+  },
+  "email": {
+    "address": "kodaallison@icloud.com",
+    "label": "kodaallison@icloud.com"
+  }
+}
