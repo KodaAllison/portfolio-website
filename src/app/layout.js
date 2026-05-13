@@ -1,12 +1,22 @@
-import { Inter } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
-import ThemeProvider from "./ThemeProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+});
 
 export const metadata = {
-  // Base URL of your live site so Next.js can build full URLs in meta tags
   metadataBase: new URL("https://koda-allison-portfolio.vercel.app"),
   title: "Koda Allison | Web Developer & Computer Science Graduate",
   description:
@@ -71,12 +81,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <ThemeProvider>
-          {children}
-          <Analytics />
-        </ThemeProvider>
+    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-mono bg-background text-on-surface antialiased">
+        {children}
+        <Analytics />
       </body>
     </html>
   );

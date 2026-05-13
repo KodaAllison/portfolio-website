@@ -7,7 +7,7 @@ import EmailSection from "./components/EmailSection";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-[#121212] dark:text-white transition-colors duration-300">
+    <main className="flex min-h-screen flex-col">
       <Navbar />
       <div className="containter mt-24 mx-auto px-12 py-4">
         <HeroSection />
