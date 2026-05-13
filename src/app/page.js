@@ -1,94 +1,489 @@
+import Link from "next/link";
 import Navbar from "./components/Navbar";
 import TerminalWindow from "./components/TerminalWindow";
 import StatusChip from "./components/StatusChip";
 import SyntaxTag from "./components/SyntaxTag";
 import CommitHeatmap from "./components/CommitHeatmap";
+import about from "../data/about.json";
+
+/* --- inline atoms (kept local; not shared components) -------------------- */
+
+// One row in the about.json terminal window. Renders `  key: <value>,`
+const JsonRow = ({ k, value, depth = 1, valueColor = "text-cyan", trailing = "," }) => (
+  <div style={{ paddingLeft: `${depth * 16}px` }} className="leading-relaxed">
+    <span className="text-on-surface">{k}</span>
+    <span className="text-outline">: </span>
+    <span className={valueColor}>{value}</span>
+    <span className="text-outline">{trailing}</span>
+  </div>
+);
+
+// A stat cell for the strip beneath the hero.
+const StatCell = ({ label, value, accent = "text-terminal", align = "left" }) => (
+  <div
+    className={`flex items-baseline gap-2 ${
+      align === "right" ? "md:justify-end" : ""
+    }`}
+  >
+    <span className="font-mono text-[10px] uppercase tracking-widest text-outline">
+      {label}
+    </span>
+    <span className="text-outline">=</span>
+    <span className={`font-mono text-[13px] font-bold ${accent}`}>{value}</span>
+  </div>
+);
+
+// A link row in the contact card.
+const LinkRow = ({ name, label, href, external = true }) => (
+  <li className="group">
+    <Link
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="flex items-baseline gap-2 font-mono text-[13px] transition-colors"
+    >
+      <span className="w-20 text-outline">{name}</span>
+      <span className="text-outline transition-colors group-hover:text-terminal">
+        →
+      </span>
+      <span className="text-cyan transition-colors group-hover:text-terminal">
+        {label}
+      </span>
+    </Link>
+  </li>
+);
+
+/* --- page ---------------------------------------------------------------- */
 
 export default function Home() {
+  const { stats, currently, stack, links } = about;
+
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex min-h-screen flex-col bg-background">
       <Navbar />
 
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-24 pb-16">
-        <div className="mb-8 flex flex-wrap items-center gap-3">
-          <StatusChip pulse glow>online</StatusChip>
-          <span className="font-mono text-label-sm text-on-surface-variant">
-            newcastle-upon-tyne
-          </span>
-          <span className="text-outline">•</span>
-          <span className="font-mono text-label-sm text-cyan">
-            54.97°N 1.61°W
-          </span>
-        </div>
+      {/* ============================================================
+          HERO
+          ============================================================ */}
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pt-20 pb-16 md:px-margin-desktop md:pt-28 md:pb-24">
+        <div className="grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
+          {/* hero left ----------------------------------------------- */}
+          <div className="space-y-8">
+            {/* status row */}
+            <div className="flex flex-wrap items-center gap-3">
+              <StatusChip pulse glow>
+                online
+              </StatusChip>
+              <span className="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">
+                {about.location.city}
+              </span>
+              <span className="text-outline">•</span>
+              <span className="font-mono text-[11px] uppercase tracking-widest text-cyan">
+                {about.location.coords}
+              </span>
+            </div>
 
-        <h1 className="font-display text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tighter">
-          <span className="block text-terminal">koda allison</span>
-          <span className="block text-cyan">portfolio_os</span>
-          <span className="block italic text-on-surface">// rebuilding.</span>
-        </h1>
+            {/* headline */}
+            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
+              <span className="block text-terminal">shipping code,</span>
+              <span className="block text-cyan">chasing miles,</span>
+              <span className="block italic text-on-surface">asking why.</span>
+            </h1>
 
-        <p className="mt-6 max-w-xl font-mono text-body-md text-on-surface-variant">
-          <span className="text-cyan">// </span>
-          phase 1 + 2 foundation. shared chrome and primitives are in. landing,
-          projects, run, and contact pages will land in their own PRs.
-        </p>
+            {/* tagline */}
+            <p className="max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
+              <span className="text-cyan">{"// "}</span>
+              first-class cs grad · technical graduate at{" "}
+              <a
+                href="https://www.virginmoney.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan hover:text-terminal hover:underline"
+              >
+                @virginmoney
+              </a>
+              . i rotate through engineering teams by day, ship side-projects at
+              stupid o&apos;clock, and am currently training for marathon #2.
+            </p>
 
-        <div className="mt-8 flex flex-wrap gap-2">
-          <SyntaxTag color="terminal" variant="flag">next-16</SyntaxTag>
-          <SyntaxTag color="cyan" variant="flag">tailwind-3</SyntaxTag>
-          <SyntaxTag color="signal" variant="flag">dark-only</SyntaxTag>
-          <SyntaxTag variant="bracket">react-18</SyntaxTag>
-          <SyntaxTag variant="bracket">resend</SyntaxTag>
+            {/* stack tags */}
+            <div className="flex flex-wrap gap-2">
+              <SyntaxTag color="terminal" variant="flag">typescript</SyntaxTag>
+              <SyntaxTag color="cyan" variant="flag">react</SyntaxTag>
+              <SyntaxTag color="cyan" variant="flag">next-16</SyntaxTag>
+              <SyntaxTag color="terminal" variant="bracket">tailwind</SyntaxTag>
+              <SyntaxTag color="signal" variant="bracket">javascript</SyntaxTag>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                href="/contact"
+                className="group inline-flex items-center gap-2 bg-terminal px-5 py-3 font-mono text-[13px] font-bold text-background transition-all hover:bg-terminal-dim hover:shadow-glow-lg"
+              >
+                <span className="opacity-60 group-hover:opacity-100">$</span>
+                <span>./hello.sh</span>
+              </Link>
+              <a
+                href="/Koda-Allison-CV.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-outline-variant px-5 py-3 font-mono text-[13px] font-bold text-on-surface-variant transition-colors hover:border-cyan hover:text-cyan"
+              >
+                <span className="opacity-60">$</span>
+                <span>wget cv.pdf</span>
+              </a>
+              <span className="hidden font-mono text-[10px] uppercase tracking-widest text-outline sm:inline-flex sm:items-center">
+                press
+                <kbd className="mx-1.5 inline-flex h-5 w-5 items-center justify-center border border-outline-variant text-[10px] text-on-surface-variant">
+                  /
+                </kbd>
+                for cmd palette
+              </span>
+            </div>
+          </div>
+
+          {/* hero right — about.json terminal ------------------------ */}
+          <div className="lg:pl-4">
+            <TerminalWindow title="~/about.json" subtitle="json · 24 lines" glow>
+              <div className="relative">
+                {/* faint line gutter */}
+                <div className="text-[13px] leading-relaxed">
+                  <div>
+                    <span className="text-outline">{"{"}</span>
+                  </div>
+                  <JsonRow k="&quot;name&quot;" value={`"${about.name}"`} />
+                  <JsonRow k="&quot;role&quot;" value={`"${about.role}"`} />
+                  <JsonRow
+                    k="&quot;employer&quot;"
+                    value={`"${about.employer}"`}
+                  />
+                  <JsonRow
+                    k="&quot;title&quot;"
+                    value={`"${about.title}"`}
+                  />
+                  <JsonRow
+                    k="&quot;location&quot;"
+                    value={`"${about.location.city}, ${about.location.country}"`}
+                  />
+                  <JsonRow
+                    k="&quot;degree&quot;"
+                    value={`"${about.education.degree}"`}
+                  />
+                  <JsonRow
+                    k="&quot;result&quot;"
+                    value={`"${about.education.result}"`}
+                    valueColor="text-signal"
+                  />
+                  <div className="pl-4 leading-relaxed">
+                    <span className="text-on-surface">&quot;stack&quot;</span>
+                    <span className="text-outline">: [</span>
+                  </div>
+                  {stack.map((tech, i) => (
+                    <div
+                      key={tech}
+                      className="leading-relaxed"
+                      style={{ paddingLeft: "32px" }}
+                    >
+                      <span className="text-terminal">&quot;{tech}&quot;</span>
+                      <span className="text-outline">
+                        {i < stack.length - 1 ? "," : ""}
+                      </span>
+                    </div>
+                  ))}
+                  <div className="pl-4 leading-relaxed">
+                    <span className="text-outline">],</span>
+                  </div>
+                  <div className="pl-4 leading-relaxed">
+                    <span className="text-on-surface">&quot;status&quot;</span>
+                    <span className="text-outline">: </span>
+                    <span className="text-terminal">&quot;available&quot;</span>
+                  </div>
+                  <div>
+                    <span className="text-outline">{"}"}</span>
+                  </div>
+
+                  {/* prompt cursor */}
+                  <div className="mt-4 flex items-center gap-2 border-t border-outline-variant pt-3 text-[12px]">
+                    <span className="text-terminal">koda@portfolio-os</span>
+                    <span className="text-outline">:</span>
+                    <span className="text-cyan">~</span>
+                    <span className="text-outline">$</span>
+                    <span className="blink-cursor" />
+                  </div>
+                </div>
+              </div>
+            </TerminalWindow>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-container-max gap-gutter px-margin-mobile md:px-margin-desktop pb-24 md:grid-cols-2">
-        <TerminalWindow title="primitives.jsx" subtitle="80x24" glow>
-          <div className="space-y-1 text-sm leading-relaxed">
-            <div>
-              <span className="text-purple-400">export</span>{" "}
-              <span className="text-purple-400">const</span>{" "}
-              <span className="text-yellow-300">primitives</span>{" "}
-              <span className="text-on-surface-variant">=</span> [
-            </div>
-            <div className="pl-4">
-              <span className="text-cyan">"TerminalWindow"</span>,
-            </div>
-            <div className="pl-4">
-              <span className="text-cyan">"StatusBar"</span>,
-            </div>
-            <div className="pl-4">
-              <span className="text-cyan">"StatusChip"</span>,
-            </div>
-            <div className="pl-4">
-              <span className="text-cyan">"SyntaxTag"</span>,
-            </div>
-            <div className="pl-4">
-              <span className="text-cyan">"CommitHeatmap"</span>,
-            </div>
-            <div>];</div>
-            <div className="pt-3">
-              <span className="text-terminal">$</span>{" "}
-              <span className="blink-cursor" />
-            </div>
-          </div>
-        </TerminalWindow>
+      {/* ============================================================
+          STATS STRIP
+          ============================================================ */}
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
+        <div className="grid grid-cols-2 gap-4 border-y border-outline-variant py-6 md:grid-cols-5 md:gap-6 md:py-5">
+          <StatCell
+            label="weekly_km"
+            value={stats.weekly_km}
+            accent="text-terminal"
+          />
+          <StatCell
+            label="commits.30d"
+            value={stats.commits_30d}
+            accent="text-cyan"
+          />
+          <StatCell
+            label="countries.visited"
+            value={stats.countries_visited}
+            accent="text-terminal"
+          />
+          <StatCell
+            label="coffee.consumed"
+            value="∞"
+            accent="text-cyan"
+          />
+          <StatCell
+            label="uptime"
+            value={stats.uptime}
+            accent="text-signal"
+            align="right"
+          />
+        </div>
+      </section>
 
-        <TerminalWindow title="activity.heatmap" subtitle="48 cells">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-display text-lg font-bold text-on-surface">
-                placeholder activity
-              </h3>
-              <p className="font-mono text-[11px] text-outline">
-                seeded sample · real data lands with /run
+      {/* ============================================================
+          CURRENTLY + ACTIVITY
+          ============================================================ */}
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-20 pt-16 md:px-margin-desktop md:pb-28 md:pt-24">
+        {/* section header */}
+        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-on-surface md:text-3xl">
+            <span className="text-outline">{"// "}</span>
+            currently
+          </h2>
+          <span className="font-mono text-[11px] uppercase tracking-widest text-outline">
+            last updated · today
+          </span>
+        </div>
+
+        <div className="grid gap-gutter md:grid-cols-2">
+          {/* currently.jsx ---------------------------------------- */}
+          <TerminalWindow title="~/currently.jsx" subtitle="jsx · live">
+            <div className="text-[13px] leading-relaxed">
+              <div>
+                <span className="text-fuchsia-400">function</span>{" "}
+                <span className="text-signal">currently</span>
+                <span className="text-outline">() {"{"}</span>
+              </div>
+              <div className="pl-4">
+                <span className="text-fuchsia-400">return</span>
+                <span className="text-outline"> {"{"}</span>
+              </div>
+
+              <div className="pl-8">
+                <span className="text-on-surface">shipping</span>
+                <span className="text-outline">: </span>
+                <span className="text-cyan">&quot;{currently.shipping}&quot;</span>
+                <span className="text-outline">,</span>
+              </div>
+              <div className="pl-8">
+                <span className="text-on-surface">training</span>
+                <span className="text-outline">: </span>
+                <span className="text-cyan">&quot;{currently.training}&quot;</span>
+                <span className="text-outline">,</span>
+              </div>
+              <div className="pl-8">
+                <span className="text-on-surface">reading</span>
+                <span className="text-outline">: </span>
+                <span className="text-cyan">&quot;{currently.reading}&quot;</span>
+                <span className="text-outline">,</span>
+              </div>
+              <div className="pl-8">
+                <span className="text-on-surface">learning</span>
+                <span className="text-outline">: </span>
+                <span className="text-cyan">&quot;{currently.learning}&quot;</span>
+                <span className="text-outline">,</span>
+              </div>
+              <div className="pl-8">
+                <span className="text-on-surface">listening</span>
+                <span className="text-outline">: </span>
+                <span className="text-cyan">&quot;{currently.listening}&quot;</span>
+                <span className="text-outline">,</span>
+              </div>
+              <div className="pl-8">
+                <span className="text-on-surface">updated</span>
+                <span className="text-outline">: </span>
+                <span className="text-fuchsia-400">new</span>{" "}
+                <span className="text-signal">Date</span>
+                <span className="text-outline">(</span>
+                <span className="text-terminal">
+                  &quot;
+                  {new Date().toISOString().slice(0, 10)}
+                  &quot;
+                </span>
+                <span className="text-outline">)</span>
+              </div>
+
+              <div className="pl-4">
+                <span className="text-outline">{"};"}</span>
+              </div>
+              <div>
+                <span className="text-outline">{"}"}</span>
+              </div>
+
+              <div className="mt-4 flex items-center gap-2 border-t border-outline-variant pt-3">
+                <span className="text-terminal">$</span>
+                <span className="text-on-surface-variant">node currently.jsx</span>
+                <span className="blink-cursor" />
+              </div>
+            </div>
+          </TerminalWindow>
+
+          {/* activity ---------------------------------------------- */}
+          <TerminalWindow title="~/activity.log" subtitle="48 cells · 30d">
+            <div className="mb-5 flex items-end justify-between">
+              <div>
+                <div className="font-display text-3xl font-bold leading-none text-on-surface">
+                  372<span className="text-terminal">.</span>
+                </div>
+                <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-outline">
+                  commits / 30d
+                </div>
+              </div>
+              <StatusChip color="cyan" pulse>
+                live
+              </StatusChip>
+            </div>
+
+            <CommitHeatmap columns={12} rows={4} seed={108} />
+
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant pt-3 font-mono text-[10px] uppercase tracking-widest text-outline">
+              <div className="flex flex-wrap items-center gap-4">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-terminal">●</span> last commit · 6h ago
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-signal">★</span> longest streak · 24d
+                </span>
+              </div>
+            </div>
+          </TerminalWindow>
+        </div>
+      </section>
+
+      {/* ============================================================
+          CONTACT CTA
+          ============================================================ */}
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-24 md:px-margin-desktop md:pb-32">
+        <div className="terminal-shadow relative overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low">
+          {/* decorative grid background — pure CSS, no extra component */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(0,255,194,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,194,0.04) 1px, transparent 1px)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+          {/* glow corner */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -right-32 -bottom-32 h-80 w-80 rounded-full bg-terminal/10 blur-3xl"
+          />
+
+          <div className="relative grid gap-10 p-8 md:grid-cols-[1.5fr_1fr] md:p-12 lg:p-16">
+            {/* left — big echo */}
+            <div className="space-y-6">
+              <div className="font-mono text-[11px] uppercase tracking-widest text-outline">
+                // get_in_touch.sh
+              </div>
+              <h2 className="font-display text-4xl font-extrabold leading-[1.05] tracking-tighter md:text-6xl">
+                <span className="block text-cyan">$ echo &quot;hello&quot;</span>
+                <span className="block text-terminal">
+                  &gt; {about.links.email.label}
+                  <span className="blink-cursor" />
+                </span>
+              </h2>
+              <p className="max-w-md font-mono text-body-md leading-relaxed text-on-surface-variant">
+                <span className="text-cyan">{"// "}</span>
+                best for: graduate engineering roles, side-project pair-ups, and
+                anyone with a long route to share.
               </p>
             </div>
-            <StatusChip color="cyan" pulse>live</StatusChip>
+
+            {/* right — link list */}
+            <div className="space-y-5 md:border-l md:border-outline-variant md:pl-10">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-outline">
+                // links
+              </div>
+              <ul className="space-y-3">
+                <LinkRow
+                  name="github"
+                  label={links.github.label}
+                  href={links.github.href}
+                />
+                <LinkRow
+                  name="linkedin"
+                  label={links.linkedin.label}
+                  href={links.linkedin.href}
+                />
+                <LinkRow
+                  name="strava"
+                  label={links.strava.label}
+                  href={links.strava.href}
+                />
+                <LinkRow
+                  name="email"
+                  label={links.email.label}
+                  href={links.email.href}
+                  external={false}
+                />
+              </ul>
+
+              <div className="pt-4">
+                <Link
+                  href="/contact"
+                  className="group inline-flex items-center gap-2 border border-terminal/40 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-widest text-terminal transition-all hover:bg-terminal hover:text-background"
+                >
+                  <span className="opacity-70 group-hover:opacity-100">$</span>
+                  open /contact
+                  <span className="opacity-70 transition-transform group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </Link>
+              </div>
+            </div>
           </div>
-          <CommitHeatmap columns={8} rows={6} seed={42} />
-        </TerminalWindow>
+        </div>
       </section>
+
+      {/* ============================================================
+          FOOTER STATUS BAR
+          ============================================================ */}
+      <footer className="border-t border-outline-variant bg-background/80 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-container-max flex-col items-start justify-between gap-2 px-margin-mobile py-3 font-mono text-[10px] uppercase tracking-widest text-outline md:flex-row md:items-center md:px-margin-desktop">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-terminal">●</span>
+            <span>sys_build · 0x_redesign_v1</span>
+            <span className="text-outline-variant">|</span>
+            <span>uptime · {stats.uptime}</span>
+            <span className="text-outline-variant">|</span>
+            <span>portfolio_os</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/KodaAllison/portfolio-website"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-terminal transition-colors"
+            >
+              source
+            </a>
+            <span>next-16 · vercel</span>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

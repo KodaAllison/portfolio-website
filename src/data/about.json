@@ -1,0 +1,42 @@
+{
+  "name": "koda allison",
+  "role": "web developer",
+  "employer": "@virginmoney",
+  "title": "technical graduate",
+  "location": {
+    "city": "newcastle-upon-tyne",
+    "country": "uk",
+    "coords": "54.97°N 1.61°W"
+  },
+  "education": {
+    "degree": "bsc computer science",
+    "result": "first class honours"
+  },
+  "stack": [
+    "typescript",
+    "javascript",
+    "react",
+    "next.js",
+    "tailwind"
+  ],
+  "currently": {
+    "shipping": "portfolio_os v3 (next-16)",
+    "training": "marathon #2 — sub 4hr",
+    "reading": "the staff engineer's path",
+    "learning": "rust, slowly",
+    "listening": "fred again.. — actual life 3"
+  },
+  "stats": {
+    "weekly_km": 38.4,
+    "commits_30d": 142,
+    "countries_visited": 14,
+    "coffee_consumed": "Infinity",
+    "uptime": "99.9%"
+  },
+  "links": {
+    "github": { "label": "/KodaAllison", "href": "https://github.com/KodaAllison" },
+    "linkedin": { "label": "/koda-allison", "href": "https://www.linkedin.com/in/koda-allison/" },
+    "strava": { "label": "/koda", "href": "https://www.strava.com/" },
+    "email": { "label": "hello@koda.dev", "href": "mailto:hello@koda.dev" }
+  }
+}
