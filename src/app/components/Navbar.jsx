@@ -1,65 +1,102 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
-import NavLink from "./Navlink";
+import { usePathname } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import MenuOverlay from "./MenuOverlay";
 
-const navLinks = [
-  {
-    title: "About",
-    path: "#about",
-  },
-  {
-    title: "Projects",
-    path: "#projects",
-  },
-  {
-    title: "Contact",
-    path: "#contact",
-  },
+const NAV_LINKS = [
+  { title: "about", path: "/" },
+  { title: "projects", path: "/projects" },
+  { title: "run", path: "/run" },
+  { title: "contact", path: "/contact" },
 ];
 
 const Navbar = () => {
+  const pathname = usePathname();
   const [navbarOpen, setNavbarOpen] = useState(false);
 
+  // close the overlay whenever the route changes
+  useEffect(() => {
+    setNavbarOpen(false);
+  }, [pathname]);
+
+  const isActive = (path) =>
+    path === "/" ? pathname === "/" : pathname?.startsWith(path);
+
   return (
-    <nav className="fixed mx-auto border border-outline-variant top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-sm">
-      <div className="flex container lg:py-4 flex-wrap items-center justify-between mx-auto px-4 py-2">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-outline-variant bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex h-12 max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
+        {/* left — system label */}
         <Link
-          href={"/"}
-          className="text-2xl md:text-3xl font-semibold text-on-surface"
+          href="/"
+          className="flex items-center gap-2 font-mono text-label-md font-bold text-terminal hover:text-terminal-dim transition-colors"
         >
-          Koda Allison
+          <span className="text-signal">~/</span>
+          <span>koda.dev</span>
         </Link>
-        <div className="mobile-menu block md:hidden">
-          {!navbarOpen ? (
-            <button
-              onClick={() => setNavbarOpen(true)}
-              className="flex items-center px-3 py-2 border rounded border-outline text-on-surface-variant hover:text-on-surface hover:border-on-surface"
-            >
-              <Bars3Icon className="h-5 w-5" />
-            </button>
-          ) : (
-            <button
-              onClick={() => setNavbarOpen(false)}
-              className="flex items-center px-3 py-2 border rounded border-outline text-on-surface-variant hover:text-on-surface hover:border-on-surface"
-            >
-              <XMarkIcon className="h-5 w-5" />
-            </button>
-          )}
-        </div>
-        <div className="menu hidden md:block md:w-auto" id="navbar">
-          <ul className="flex p-4 md:p-0 md:flex-row md:space-x-8 mt-0">
-            {navLinks.map((link, index) => (
-              <li key={index}>
-                <NavLink href={link.path} title={link.title} />
+
+        {/* center — desktop nav */}
+        <ul className="hidden md:flex items-center gap-1 font-mono text-label-sm uppercase tracking-widest">
+          {NAV_LINKS.map((link) => {
+            const active = isActive(link.path);
+            return (
+              <li key={link.path}>
+                <Link
+                  href={link.path}
+                  className={[
+                    "px-3 py-1.5 transition-colors",
+                    active
+                      ? "text-terminal"
+                      : "text-on-surface-variant hover:text-terminal",
+                  ].join(" ")}
+                >
+                  {active ? (
+                    <>
+                      <span className="text-outline">[</span>
+                      <span className="px-1">{link.title}</span>
+                      <span className="text-outline">]</span>
+                    </>
+                  ) : (
+                    <>/{link.title}</>
+                  )}
+                </Link>
               </li>
-            ))}
-          </ul>
+            );
+          })}
+        </ul>
+
+        {/* right — status + mobile menu trigger */}
+        <div className="flex items-center gap-3">
+          <span className="hidden md:inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">
+            <span className="h-2 w-2 rounded-full bg-terminal animate-pulse" aria-hidden />
+            online
+          </span>
+          <div className="md:hidden">
+            {!navbarOpen ? (
+              <button
+                onClick={() => setNavbarOpen(true)}
+                aria-label="open menu"
+                className="flex items-center justify-center h-9 w-9 border border-outline-variant text-on-surface-variant hover:text-terminal hover:border-terminal transition-colors"
+              >
+                <Bars3Icon className="h-5 w-5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setNavbarOpen(false)}
+                aria-label="close menu"
+                className="flex items-center justify-center h-9 w-9 border border-outline-variant text-terminal hover:border-terminal transition-colors"
+              >
+                <XMarkIcon className="h-5 w-5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
-      {navbarOpen ? <MenuOverlay links={navLinks} /> : null}
+
+      {navbarOpen ? (
+        <MenuOverlay links={NAV_LINKS} pathname={pathname} onClose={() => setNavbarOpen(false)} />
+      ) : null}
     </nav>
   );
 };

@@ -37,3 +37,6 @@ next-env.d.ts
 
 # stitch design references
 /design
+
+# claude code local
+/.claude
