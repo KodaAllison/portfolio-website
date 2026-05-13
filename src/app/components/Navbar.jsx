@@ -33,7 +33,7 @@ const Navbar = () => {
           className="flex items-center gap-2 font-mono text-label-md font-bold text-terminal hover:text-terminal-dim transition-colors"
         >
           <span className="text-signal">~/</span>
-          <span>koda.dev</span>
+          <span>kodaallison.dev</span>
         </Link>
 
         {/* center — desktop nav */}
