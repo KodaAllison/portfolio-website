@@ -123,15 +123,6 @@ export default function Home() {
                 <span className="opacity-60 group-hover:opacity-100">$</span>
                 <span>./hello.sh</span>
               </Link>
-              <a
-                href="/Koda-Allison-CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-outline-variant px-5 py-3 font-mono text-[13px] font-bold text-on-surface-variant transition-colors hover:border-cyan hover:text-cyan"
-              >
-                <span className="opacity-60">$</span>
-                <span>wget cv.pdf</span>
-              </a>
               <span className="hidden font-mono text-[10px] uppercase tracking-widest text-outline sm:inline-flex sm:items-center">
                 press
                 <kbd className="mx-1.5 inline-flex h-5 w-5 items-center justify-center border border-outline-variant text-[10px] text-on-surface-variant">
