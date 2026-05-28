@@ -389,20 +389,18 @@ export default function ContactPage() {
       <Navbar />
 
       <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-20 pt-24 md:px-margin-desktop">
-        {/* breadcrumb / route stamp */}
-        <div className="mb-6 flex flex-wrap items-center gap-3 font-mono text-label-sm">
-          <span className="text-outline">~/</span>
-          <span className="text-cyan">contact</span>
-          <span className="text-outline">/</span>
-          <span className="text-terminal">mail_client.sh</span>
-          <span className="ml-2 text-outline">— stable v3</span>
+        {/* route stamp */}
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          <span className="font-mono text-label-md text-cyan">/* 04 · contact */</span>
+          <span className="text-outline">•</span>
+          <span className="font-mono text-label-sm text-on-surface-variant">mail_client.sh — stable v3</span>
         </div>
 
         <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
           <span className="block text-on-surface">say</span>
           <span className="block text-terminal">hello.</span>
         </h1>
-        <p className="mt-6 max-w-xl font-mono text-body-md text-on-surface-variant">
+        <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
           <span className="text-cyan">// </span>
           a real form, piped straight into resend. write me about work, runs,
           or anything in between.
@@ -423,13 +421,6 @@ export default function ContactPage() {
               <span className="text-terminal">$</span>
               <span className="text-signal">echo</span>
               <span className="text-cyan">&quot;hello&quot;</span>
-              <span className="text-on-surface-variant">&gt;</span>
-              <a
-                href={`mailto:${social.email.address}`}
-                className="text-terminal underline decoration-2 underline-offset-[6px] hover:text-terminal-dim"
-              >
-                {social.email.label}
-              </a>
               <span
                 className="ml-1 inline-block h-7 w-3 animate-pulse bg-terminal md:h-9 md:w-4"
                 aria-hidden

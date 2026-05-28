@@ -27,11 +27,11 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-outline-variant bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-12 max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
+      <div className="mx-auto flex h-16 max-w-container-max items-center justify-between px-margin-mobile md:px-margin-desktop">
         {/* left — system label */}
         <Link
           href="/"
-          className="flex items-center gap-2 font-mono text-label-md font-bold text-terminal hover:text-terminal-dim transition-colors"
+          className="flex items-center gap-2 font-mono text-label-md font-bold text-on-surface hover:text-terminal transition-colors"
         >
           <span className="text-signal">~/</span>
           <span>{about.domain}</span>

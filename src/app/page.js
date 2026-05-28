@@ -82,13 +82,13 @@ export default async function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col bg-background">
+    <main className="flex min-h-screen flex-col">
       <Navbar />
 
       {/* ============================================================
           HERO
           ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pt-20 pb-16 md:px-margin-desktop md:pt-28 md:pb-24">
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pt-24 pb-10 md:px-margin-desktop md:pb-16">
         <div className="grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
           {/* hero left ----------------------------------------------- */}
           <div className="space-y-8">
@@ -259,7 +259,7 @@ export default async function Home() {
       {/* ============================================================
           CURRENTLY + ACTIVITY
           ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-20 pt-16 md:px-margin-desktop md:pb-28 md:pt-24">
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 pt-10 md:px-margin-desktop md:pb-20 md:pt-16">
         {/* section header */}
         <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
           <h2 className="font-display text-2xl font-bold tracking-tight text-on-surface md:text-3xl">
@@ -379,7 +379,7 @@ export default async function Home() {
       {/* ============================================================
           CONTACT CTA
           ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-24 md:px-margin-desktop md:pb-32">
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
         <div className="terminal-shadow relative overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low">
           {/* decorative grid background — pure CSS, no extra component */}
           <div
@@ -399,13 +399,13 @@ export default async function Home() {
 
           <div className="relative grid gap-10 p-8 md:grid-cols-[1.5fr_1fr] md:p-12 lg:p-16">
             {/* left — big echo */}
-            <div className="space-y-6">
+            <div className="min-w-0 space-y-6">
               <div className="font-mono text-[11px] uppercase tracking-widest text-outline">
                 // get_in_touch.sh
               </div>
-              <h2 className="font-display text-4xl font-extrabold leading-[1.05] tracking-tighter md:text-6xl">
+              <h2 className="font-display text-2xl font-extrabold leading-[1.05] tracking-tighter sm:text-4xl md:text-4xl lg:text-6xl">
                 <span className="block text-cyan">$ echo &quot;hello&quot;</span>
-                <span className="block text-terminal">
+                <span className="block break-all text-terminal">
                   &gt; {about.links.email.label}
                   <span className="blink-cursor" />
                 </span>

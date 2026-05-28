@@ -149,13 +149,13 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col bg-background">
+    <main className="flex min-h-screen flex-col">
       <Navbar />
 
       <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-24 pb-16">
         {/* Hero */}
         <div className="mb-12">
-          <div className="mb-3 flex flex-wrap items-center gap-3">
+          <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="font-mono text-label-md text-cyan">
               /* 02 · projects */
             </span>
@@ -165,14 +165,14 @@ export default function ProjectsPage() {
             </StatusChip>
           </div>
 
-          <h1 className="font-display text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tighter">
+          <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
             <span className="text-signal">~/</span>
             <span className="text-terminal">projects</span>
             <span className="ml-2 text-cyan blink-cursor" />
           </h1>
 
-          <p className="mt-5 max-w-xl font-mono text-body-md italic text-on-surface-variant">
-            <span className="text-cyan not-italic">// </span>
+          <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
+            <span className="text-cyan">// </span>
             five files, five different ways of asking{" "}
             <span className="text-on-surface">&ldquo;could I build this?&rdquo;</span>
           </p>

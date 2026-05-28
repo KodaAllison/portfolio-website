@@ -76,51 +76,25 @@ export default async function RunPage() {
     <main className="flex min-h-screen flex-col">
       <Navbar />
 
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-24 pb-24">
-        {/* ── status bar ── */}
-        <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-outline-variant pb-6 font-mono text-label-sm">
-          <span className="text-on-surface-variant">
-            marathon_pb = <span className="text-terminal">{marathonPr?.time ?? "—"}</span>
-          </span>
-          <span className="text-outline">·</span>
-          <span className="text-on-surface-variant">
-            this_week_km = <span className="text-cyan">{weekly_km}</span>
-          </span>
-          <span className="text-outline">·</span>
-          <span className="text-on-surface-variant">
-            this_year_km = <span className="text-signal">{ytd_km.toLocaleString()}</span>
-          </span>
-          <span className="text-outline">·</span>
-          <span className="text-on-surface-variant">
-            lifetime_km = <span className="text-terminal">{all_time.km.toLocaleString()}</span>
-          </span>
-          <span className="text-outline">·</span>
-          <span className="text-on-surface-variant">
-            next_race = <span className="text-cyan">&quot;{next_race}&quot;</span>
-          </span>
-          <span className="ml-auto inline-flex items-center gap-2 text-on-surface-variant">
-            <span className="h-2 w-2 rounded-full bg-terminal animate-pulse" aria-hidden />
-            <span className="uppercase tracking-widest">live_data_feed</span>
-          </span>
-        </div>
-
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-24 pb-20">
         {/* ── hero ── */}
         <div className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <p className="font-mono text-label-md text-outline">
-              {"/* 02 · running.log */"}
-            </p>
+            <div className="mb-4">
+              <p className="font-mono text-label-md text-cyan">
+                {"/* 03 · running.log */"}
+              </p>
+            </div>
 
-            <h1 className="mt-3 font-display text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tighter">
+            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
               <span className="block text-cyan">const</span>
               <span className="block text-terminal">running.log</span>
               <span className="block italic text-on-surface">// chasing sub-4:00.</span>
             </h1>
 
-            <p className="mt-6 max-w-xl font-mono text-body-md text-on-surface-variant">
+            <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
               <span className="text-cyan">// </span>
-              splits, blocks, blowups. an honest record of the long road to a
-              negative-split marathon. live data via strava.
+              live data pulled from Strava API.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
@@ -191,7 +165,7 @@ export default async function RunPage() {
         </div>
 
         {/* ── training load + PR list ── */}
-        <div className="mt-16 grid grid-cols-1 gap-gutter lg:grid-cols-12">
+        <div className="mt-10 grid grid-cols-1 gap-gutter lg:grid-cols-12">
           {/* weekly bars */}
           <div className="lg:col-span-7">
             <TerminalWindow title="training.load" subtitle="last 16 weeks">
@@ -229,9 +203,9 @@ export default async function RunPage() {
           </div>
 
           {/* PR list */}
-          <div className="lg:col-span-5">
-            <TerminalWindow title="personal_records.js" subtitle="pbs[]" glow>
-              <div className="space-y-1 font-mono text-body-md">
+          <div className="flex lg:col-span-5">
+            <TerminalWindow title="personal_records.js" subtitle="pbs[]" glow className="flex-1 flex flex-col" bodyClass="p-6 flex flex-col flex-1">
+              <div className="space-y-3 font-mono text-body-md">
                 <div>
                   <span className="text-cyan">export const</span>{" "}
                   <span className="text-signal">pbs</span>{" "}
@@ -240,7 +214,6 @@ export default async function RunPage() {
 
                 {personal_records.map((pr, i) => {
                   const sec = timeToSeconds(pr.time);
-                  // shorter time = stronger bar
                   const strength = Math.max(0.25, 1 - (sec / maxPr) * 0.75);
                   const isMarathon = pr.distance === "Marathon";
                   const isHalf = pr.distance === "Half";
@@ -266,7 +239,7 @@ export default async function RunPage() {
                           ) : null}
                         </span>
                       </div>
-                      <div className="grid grid-cols-[90px_1fr] pl-0">
+                      <div className="mt-1 grid grid-cols-[90px_1fr] pl-0">
                         <span />
                         <span className="text-label-sm text-outline">
                           {`// ${pr.note} · ${pr.date}`}
@@ -277,27 +250,20 @@ export default async function RunPage() {
                 })}
 
                 <div>];</div>
+              </div>
 
-                <div className="mt-4 border-t border-outline-variant pt-4 text-label-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="h-3 w-[3px] bg-cyan" aria-hidden />
-                    <span className="uppercase tracking-widest text-on-surface-variant">
-                      note
-                    </span>
-                  </div>
-                  <p className="mt-2 italic leading-relaxed text-outline">
-                    {"// "}sub-3:30 in york is the goal. half PB suggests
-                    fitness is there — pacing the long drag from 28k is the
-                    open question.
-                  </p>
-                </div>
+              <div className="mt-auto border-t border-outline-variant pt-4 font-mono text-label-sm text-on-surface-variant">
+                <span className="text-terminal">$</span>{" "}
+                <span className="text-outline">node pbs.js</span>{" "}
+                <span className="text-signal">--sort=distance</span>
+                <span className="blink-cursor" />
               </div>
             </TerminalWindow>
           </div>
         </div>
 
         {/* ── recent activity log ── */}
-        <div className="mt-16">
+        <div className="mt-10">
           <TerminalWindow title="recent.log" subtitle={`tail -n ${recent_activity.length}`}>
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <div>
