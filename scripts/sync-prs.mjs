@@ -32,6 +32,8 @@ const DISTANCE_MAP = {
 
 const TARGETS = new Set(Object.values(DISTANCE_MAP));
 
+const LOOKBACK_DAYS = 90;
+
 // Minimum activity distance (metres) needed to contain each PR target.
 // Used to skip detail fetches for runs that are too short to matter.
 const MIN_DIST = { "5K": 4800, "10K": 9800, "Half": 20800, "Marathon": 41800 };
@@ -113,9 +115,11 @@ async function findAllPRs(token) {
   const remaining = new Set(TARGETS);
   const MAX_PAGES = 15;       // 15 × 200 = 3 000 activities — generous safety cap
 
+  const after = Math.floor((Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000) / 1000);
+
   for (let page = 1; page <= MAX_PAGES && remaining.size > 0; page++) {
     const activities = await apiFetch(
-      `/athlete/activities?per_page=200&page=${page}`,
+      `/athlete/activities?per_page=200&page=${page}&after=${after}`,
       token
     );
     if (!activities || activities.length === 0) break;
