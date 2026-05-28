@@ -13,7 +13,7 @@
     "degree": "bsc computer science",
     "result": "first class honours"
   },
-  "bio": "i rotate through engineering teams by day, ship side-projects at stupid o'clock, and am currently training for marathon #3.",
+  "bio": "Extremely curious person always trying to learn.",
   "stack": [
     "typescript",
     "javascript",
@@ -24,7 +24,7 @@
   "stack_tags": [
     { "label": "typescript", "color": "terminal", "variant": "flag" },
     { "label": "react",      "color": "cyan",     "variant": "flag" },
-    { "label": "next-16",    "color": "cyan",     "variant": "flag" },
+    { "label": "github",    "color": "cyan",     "variant": "flag" },
     { "label": "tailwind",   "color": "terminal", "variant": "bracket" },
     { "label": "javascript", "color": "signal",   "variant": "bracket" }
   ],
@@ -38,8 +38,7 @@
   "stats": {
     "commits_30d": 142,
     "countries_visited": 14,
-    "coffee_consumed": "Infinity",
-    "uptime": "99.9%"
+    "coffee_consumed": "Infinity"
   },
   "links": {
     "github": { "label": "/KodaAllison", "href": "https://github.com/KodaAllison" },

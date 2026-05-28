@@ -6,24 +6,28 @@
     {
       "distance": "5K",
       "time": "23:28",
+      "goal": "20:00",
       "date": "2024-10-25",
       "note": "Afternoon Run"
     },
     {
       "distance": "10K",
       "time": "51:18",
+      "goal": "50:00",
       "date": "2025-02-19",
       "note": "Morning Run"
     },
     {
       "distance": "Half",
       "time": "1:55:06",
+      "goal": "1:45:00",
       "date": "2025-11-16",
       "note": "Alton Towers Half"
     },
     {
       "distance": "Marathon",
       "time": "4:11:11",
+      "goal": "4:00:00",
       "date": "2025-03-16",
       "note": "Barcelona Marathon"
     }

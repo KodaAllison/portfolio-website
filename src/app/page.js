@@ -109,14 +109,13 @@ export default async function Home() {
             {/* headline */}
             <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
               <span className="block text-terminal">shipping code,</span>
-              <span className="block text-cyan">chasing miles,</span>
-              <span className="block italic text-on-surface">asking why.</span>
+              <span className="block text-cyan">logging miles</span>
             </h1>
 
             {/* tagline */}
             <p className="max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
               <span className="text-cyan">{"// "}</span>
-              first-class cs grad · {about.title} at{" "}
+              First-class CS grad · {about.title} at{" "}
               <a
                 href={about.employer.href}
                 target="_blank"
@@ -226,7 +225,7 @@ export default async function Home() {
           STATS STRIP
           ============================================================ */}
       <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
-        <div className="grid grid-cols-2 gap-4 border-y border-outline-variant py-6 md:grid-cols-5 md:gap-6 md:py-5">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-outline-variant py-6 md:flex md:justify-between md:gap-6 md:py-5">
           <StatCell
             label="this_week_km"
             value={weeklyKm}
@@ -246,12 +245,6 @@ export default async function Home() {
             label="coffee.consumed"
             value="∞"
             accent="text-cyan"
-          />
-          <StatCell
-            label="uptime"
-            value={stats.uptime}
-            accent="text-signal"
-            align="right"
           />
         </div>
       </section>

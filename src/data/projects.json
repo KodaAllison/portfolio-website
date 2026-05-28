@@ -7,40 +7,99 @@
     "path": "~/projects/swiftplan.tsx",
     "permissions": "-rw-r--r--",
     "size": "248k",
-    "stars": 12,
     "category": "web",
     "status": "featured",
-    "tagline": "AI lesson-plan generator. NextAuth, Prisma, OpenAI. Dissertation.",
-    "description": "Full-stack Next.js app for teachers to generate AI-powered lesson plans. Built for my dissertation with NextAuth authentication, Prisma/PostgreSQL persistence, and OpenAI integration for generation.",
+    "tagline": "My Dissertation Project. Full Dev Cycle. AI Lesson Generator.",
+    "description": "Final year dissertation — the full cycle from research to delivery. Started by surveying teachers about how they plan lessons, identified AI-assisted generation as a worthwhile intervention, then built and evaluated the solution. The app lets teachers enter a topic, year group, and objectives, and get back a structured lesson plan via the OpenAI API. Built with Next.js, Prisma, and Google OAuth — with prompt engineering doing a lot of the heavy lifting to keep outputs consistent and useful.",
     "tags": [
-      { "label": "typescript", "color": "cyan", "variant": "flag" },
-      { "label": "next-js", "color": "terminal", "variant": "flag" },
-      { "label": "tailwind", "color": "cyan", "variant": "flag" },
-      { "label": "prisma", "color": "muted", "variant": "flag" },
-      { "label": "openai", "color": "signal", "variant": "flag" }
+      {
+        "label": "openai api",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "prompt engineering",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "git",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "javascript",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "next-js",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "tailwind",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "google oAuth",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "prisma",
+        "color": "muted",
+        "variant": "flag"
+      }
     ],
     "image": null,
     "gitUrl": "https://github.com/KodaAllison/SwiftPlan",
     "previewUrl": null
   },
   {
-    "id": "cc-centre",
-    "slug": "cc-centre",
-    "title": "CC-Centre",
-    "file": "cc-centre.tsx",
-    "path": "~/projects/cc-centre.tsx",
+    "id": "crook-community-centre",
+    "slug": "crook-community-centre",
+    "title": "Crook Community Centre",
+    "file": "crook-cc.tsx",
+    "path": "~/projects/crook-cc.tsx",
     "permissions": "-rw-r--r--",
-    "size": "412k",
-    "stars": 3,
+    "size": "189k",
     "category": "web",
     "status": "live",
-    "tagline": "Community-centre rebuild. SendGrid mail flow. First real client.",
-    "description": "Complete website redesign for a local community centre with SendGrid Email API integration. Full development cycle experience working with a real client, from discovery through launch and maintenance.",
+    "tagline": "Client site. Resend + Upstash rate-limiting. What's On section.",
+    "description": "First real client project — built and shipped a full website for a local community centre. Handled everything: client meetings, content structure, design decisions, and deployment. The contact form uses Resend with Upstash Redis rate limiting to handle spam. There's a What's On section with a weekly events schedule, an image carousel, and Vitest unit tests covering the form and API route. Still live and maintained.",
     "tags": [
-      { "label": "next-js", "color": "terminal", "variant": "flag" },
-      { "label": "sendgrid", "color": "cyan", "variant": "flag" },
-      { "label": "tailwind", "color": "cyan", "variant": "flag" },
-      { "label": "client-work", "color": "signal", "variant": "flag" }
+      {
+        "label": "next-js",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "resend",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "upstash-redis",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "tailwind",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "vitest",
+        "color": "muted",
+        "variant": "flag"
+      },
+      {
+        "label": "client-work",
+        "color": "signal",
+        "variant": "flag"
+      }
     ],
     "image": "/CC-Logo.JPEG",
     "gitUrl": null,
@@ -54,20 +113,88 @@
     "path": "~/projects/start-bench-sell.tsx",
     "permissions": "-rw-r--r--",
     "size": "156k",
-    "stars": 5,
     "category": "web",
     "status": "live",
     "tagline": "Daily football decision game. Vercel cron. Built with my dad.",
-    "description": "Next.js app that generates 3 football players daily where users decide which to Start, Bench, and Sell. Built collaboratively with my dad as a side project — daily generation runs on a Vercel cron job.",
+    "description": "Built this one with my dad — a daily football game where three players are served up and you decide who to Start, Bench, and Sell. A Vercel cron job picks the trio each morning so there's always something fresh to argue about. Simple concept, but it gave me a good excuse to get proper with cron scheduling and think about state across daily resets.",
     "tags": [
-      { "label": "next-js", "color": "terminal", "variant": "flag" },
-      { "label": "vercel-cron", "color": "cyan", "variant": "flag" },
-      { "label": "tailwind", "color": "cyan", "variant": "flag" },
-      { "label": "side-project", "color": "muted", "variant": "flag" }
+      {
+        "label": "next-js",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "vercel-cron",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "tailwind",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "side-project",
+        "color": "muted",
+        "variant": "flag"
+      }
     ],
     "image": "/sbs.png",
     "gitUrl": null,
     "previewUrl": "https://start-bench-sell.vercel.app"
+  },
+  {
+    "id": "holitrackr",
+    "slug": "holitrackr",
+    "title": "HoliTrackr",
+    "file": "holitrackr.tsx",
+    "path": "~/projects/holitrackr.tsx",
+    "permissions": "-rw-r--r--",
+    "size": "320k",
+    "category": "web",
+    "status": "live",
+    "tagline": "Travel tracker. Interactive world map. Fullstack with auth.",
+    "description": "A travel tracker I built to scratch my own itch — mark countries you've visited or want to visit on an interactive Leaflet map, with a journal entry per country for ratings, notes, and dates. Those entries roll up into a trip timeline view that tells the story of where you've been. Fullstack with React, TypeScript, Express, and PostgreSQL on Neon. First time using Better Auth for sign-up and login — solid library, much less faff than rolling it yourself.",
+    "tags": [
+      {
+        "label": "react",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "typescript",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "postgresql",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "leaflet",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "express",
+        "color": "muted",
+        "variant": "flag"
+      },
+      {
+        "label": "better-auth",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "tailwind",
+        "color": "cyan",
+        "variant": "flag"
+      }
+    ],
+    "image": null,
+    "gitUrl": "https://github.com/KodaAllison/holitrackr",
+    "previewUrl": "https://myatlasio.vercel.app"
   },
   {
     "id": "five-somewhere",
@@ -77,15 +204,26 @@
     "path": "~/projects/five-somewhere.jsx",
     "permissions": "-rw-r--r--",
     "size": "98k",
-    "stars": 2,
     "category": "web",
     "status": "archived",
     "tagline": "It's 5pm somewhere — Mongo-backed timezone party finder.",
-    "description": "React app with MongoDB that finds global locations where it's currently 5pm. A small joke app that turned into a fun timezone-math exercise.",
+    "description": "Started as a joke — it's always 5pm somewhere, so where exactly? Turned into a decent exercise in timezone arithmetic, querying MongoDB for locations by UTC offset and surfacing them in real time. Small scope, but it was early React and taught me more about state and side effects than most tutorials managed.",
     "tags": [
-      { "label": "react", "color": "cyan", "variant": "flag" },
-      { "label": "mongodb", "color": "terminal", "variant": "flag" },
-      { "label": "timezones", "color": "muted", "variant": "flag" }
+      {
+        "label": "react",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "mongodb",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "timezones",
+        "color": "muted",
+        "variant": "flag"
+      }
     ],
     "image": "/five-somewhere.png",
     "gitUrl": "https://github.com/KodaAllison/five-somewhere",
@@ -99,18 +237,29 @@
     "path": "~/projects/weatherapp.jsx",
     "permissions": "-rw-r--r--",
     "size": "76k",
-    "stars": 1,
     "category": "web",
     "status": "archived",
     "tagline": "Weather API wrapper. LocalStorage favourites.",
-    "description": "Next.js app using a Weather API to fetch live forecasts and storing user's favourite locations in LocalStorage. An early Next.js learning project.",
+    "description": "One of my first proper Next.js projects — pulls live forecasts from a weather API and lets you save favourite locations to LocalStorage so they're there next time. Nothing groundbreaking, but it's where a lot of the fundamentals clicked: API routes, client-side state, and thinking about what belongs where.",
     "tags": [
-      { "label": "next-js", "color": "terminal", "variant": "flag" },
-      { "label": "weather-api", "color": "cyan", "variant": "flag" },
-      { "label": "localstorage", "color": "muted", "variant": "flag" }
+      {
+        "label": "next-js",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "weather-api",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "localstorage",
+        "color": "muted",
+        "variant": "flag"
+      }
     ],
     "image": "/weather.png",
     "gitUrl": "https://github.com/KodaAllison/weatherapp",
-    "previewUrl": null
+    "previewUrl": "https://weatherapp-ivory-seven.vercel.app"
   }
 ]

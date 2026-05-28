@@ -20,12 +20,19 @@ function timeToSeconds(t) {
   return Number(t) || 0;
 }
 
-// build a fixed-width ascii bar — block-element progress for that terminal feel
-function asciiBar(pct, width = 22) {
-  const clamped = Math.max(0, Math.min(1, pct));
-  const filled = Math.round(clamped * width);
-  return "█".repeat(filled) + "░".repeat(width - filled);
+// pretty-print a goal time: strip a trailing ":00" so 1:45:00 → 1:45, 4:00:00 → 4:00 (mm:ss unchanged)
+function prettyGoal(t) {
+  const parts = t.split(":");
+  if (parts.length === 3 && parts[2] === "00") return `${parts[0]}:${parts[1]}`;
+  return t;
 }
+
+// per-distance accent (literal class strings so Tailwind keeps them)
+const PR_ACCENT = {
+  terminal: { text: "text-terminal", bg: "bg-terminal" },
+  signal: { text: "text-signal", bg: "bg-signal" },
+  cyan: { text: "text-cyan", bg: "bg-cyan" },
+};
 
 const TYPE_COLOR = { long: "terminal", tempo: "signal", easy: "cyan" };
 
@@ -67,10 +74,6 @@ export default async function RunPage() {
       console.error("[run/page] Strava fetch failed, showing zeros:", err.message);
     }
   }
-
-  // normalise PR times against the slowest for a comparative bar
-  const prSeconds = personal_records.map((p) => timeToSeconds(p.time));
-  const maxPr = Math.max(...prSeconds);
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -167,8 +170,13 @@ export default async function RunPage() {
         {/* ── training load + PR list ── */}
         <div className="mt-10 grid grid-cols-1 gap-gutter lg:grid-cols-12">
           {/* weekly bars */}
-          <div className="lg:col-span-7">
-            <TerminalWindow title="training.load" subtitle="last 16 weeks">
+          <div className="flex lg:col-span-7">
+            <TerminalWindow
+              title="training.load"
+              subtitle="last 16 weeks"
+              className="flex-1 flex flex-col"
+              bodyClass="p-6 flex flex-col flex-1"
+            >
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <h2 className="font-display text-headline-md text-on-surface">
@@ -182,7 +190,9 @@ export default async function RunPage() {
                 <StatusChip color="cyan" pulse>synced</StatusChip>
               </div>
 
-              <WeeklyLine data={weekly_bars} />
+              <div className="flex flex-1 flex-col">
+                <WeeklyLine data={weekly_bars} className="flex-1" />
+              </div>
 
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-outline-variant pt-4 font-mono text-label-sm text-on-surface-variant">
                 <span>
@@ -205,59 +215,71 @@ export default async function RunPage() {
           {/* PR list */}
           <div className="flex lg:col-span-5">
             <TerminalWindow title="personal_records.js" subtitle="pbs[]" glow className="flex-1 flex flex-col" bodyClass="p-6 flex flex-col flex-1">
-              <div className="space-y-3 font-mono text-body-md">
-                <div>
-                  <span className="text-cyan">export const</span>{" "}
-                  <span className="text-signal">pbs</span>{" "}
-                  <span className="text-outline">=</span> [
-                </div>
-
-                {personal_records.map((pr, i) => {
-                  const sec = timeToSeconds(pr.time);
-                  const strength = Math.max(0.25, 1 - (sec / maxPr) * 0.75);
+              <div className="space-y-6 mb-2 ">
+                {personal_records.map((pr) => {
+                  const goalSec = timeToSeconds(pr.goal);
+                  const curSec = timeToSeconds(pr.time);
+                  // progress along the journey from a baseline (30% slower than goal) up to the goal
+                  const fill = Math.max(
+                    0,
+                    Math.min(1, (goalSec * 1.3 - curSec) / (goalSec * 0.3)),
+                  );
+                  const pct = Math.round(fill * 100);
+                  const achieved = curSec <= goalSec;
                   const isMarathon = pr.distance === "Marathon";
                   const isHalf = pr.distance === "Half";
-                  const barColor = isMarathon
-                    ? "text-terminal"
-                    : isHalf
-                    ? "text-signal"
-                    : "text-cyan";
+                  const accent =
+                    achieved || isMarathon
+                      ? PR_ACCENT.terminal
+                      : isHalf
+                      ? PR_ACCENT.signal
+                      : PR_ACCENT.cyan;
 
                   return (
-                    <div key={pr.distance} className="pl-4">
-                      <div className="grid grid-cols-[90px_1fr_auto] items-baseline gap-x-3">
-                        <span className="text-on-surface-variant">
-                          {pr.distance.toLowerCase()}:
+                    <div key={pr.distance}>
+                      {/* distance + the PB itself */}
+                      <div className="flex items-baseline justify-between gap-3">
+                        <span className="text-label-sm uppercase tracking-widest text-on-surface-variant">
+                          {pr.distance}
                         </span>
-                        <span className={`tracking-tighter ${barColor}`}>
-                          {asciiBar(strength, 16)}
-                        </span>
-                        <span>
-                          <span className="text-signal">{`"${pr.time}"`}</span>
-                          {i < personal_records.length - 1 ? (
-                            <span className="text-outline">,</span>
-                          ) : null}
+                        <span className={`text-xl font-bold ${accent.text}`}>
+                          {pr.time}
                         </span>
                       </div>
-                      <div className="mt-1 grid grid-cols-[90px_1fr] pl-0">
-                        <span />
-                        <span className="text-label-sm text-outline">
-                          {`// ${pr.note} · ${pr.date}`}
+
+                      {/* where / when this PB was set */}
+                      <div className="mt-0.5 text-right text-label-sm text-outline">
+                        {pr.note} · {pr.date}
+                      </div>
+
+                      {/* progress toward goal */}
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-sm bg-surface-container-high">
+                        <div
+                          className={`h-full ${accent.bg}`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div className="mt-1.5 flex items-baseline justify-between text-label-sm">
+                        <span className="text-outline">
+                          goal sub-{prettyGoal(pr.goal)}
+                        </span>
+                        <span
+                          className={
+                            achieved ? accent.text : "text-on-surface-variant"
+                          }
+                        >
+                          {achieved ? "done ✓" : `${pct}% there`}
                         </span>
                       </div>
                     </div>
                   );
                 })}
-
-                <div>];</div>
               </div>
-
+                
               <div className="mt-auto border-t border-outline-variant pt-4 font-mono text-label-sm text-on-surface-variant">
                 <span className="text-terminal">$</span>{" "}
                 <span className="text-outline">node pbs.js</span>{" "}
-                <span className="text-signal">--sort=distance</span>
-                <span className="blink-cursor" />
-              </div>
+                <span className="text-signal">--sort=distance</span>              </div>
             </TerminalWindow>
           </div>
         </div>

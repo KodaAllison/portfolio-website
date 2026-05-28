@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 function niceYTicks(peak) {
   for (const step of [5, 10, 15, 20, 25, 30, 50, 75, 100]) {
@@ -15,7 +15,21 @@ export default function WeeklyLine({ data = [], className = "" }) {
   const [hovered, setHovered] = useState(null);
   const svgRef = useRef(null);
 
-  const W = 600, H = 160;
+  // measure the chart box so the svg fills the panel (1 user unit = 1px → no distortion)
+  const chartBoxRef = useRef(null);
+  const [box, setBox] = useState({ w: 600, h: 200 });
+  useEffect(() => {
+    const el = chartBoxRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) setBox({ w: width, h: height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const W = box.w, H = box.h;
   const PAD_TOP = 16, PAD_RIGHT = 8, PAD_BOTTOM = 4, PAD_LEFT = 44;
 
   const n = data.length;
@@ -24,7 +38,7 @@ export default function WeeklyLine({ data = [], className = "" }) {
   if (n < 2) {
     return (
       <div
-        className={`flex items-center justify-center h-36 border-b border-outline-variant font-mono text-label-sm text-outline ${className}`}
+        className={`flex min-h-36 flex-1 items-center justify-center border-b border-outline-variant font-mono text-label-sm text-outline ${className}`}
       >
         // no data
       </div>
@@ -76,12 +90,13 @@ export default function WeeklyLine({ data = [], className = "" }) {
   }
 
   return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      <div className="border-b border-outline-variant">
+    <div className={`flex min-h-0 flex-col gap-2 ${className}`}>
+      <div ref={chartBoxRef} className="min-h-0 flex-1 border-b border-outline-variant">
         <svg
           ref={svgRef}
           viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-auto"
+          preserveAspectRatio="none"
+          className="block h-full w-full"
           onMouseMove={handleMouseMove}
           onMouseLeave={() => setHovered(null)}
         >
