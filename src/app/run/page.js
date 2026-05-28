@@ -29,13 +29,24 @@ function asciiBar(pct, width = 22) {
 
 const TYPE_COLOR = { long: "terminal", tempo: "signal", easy: "cyan" };
 
+function hrZoneColor(hr) {
+  if (!hr) return "text-outline";
+  if (hr < 140) return "text-[#ffd0d0]";
+  if (hr < 160) return "text-[#ff7878]";
+  return "text-[#ff0000]";
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default async function RunPage() {
-  const { marathon_pb, training_state, next_race, personal_records } = runData;
+  const { training_state, next_race, personal_records } = runData;
+  const marathonPr = personal_records.find((p) => p.distance === "Marathon");
 
   let weekly_km = 0;
+  let avg_weekly_km = 0;
   let ytd_km = 0;
+  let ytd_runs = 0;
+  const year = new Date().getFullYear();
   let all_time = { runs: 0, km: 0, elevation_m: 0 };
   let recent_activity = [];
   let weekly_bars = [];
@@ -50,7 +61,7 @@ export default async function RunPage() {
 
   if (hasStrava) {
     try {
-      ({ weekly_km, ytd_km, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km } =
+      ({ weekly_km, avg_weekly_km, ytd_km, ytd_runs, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km } =
         await fetchStravaData());
     } catch (err) {
       console.error("[run/page] Strava fetch failed, showing zeros:", err.message);
@@ -61,14 +72,6 @@ export default async function RunPage() {
   const prSeconds = personal_records.map((p) => timeToSeconds(p.time));
   const maxPr = Math.max(...prSeconds);
 
-  // weekly target — 80km build week
-  const weeklyTarget = 80;
-  const weeklyPct = Math.min(1, weekly_km / weeklyTarget);
-
-  // YTD target — 3000km year
-  const ytdTarget = 3000;
-  const ytdPct = Math.min(1, ytd_km / ytdTarget);
-
   return (
     <main className="flex min-h-screen flex-col">
       <Navbar />
@@ -77,19 +80,19 @@ export default async function RunPage() {
         {/* ── status bar ── */}
         <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-outline-variant pb-6 font-mono text-label-sm">
           <span className="text-on-surface-variant">
-            marathon.pb = <span className="text-terminal">{marathon_pb}</span>
+            marathon_pb = <span className="text-terminal">{marathonPr?.time ?? "—"}</span>
           </span>
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
-            weekly_km = <span className="text-cyan">{weekly_km}</span>
+            this_week_km = <span className="text-cyan">{weekly_km}</span>
           </span>
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
-            ytd_km = <span className="text-signal">{ytd_km.toLocaleString()}</span>
+            this_year_km = <span className="text-signal">{ytd_km.toLocaleString()}</span>
           </span>
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
-            total_km = <span className="text-terminal">{all_time.km.toLocaleString()}</span>
+            lifetime_km = <span className="text-terminal">{all_time.km.toLocaleString()}</span>
           </span>
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
@@ -111,7 +114,7 @@ export default async function RunPage() {
             <h1 className="mt-3 font-display text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tighter">
               <span className="block text-cyan">const</span>
               <span className="block text-terminal">running.log</span>
-              <span className="block italic text-on-surface">// chasing sub-3:30.</span>
+              <span className="block italic text-on-surface">// chasing sub-4:00.</span>
             </h1>
 
             <p className="mt-6 max-w-xl font-mono text-body-md text-on-surface-variant">
@@ -134,42 +137,48 @@ export default async function RunPage() {
               <div className="space-y-4 font-mono text-body-md">
                 <div className="text-outline">{"{"}</div>
 
-                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
-                  <span className="text-on-surface-variant">marathon:</span>
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">marathon_pb:</span>
                   <span>
-                    <span className="text-terminal">{`"${marathon_pb}"`}</span>
+                    <span className="text-terminal">{marathonPr?.time ?? "—"}</span>
                     <span className="text-outline">,</span>
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
-                  <span className="text-on-surface-variant">weekly_km:</span>
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">this_week_km:</span>
                   <span>
                     <span className="text-cyan">{weekly_km}</span>
                     <span className="text-outline">,</span>
-                    <span className="ml-3 text-outline">{`// target ${weeklyTarget}`}</span>
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
-                  <span className="text-on-surface-variant">ytd_km:</span>
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">avg_weekly_km:</span>
+                  <span>
+                    <span className="text-cyan">{avg_weekly_km}</span>
+                    <span className="text-outline">,</span>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">this_year_km:</span>
                   <span>
                     <span className="text-signal">{ytd_km}</span>
                     <span className="text-outline">,</span>
-                    <span className="ml-3 text-outline">{`// of ${ytdTarget}`}</span>
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
-                  <span className="text-on-surface-variant">total_runs:</span>
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">this_year_runs:</span>
                   <span>
-                    <span className="text-terminal">{all_time.runs}</span>
+                    <span className="text-terminal">{ytd_runs}</span>
                     <span className="text-outline">,</span>
                   </span>
                 </div>
 
-                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
-                  <span className="text-on-surface-variant">block:</span>
+                <div className="grid grid-cols-[140px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">training_block:</span>
                   <span>
                     <span className="text-cyan">{`"${training_state}"`}</span>
                   </span>
@@ -300,22 +309,25 @@ export default async function RunPage() {
                   <span className="text-signal">--limit=8</span>
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <SyntaxTag color="terminal" variant="bracket">long</SyntaxTag>
-                <SyntaxTag color="signal" variant="bracket">tempo</SyntaxTag>
-                <SyntaxTag color="cyan" variant="bracket">easy</SyntaxTag>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-label-sm">
+                <span className="text-outline">hr:</span>
+                <span className="text-[#ffd0d0]">&lt;140 easy</span>
+                <span className="text-outline">·</span>
+                <span className="text-[#ff7878]">140–160 aerobic</span>
+                <span className="text-outline">·</span>
+                <span className="text-[#ff0000]">160+ threshold</span>
               </div>
             </div>
 
             {/* header row */}
-            <div className="hidden md:grid grid-cols-[96px_72px_1fr_72px_64px_64px_96px] gap-x-4 border-b border-outline-variant pb-2 font-mono text-label-sm uppercase tracking-widest text-outline">
+            <div className="hidden md:grid md:grid-cols-[96px_72px_80px_52px_72px_88px] lg:grid-cols-[96px_72px_1fr_80px_52px_72px_88px] gap-x-6 border-b border-outline-variant pb-2 font-mono text-label-sm uppercase tracking-widest text-outline">
               <span>date</span>
               <span>dist</span>
-              <span>load</span>
+              <span className="hidden lg:block">load</span>
               <span>pace</span>
               <span>hr</span>
               <span>elev</span>
-              <span className="text-right">type</span>
+              <span>type</span>
             </div>
 
             <ul className="divide-y divide-outline-variant font-mono text-body-md">
@@ -331,31 +343,40 @@ export default async function RunPage() {
                     : a.type === "tempo"
                     ? "text-signal"
                     : "text-cyan";
+                const distBgColor =
+                  a.type === "long"
+                    ? "bg-terminal"
+                    : a.type === "tempo"
+                    ? "bg-signal"
+                    : "bg-cyan";
 
                 return (
                   <li
                     key={a.date}
-                    className="grid grid-cols-[96px_72px_1fr_72px_64px_64px_96px] items-center gap-x-4 py-3"
+                    className="grid grid-cols-[90px_52px_64px_1fr] gap-x-3 md:grid-cols-[96px_72px_80px_52px_72px_88px] md:gap-x-6 lg:grid-cols-[96px_72px_1fr_80px_52px_72px_88px] items-center py-3"
                   >
                     <span className="text-outline">{a.date}</span>
                     <span className={distColor}>
                       {a.distance_km.toFixed(1)}
                       <span className="ml-0.5 text-outline">km</span>
                     </span>
-                    <span className={`tracking-tighter ${distColor} hidden md:inline`}>
-                      {asciiBar(distPct, 20)}
+                    <span className="hidden lg:block relative h-[3px] w-full bg-outline-variant">
+                      <span
+                        className={`absolute inset-y-0 left-0 ${distBgColor}`}
+                        style={{ width: `${distPct * 100}%` }}
+                      />
                     </span>
                     <span className="text-on-surface-variant">
                       {a.pace}
                       <span className="ml-0.5 text-outline">/km</span>
                     </span>
-                    <span className="text-on-surface-variant hidden md:inline">
+                    <span className={`hidden md:inline ${hrZoneColor(a.hr)}`}>
                       {a.hr ?? "—"}
                     </span>
                     <span className="text-on-surface-variant hidden md:inline">
                       +{a.elev_m}m
                     </span>
-                    <span className="justify-self-end">
+                    <span>
                       <SyntaxTag color={tagColor} variant="raw">
                         {a.type}
                       </SyntaxTag>

@@ -228,7 +228,7 @@ export default async function Home() {
       <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
         <div className="grid grid-cols-2 gap-4 border-y border-outline-variant py-6 md:grid-cols-5 md:gap-6 md:py-5">
           <StatCell
-            label="weekly_km"
+            label="this_week_km"
             value={weeklyKm}
             accent="text-terminal"
           />

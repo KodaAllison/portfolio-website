@@ -1,8 +1,7 @@
 {
   "_comment": "Static data — manually updated. Live stats (weekly_km, ytd_km, recent_activity, heatmap) come from the Strava API via src/lib/strava.js.",
-  "marathon_pb": "3:42:18",
-  "training_state": "marathon-block",
-  "next_race": "york.2026.oct",
+  "training_state": "maintaining",
+  "next_race": "manchester.2027.apr",
   "personal_records": [
     {
       "distance": "5K",

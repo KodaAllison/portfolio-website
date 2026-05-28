@@ -90,6 +90,7 @@ async function _fetchStravaData() {
 
   // ── YTD + all-time from athlete stats ────────────────────────────────────
   const ytd_km = Math.round((stats.ytd_run_totals?.distance ?? 0) / 1000);
+  const ytd_runs = stats.ytd_run_totals?.count ?? 0;
   const all_time = {
     runs: stats.all_run_totals?.count ?? 0,
     km: Math.round((stats.all_run_totals?.distance ?? 0) / 1000),
@@ -127,6 +128,13 @@ async function _fetchStravaData() {
     return { label, km };
   });
 
+  // avg km over the 15 completed weeks (excludes the current in-progress week)
+  const completedWeeks = weekly_bars.slice(0, -1);
+  const avg_weekly_km =
+    Math.round(
+      (completedWeeks.reduce((sum, w) => sum + w.km, 0) / completedWeeks.length) * 10
+    ) / 10;
+
   // ── Streak / rest / longest — from the 112-day window ────────────────────
   const todayStart = new Date();
   todayStart.setUTCHours(0, 0, 0, 0);
@@ -149,7 +157,9 @@ async function _fetchStravaData() {
 
   return {
     weekly_km,
+    avg_weekly_km,
     ytd_km,
+    ytd_runs,
     all_time,
     recent_activity,
     weekly_bars,
