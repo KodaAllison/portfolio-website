@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import about from "../../data/about.json";
 import React, { useState, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
 import MenuOverlay from "./MenuOverlay";
@@ -33,7 +34,7 @@ const Navbar = () => {
           className="flex items-center gap-2 font-mono text-label-md font-bold text-terminal hover:text-terminal-dim transition-colors"
         >
           <span className="text-signal">~/</span>
-          <span>kodaallison.dev</span>
+          <span>{about.domain}</span>
         </Link>
 
         {/* center — desktop nav */}

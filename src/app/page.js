@@ -5,6 +5,8 @@ import StatusChip from "./components/StatusChip";
 import SyntaxTag from "./components/SyntaxTag";
 import CommitHeatmap from "./components/CommitHeatmap";
 import about from "../data/about.json";
+import { fetchStravaData } from "../lib/strava";
+import { fetchGitHubData } from "../lib/github";
 
 /* --- inline atoms (kept local; not shared components) -------------------- */
 
@@ -54,8 +56,30 @@ const LinkRow = ({ name, label, href, external = true }) => (
 
 /* --- page ---------------------------------------------------------------- */
 
-export default function Home() {
-  const { stats, currently, stack, links } = about;
+export default async function Home() {
+  const { stats, currently, stack, stack_tags, links } = about;
+
+  let weeklyKm;
+  try {
+    const strava = await fetchStravaData();
+    weeklyKm = strava.weekly_km;
+  } catch {
+    weeklyKm = "rip gps";
+  }
+
+  let commits_30d = stats.commits_30d;
+  let last_commit = "n/a";
+  let longest_streak = "n/a";
+  let heatmap;
+  try {
+    const gh = await fetchGitHubData();
+    commits_30d = gh.commits_30d;
+    last_commit = gh.last_commit;
+    longest_streak = `${gh.longest_streak}d`;
+    heatmap = gh.heatmap;
+  } catch {
+    // falls back to about.json value for commit count, heatmap uses seed
+  }
 
   return (
     <main className="flex min-h-screen flex-col bg-background">
@@ -92,26 +116,23 @@ export default function Home() {
             {/* tagline */}
             <p className="max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
               <span className="text-cyan">{"// "}</span>
-              first-class cs grad · technical graduate at{" "}
+              first-class cs grad · {about.title} at{" "}
               <a
-                href="https://www.virginmoney.com/"
+                href={about.employer.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-cyan hover:text-terminal hover:underline"
               >
-                @virginmoney
+                {about.employer.label}
               </a>
-              . i rotate through engineering teams by day, ship side-projects at
-              stupid o&apos;clock, and am currently training for marathon #2.
+              . {about.bio}
             </p>
 
             {/* stack tags */}
             <div className="flex flex-wrap gap-2">
-              <SyntaxTag color="terminal" variant="flag">typescript</SyntaxTag>
-              <SyntaxTag color="cyan" variant="flag">react</SyntaxTag>
-              <SyntaxTag color="cyan" variant="flag">next-16</SyntaxTag>
-              <SyntaxTag color="terminal" variant="bracket">tailwind</SyntaxTag>
-              <SyntaxTag color="signal" variant="bracket">javascript</SyntaxTag>
+              {stack_tags.map(({ label, color, variant }) => (
+                <SyntaxTag key={label} color={color} variant={variant}>{label}</SyntaxTag>
+              ))}
             </div>
 
             {/* CTAs */}
@@ -123,13 +144,6 @@ export default function Home() {
                 <span className="opacity-60 group-hover:opacity-100">$</span>
                 <span>./hello.sh</span>
               </Link>
-              <span className="hidden font-mono text-[10px] uppercase tracking-widest text-outline sm:inline-flex sm:items-center">
-                press
-                <kbd className="mx-1.5 inline-flex h-5 w-5 items-center justify-center border border-outline-variant text-[10px] text-on-surface-variant">
-                  /
-                </kbd>
-                for cmd palette
-              </span>
             </div>
           </div>
 
@@ -146,7 +160,7 @@ export default function Home() {
                   <JsonRow k="&quot;role&quot;" value={`"${about.role}"`} />
                   <JsonRow
                     k="&quot;employer&quot;"
-                    value={`"${about.employer}"`}
+                    value={`"${about.employer.label}"`}
                   />
                   <JsonRow
                     k="&quot;title&quot;"
@@ -215,12 +229,12 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-4 border-y border-outline-variant py-6 md:grid-cols-5 md:gap-6 md:py-5">
           <StatCell
             label="weekly_km"
-            value={stats.weekly_km}
+            value={weeklyKm}
             accent="text-terminal"
           />
           <StatCell
             label="commits.30d"
-            value={stats.commits_30d}
+            value={commits_30d}
             accent="text-cyan"
           />
           <StatCell
@@ -335,7 +349,7 @@ export default function Home() {
             <div className="mb-5 flex items-end justify-between">
               <div>
                 <div className="font-display text-3xl font-bold leading-none text-on-surface">
-                  372<span className="text-terminal">.</span>
+                  {commits_30d}<span className="text-terminal">.</span>
                 </div>
                 <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-outline">
                   commits / 30d
@@ -346,15 +360,15 @@ export default function Home() {
               </StatusChip>
             </div>
 
-            <CommitHeatmap columns={12} rows={4} seed={108} />
+            <CommitHeatmap columns={12} rows={4} seed={108} data={heatmap} />
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant pt-3 font-mono text-[10px] uppercase tracking-widest text-outline">
               <div className="flex flex-wrap items-center gap-4">
                 <span className="flex items-center gap-1.5">
-                  <span className="text-terminal">●</span> last commit · 6h ago
+                  <span className="text-terminal">●</span> last commit · {last_commit}
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-signal">★</span> longest streak · 24d
+                  <span className="text-signal">★</span> longest streak · {longest_streak}
                 </span>
               </div>
             </div>
@@ -464,12 +478,12 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/KodaAllison/portfolio-website"
+              href={links.repo.href}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-terminal transition-colors"
             >
-              source
+              {links.repo.label}
             </a>
             <span>next-16 · vercel</span>
           </div>

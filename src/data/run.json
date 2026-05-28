@@ -4,9 +4,29 @@
   "training_state": "marathon-block",
   "next_race": "york.2026.oct",
   "personal_records": [
-    { "distance": "5K",       "time": "20:14",   "date": "2025-08-12", "note": "town moor parkrun" },
-    { "distance": "10K",      "time": "42:30",   "date": "2025-09-04", "note": "blaydon races" },
-    { "distance": "Half",     "time": "1:38:22", "date": "2026-02-15", "note": "great north run" },
-    { "distance": "Marathon", "time": "3:42:18", "date": "2025-10-20", "note": "barcelona" }
+    {
+      "distance": "5K",
+      "time": "23:28",
+      "date": "2024-10-25",
+      "note": "Afternoon Run"
+    },
+    {
+      "distance": "10K",
+      "time": "51:18",
+      "date": "2025-02-19",
+      "note": "Morning Run"
+    },
+    {
+      "distance": "Half",
+      "time": "1:55:06",
+      "date": "2025-11-16",
+      "note": "Alton Towers Half"
+    },
+    {
+      "distance": "Marathon",
+      "time": "4:11:11",
+      "date": "2025-03-16",
+      "note": "barcelona"
+    }
   ]
 }

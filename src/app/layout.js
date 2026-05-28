@@ -1,6 +1,7 @@
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
+import about from "../data/about.json";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -16,28 +17,27 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const siteUrl = `https://${about.domain}`;
+const title = `${about.name} | ${about.role} & computer science graduate`;
+const description = `${about.education.result} computer science graduate and ${about.title} at ${about.employer.label}. ${about.bio} Proficient in ${about.stack.join(", ")}.`;
+
 export const metadata = {
-  metadataBase: new URL("https://koda-allison-portfolio.vercel.app"),
-  title: "Koda Allison | Web Developer & Computer Science Graduate",
-  description:
-    "First Class Computer Science Graduate with a passion for web development and a keen interest in fitness. Proficient in TypeScript, JavaScript, Tailwind CSS, and Git. Technical Graduate with Virgin Money.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
   keywords: [
-    "Koda Allison",
-    "Web Developer",
-    "Software Developer",
-    "Computer Science Graduate",
-    "TypeScript",
-    "JavaScript",
-    "React",
-    "Next.js",
-    "Tailwind CSS",
-    "Portfolio",
-    "Full Stack Developer",
-    "Virgin Money",
+    about.name,
+    "web developer",
+    "software developer",
+    "computer science graduate",
+    ...about.stack,
+    "portfolio",
+    "full stack developer",
+    about.employer.label,
   ],
-  authors: [{ name: "Koda Allison" }],
-  creator: "Koda Allison",
-  publisher: "Koda Allison",
+  authors: [{ name: about.name }],
+  creator: about.name,
+  publisher: about.name,
   robots: {
     index: true,
     follow: true,
@@ -52,25 +52,23 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_GB",
-    url: "https://koda-allison-portfolio.vercel.app",
-    siteName: "Koda Allison Portfolio",
-    title: "Koda Allison | Web Developer & Computer Science Graduate",
-    description:
-      "First Class Computer Science Graduate with a passion for web development and a keen interest in fitness. Proficient in TypeScript, JavaScript, Tailwind CSS, and Git.",
+    url: siteUrl,
+    siteName: `${about.name} portfolio`,
+    title,
+    description,
     images: [
       {
         url: "/profilePhoto.jpg",
         width: 1200,
         height: 630,
-        alt: "Koda Allison - Web Developer & Computer Science Graduate",
+        alt: `${about.name} — ${about.role} & computer science graduate`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Koda Allison | Web Developer & Computer Science Graduate",
-    description:
-      "First Class Computer Science Graduate with a passion for web development and a keen interest in fitness.",
+    title,
+    description,
     images: ["/profilePhoto.jpg"],
     creator: "@kodallison",
   },

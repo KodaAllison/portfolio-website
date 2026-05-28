@@ -176,28 +176,6 @@ export default async function RunPage() {
                 </div>
 
                 <div className="text-outline">{"}"}</div>
-
-                {/* mini progress bars under the JSON */}
-                <div className="mt-6 space-y-3 border-t border-outline-variant pt-5">
-                  <div className="flex items-center gap-3 text-label-sm">
-                    <span className="w-16 text-outline">weekly</span>
-                    <span className="flex-1 tracking-tighter text-terminal">
-                      {asciiBar(weeklyPct, 18)}
-                    </span>
-                    <span className="w-12 text-right text-on-surface-variant">
-                      {Math.round(weeklyPct * 100)}%
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 text-label-sm">
-                    <span className="w-16 text-outline">ytd</span>
-                    <span className="flex-1 tracking-tighter text-signal">
-                      {asciiBar(ytdPct, 18)}
-                    </span>
-                    <span className="w-12 text-right text-on-surface-variant">
-                      {Math.round(ytdPct * 100)}%
-                    </span>
-                  </div>
-                </div>
               </div>
             </TerminalWindow>
           </div>

@@ -1,7 +1,8 @@
 {
   "name": "koda allison",
   "role": "web developer",
-  "employer": "@virginmoney",
+  "domain": "kodaallison.dev",
+  "employer": { "label": "@virginmoney", "href": "https://www.virginmoney.com/" },
   "title": "technical graduate",
   "location": {
     "city": "newcastle-upon-tyne",
@@ -12,6 +13,7 @@
     "degree": "bsc computer science",
     "result": "first class honours"
   },
+  "bio": "i rotate through engineering teams by day, ship side-projects at stupid o'clock, and am currently training for marathon #3.",
   "stack": [
     "typescript",
     "javascript",
@@ -19,15 +21,21 @@
     "next.js",
     "tailwind"
   ],
+  "stack_tags": [
+    { "label": "typescript", "color": "terminal", "variant": "flag" },
+    { "label": "react",      "color": "cyan",     "variant": "flag" },
+    { "label": "next-16",    "color": "cyan",     "variant": "flag" },
+    { "label": "tailwind",   "color": "terminal", "variant": "bracket" },
+    { "label": "javascript", "color": "signal",   "variant": "bracket" }
+  ],
   "currently": {
     "shipping": "portfolio_os v3 (next-16)",
-    "training": "marathon #2 — sub 4hr",
-    "reading": "the staff engineer's path",
-    "learning": "rust, slowly",
-    "listening": "fred again.. — actual life 3"
+    "training": "marathon #3 — sub 4hr",
+    "reading": "Iron Gold - Pierce Brown",
+    "learning": "Best way to adopt ai",
+    "listening": "Syntax Podcast"
   },
   "stats": {
-    "weekly_km": 38.4,
     "commits_30d": 142,
     "countries_visited": 14,
     "coffee_consumed": "Infinity",
@@ -36,7 +44,8 @@
   "links": {
     "github": { "label": "/KodaAllison", "href": "https://github.com/KodaAllison" },
     "linkedin": { "label": "/koda-allison", "href": "https://www.linkedin.com/in/koda-allison/" },
-    "strava": { "label": "/koda", "href": "https://www.strava.com/" },
-    "email": { "label": "hello@koda.dev", "href": "mailto:hello@koda.dev" }
+    "strava": { "label": "/kodaallison", "href": "https://www.strava.com/kodaallison" },
+    "email": { "label": "kodaallison@icloud.com", "href": "mailto:kodaallison@icloud.com" },
+    "repo": { "label": "source", "href": "https://github.com/KodaAllison/portfolio-website" }
   }
 }
