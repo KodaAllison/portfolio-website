@@ -2,8 +2,9 @@ import Navbar from "../components/Navbar";
 import TerminalWindow from "../components/TerminalWindow";
 import StatusChip from "../components/StatusChip";
 import SyntaxTag from "../components/SyntaxTag";
-import CommitHeatmap from "../components/CommitHeatmap";
+import WeeklyLine from "../components/WeeklyLine";
 import runData from "../../data/run.json";
+import { fetchStravaData } from "@/lib/strava";
 
 export const metadata = { title: "Run | Koda Allison" };
 
@@ -30,26 +31,41 @@ const TYPE_COLOR = { long: "terminal", tempo: "signal", easy: "cyan" };
 
 // ──────────────────────────────────────────────────────────────────────────────
 
-export default function RunPage() {
-  const {
-    marathon_pb,
-    weekly_km,
-    ytd_km,
-    training_state,
-    next_race,
-    personal_records,
-    recent_activity,
-  } = runData;
+export default async function RunPage() {
+  const { marathon_pb, training_state, next_race, personal_records } = runData;
+
+  let weekly_km = 0;
+  let ytd_km = 0;
+  let all_time = { runs: 0, km: 0, elevation_m: 0 };
+  let recent_activity = [];
+  let weekly_bars = [];
+  let streak = 0;
+  let rest_days = 0;
+  let longest_km = "0.0";
+
+  const hasStrava =
+    process.env.STRAVA_CLIENT_ID &&
+    process.env.STRAVA_CLIENT_SECRET &&
+    process.env.STRAVA_REFRESH_TOKEN;
+
+  if (hasStrava) {
+    try {
+      ({ weekly_km, ytd_km, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km } =
+        await fetchStravaData());
+    } catch (err) {
+      console.error("[run/page] Strava fetch failed, showing zeros:", err.message);
+    }
+  }
 
   // normalise PR times against the slowest for a comparative bar
   const prSeconds = personal_records.map((p) => timeToSeconds(p.time));
   const maxPr = Math.max(...prSeconds);
 
-  // weekly target (placeholder) — 80km build week
+  // weekly target — 80km build week
   const weeklyTarget = 80;
   const weeklyPct = Math.min(1, weekly_km / weeklyTarget);
 
-  // YTD target (placeholder) — 3000km year
+  // YTD target — 3000km year
   const ytdTarget = 3000;
   const ytdPct = Math.min(1, ytd_km / ytdTarget);
 
@@ -58,7 +74,7 @@ export default function RunPage() {
       <Navbar />
 
       <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop pt-24 pb-24">
-        {/* ── status bar — comma-separated key=value monospace stats ── */}
+        {/* ── status bar ── */}
         <div className="mb-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-outline-variant pb-6 font-mono text-label-sm">
           <span className="text-on-surface-variant">
             marathon.pb = <span className="text-terminal">{marathon_pb}</span>
@@ -70,6 +86,10 @@ export default function RunPage() {
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
             ytd_km = <span className="text-signal">{ytd_km.toLocaleString()}</span>
+          </span>
+          <span className="text-outline">·</span>
+          <span className="text-on-surface-variant">
+            total_km = <span className="text-terminal">{all_time.km.toLocaleString()}</span>
           </span>
           <span className="text-outline">·</span>
           <span className="text-on-surface-variant">
@@ -97,16 +117,14 @@ export default function RunPage() {
             <p className="mt-6 max-w-xl font-mono text-body-md text-on-surface-variant">
               <span className="text-cyan">// </span>
               splits, blocks, blowups. an honest record of the long road to a
-              negative-split marathon. data is{" "}
-              <span className="text-signal">placeholder</span> until the strava
-              hook ships.
+              negative-split marathon. live data via strava.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
               <StatusChip color="terminal" pulse glow>training</StatusChip>
               <SyntaxTag color="terminal" variant="raw">{training_state}</SyntaxTag>
               <SyntaxTag color="cyan" variant="raw">{`next → ${next_race}`}</SyntaxTag>
-              <SyntaxTag color="signal" variant="flag">strava-pending</SyntaxTag>
+              <SyntaxTag color="signal" variant="flag">strava-live</SyntaxTag>
             </div>
           </div>
 
@@ -139,6 +157,14 @@ export default function RunPage() {
                     <span className="text-signal">{ytd_km}</span>
                     <span className="text-outline">,</span>
                     <span className="ml-3 text-outline">{`// of ${ytdTarget}`}</span>
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-[110px_1fr] items-baseline pl-4">
+                  <span className="text-on-surface-variant">total_runs:</span>
+                  <span>
+                    <span className="text-terminal">{all_time.runs}</span>
+                    <span className="text-outline">,</span>
                   </span>
                 </div>
 
@@ -177,39 +203,39 @@ export default function RunPage() {
           </div>
         </div>
 
-        {/* ── activity heatmap + PR list ── */}
+        {/* ── training load + PR list ── */}
         <div className="mt-16 grid grid-cols-1 gap-gutter lg:grid-cols-12">
-          {/* heatmap */}
+          {/* weekly bars */}
           <div className="lg:col-span-7">
-            <TerminalWindow title="activity.heatmap" subtitle="last 48 days">
+            <TerminalWindow title="training.load" subtitle="last 16 weeks">
               <div className="mb-5 flex items-center justify-between">
                 <div>
                   <h2 className="font-display text-headline-md text-on-surface">
-                    distance per day
+                    weekly mileage
                   </h2>
                   <p className="font-mono text-label-sm text-outline">
-                    <span className="text-cyan">$</span> strava heatmap{" "}
-                    <span className="text-signal">--window=48d</span>
+                    <span className="text-cyan">$</span> strava log{" "}
+                    <span className="text-signal">--group=week --window=16w</span>
                   </p>
                 </div>
                 <StatusChip color="cyan" pulse>synced</StatusChip>
               </div>
 
-              <CommitHeatmap columns={12} rows={4} seed={7} />
+              <WeeklyLine data={weekly_bars} />
 
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-outline-variant pt-4 font-mono text-label-sm text-on-surface-variant">
                 <span>
                   streak ={" "}
-                  <span className="text-terminal">12</span>
+                  <span className="text-terminal">{streak}</span>
                   <span className="text-outline"> days</span>
                 </span>
                 <span>
                   rest_days ={" "}
-                  <span className="text-cyan">9</span>
+                  <span className="text-cyan">{rest_days}</span>
                 </span>
                 <span>
                   longest ={" "}
-                  <span className="text-signal">18.2 km</span>
+                  <span className="text-signal">{longest_km} km</span>
                 </span>
               </div>
             </TerminalWindow>
@@ -293,7 +319,7 @@ export default function RunPage() {
                 </h2>
                 <p className="font-mono text-label-sm text-outline">
                   <span className="text-cyan">$</span> strava log{" "}
-                  <span className="text-signal">--limit=6</span>
+                  <span className="text-signal">--limit=8</span>
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -346,7 +372,7 @@ export default function RunPage() {
                       <span className="ml-0.5 text-outline">/km</span>
                     </span>
                     <span className="text-on-surface-variant hidden md:inline">
-                      {a.hr}
+                      {a.hr ?? "—"}
                     </span>
                     <span className="text-on-surface-variant hidden md:inline">
                       +{a.elev_m}m
@@ -373,9 +399,9 @@ export default function RunPage() {
 
         {/* ── footer note ── */}
         <p className="mt-12 font-mono text-label-sm text-outline">
-          {"// "}all numbers above are placeholder. real splits land when the{" "}
-          <span className="text-cyan">strava</span> integration ships in a
-          follow-up PR.
+          {"// "}data via{" "}
+          <span className="text-cyan">strava</span>. refreshed every hour.
+          personal records are manually maintained.
         </p>
       </section>
     </main>

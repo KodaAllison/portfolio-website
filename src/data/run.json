@@ -1,8 +1,6 @@
 {
-  "_comment": "PLACEHOLDER DATA — real run data will be sourced from Strava API in a follow-up PR. Do not treat any numbers below as real.",
+  "_comment": "Static data — manually updated. Live stats (weekly_km, ytd_km, recent_activity, heatmap) come from the Strava API via src/lib/strava.js.",
   "marathon_pb": "3:42:18",
-  "weekly_km": 48,
-  "ytd_km": 1240,
   "training_state": "marathon-block",
   "next_race": "york.2026.oct",
   "personal_records": [
@@ -10,13 +8,5 @@
     { "distance": "10K",      "time": "42:30",   "date": "2025-09-04", "note": "blaydon races" },
     { "distance": "Half",     "time": "1:38:22", "date": "2026-02-15", "note": "great north run" },
     { "distance": "Marathon", "time": "3:42:18", "date": "2025-10-20", "note": "barcelona" }
-  ],
-  "recent_activity": [
-    { "date": "2026-05-12", "distance_km": 12.4, "pace": "5:02", "type": "long",  "elev_m": 84,  "hr": 152 },
-    { "date": "2026-05-10", "distance_km": 6.0,  "pace": "4:48", "type": "easy",  "elev_m": 22,  "hr": 141 },
-    { "date": "2026-05-08", "distance_km": 8.2,  "pace": "4:15", "type": "tempo", "elev_m": 41,  "hr": 168 },
-    { "date": "2026-05-06", "distance_km": 5.4,  "pace": "5:14", "type": "easy",  "elev_m": 18,  "hr": 138 },
-    { "date": "2026-05-04", "distance_km": 18.2, "pace": "4:58", "type": "long",  "elev_m": 132, "hr": 156 },
-    { "date": "2026-05-02", "distance_km": 7.0,  "pace": "4:22", "type": "tempo", "elev_m": 38,  "hr": 165 }
   ]
 }
