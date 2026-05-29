@@ -58,6 +58,54 @@
     "previewUrl": null
   },
   {
+    "id": "strava-worker",
+    "slug": "strava-worker",
+    "title": "Strava Worker",
+    "file": "strava-worker.js",
+    "path": "~/projects/strava-worker.js",
+    "permissions": "-rw-r--r--",
+    "size": "64k",
+    "category": "web",
+    "status": "featured",
+    "tagline": "Cloudflare Worker. Cron-synced Strava data over a KV-backed API.",
+    "description": "Split my portfolio's Strava integration out into its own Cloudflare Worker so page renders stop waiting on the slow, rate-limited Strava API. The Worker owns the secrets and runs on two cron triggers — live stats every three hours and a full sync (including personal bests) every Sunday — caching everything in Workers KV. The portfolio just hits one /data endpoint. Same code handles both triggers: fetch() serves HTTP, scheduled() runs the cron. Taught me a lot about the Worker model, edge KV, and keeping a clean producer/consumer split.",
+    "tags": [
+      {
+        "label": "cloudflare-workers",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "javascript",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "workers-kv",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "cron",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "strava-api",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "serverless",
+        "color": "muted",
+        "variant": "flag"
+      }
+    ],
+    "image": null,
+    "gitUrl": "https://github.com/KodaAllison/strava-worker",
+    "previewUrl": null
+  },
+  {
     "id": "crook-community-centre",
     "slug": "crook-community-centre",
     "title": "Crook Community Centre",
