@@ -1,5 +1,5 @@
 {
-  "_comment": "Static data — manually updated. Live stats (weekly_km, ytd_km, recent_activity, heatmap) come from the Strava API via src/lib/strava.js.",
+  "_comment": "Manual config: training_state + next_race. All Strava-derived data (live stats AND personal_records) now comes from the strava-worker /data endpoint via src/lib/strava.js. The personal_records/marathon_pb below are kept only as a fallback if the Worker is unreachable.",
   "training_state": "maintaining",
   "next_race": "manchester.2027.apr",
   "personal_records": [
