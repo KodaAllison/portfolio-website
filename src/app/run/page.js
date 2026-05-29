@@ -46,8 +46,10 @@ function hrZoneColor(hr) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default async function RunPage() {
-  const { training_state, next_race, personal_records } = runData;
-  const marathonPr = personal_records.find((p) => p.distance === "Marathon");
+  // training_state + next_race are manual config and stay in run.json. Everything
+  // Strava-derived (live stats AND personal records) now comes from the Worker;
+  // run.json's personal_records is only a fallback if the Worker is unreachable.
+  const { training_state, next_race } = runData;
 
   let weekly_km = 0;
   let avg_weekly_km = 0;
@@ -60,20 +62,28 @@ export default async function RunPage() {
   let streak = 0;
   let rest_days = 0;
   let longest_km = "0.0";
+  let personal_records = runData.personal_records;
 
-  const hasStrava =
-    process.env.STRAVA_CLIENT_ID &&
-    process.env.STRAVA_CLIENT_SECRET &&
-    process.env.STRAVA_REFRESH_TOKEN;
-
-  if (hasStrava) {
-    try {
-      ({ weekly_km, avg_weekly_km, ytd_km, ytd_runs, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km } =
-        await fetchStravaData());
-    } catch (err) {
-      console.error("[run/page] Strava fetch failed, showing zeros:", err.message);
-    }
+  try {
+    ({ weekly_km, avg_weekly_km, ytd_km, ytd_runs, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km, personal_records } =
+      await fetchStravaData());
+  } catch (err) {
+    console.error("[run/page] strava-worker fetch failed, showing zeros:", err.message);
   }
+
+  // `goal` is a manual target (aspirational, not Strava data), so it stays in
+  // run.json. The Worker supplies the actual time/date/note; merge the goal back
+  // on by distance. (?? handles the fallback case where personal_records already
+  // came from run.json and thus already carries goal.)
+  const goalByDistance = Object.fromEntries(
+    runData.personal_records.map((p) => [p.distance, p.goal])
+  );
+  personal_records = personal_records.map((p) => ({
+    ...p,
+    goal: p.goal ?? goalByDistance[p.distance],
+  }));
+
+  const marathonPr = personal_records.find((p) => p.distance === "Marathon");
 
   return (
     <main className="flex min-h-screen flex-col">
