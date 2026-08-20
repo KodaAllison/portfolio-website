@@ -2,6 +2,7 @@ import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import about from "../data/about.json";
+import { siteUrl } from "../lib/site";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -17,7 +18,6 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl = `https://${about.domain}`;
 const title = `${about.name} | ${about.role} & computer science graduate`;
 const description = `${about.education.result} computer science graduate and ${about.title} at ${about.employer.label}. ${about.bio} Proficient in ${about.stack.join(", ")}.`;
 
