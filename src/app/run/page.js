@@ -65,8 +65,14 @@ export default async function RunPage() {
   let personal_records = runData.personal_records;
 
   try {
-    ({ weekly_km, avg_weekly_km, ytd_km, ytd_runs, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km, personal_records } =
-      await fetchStravaData());
+    const strava = await fetchStravaData();
+    ({ weekly_km, avg_weekly_km, ytd_km, ytd_runs, all_time, recent_activity, weekly_bars, streak, rest_days, longest_km } =
+      strava);
+    // A Worker blob without personal_records (older deploy, partial sync) must
+    // not clobber the run.json fallback — .map below would crash on undefined.
+    if (strava.personal_records?.length) {
+      personal_records = strava.personal_records;
+    }
   } catch (err) {
     console.error("[run/page] strava-worker fetch failed, showing zeros:", err.message);
   }
@@ -107,7 +113,7 @@ export default async function RunPage() {
 
             <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
               <span className="text-cyan">// </span>
-              live data pulled from Strava API.
+              live data via strava-worker — synced from Strava every 3h.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
