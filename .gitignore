@@ -44,3 +44,6 @@ next-env.d.ts
 # windows temp files with invalid path characters
 C:Temp*
 C：Temp*
+
+# koder skill credentials must never be committed
+.claude/skills/koder-ticket/.koder.env
