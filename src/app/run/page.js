@@ -6,7 +6,12 @@ import WeeklyLine from "../components/WeeklyLine";
 import runData from "../../data/run.json";
 import { fetchStravaData } from "@/lib/strava";
 
-export const metadata = { title: "Run | Koda Allison" };
+export const metadata = {
+  title: "Run | Koda Allison",
+  description:
+    "Live running stats synced from Strava — weekly mileage, PBs vs goals, and streaks.",
+  alternates: { canonical: "/run" },
+};
 
 // ──────────────────────────────────────────────────────────────────────────────
 // helpers — pure, server-rendered
