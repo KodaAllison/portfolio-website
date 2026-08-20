@@ -1,5 +1,5 @@
 {
-  "_comment": "Manual config: training_state + next_race. All Strava-derived data (live stats AND personal_records) now comes from the strava-worker /data endpoint via src/lib/strava.js. The personal_records/marathon_pb below are kept only as a fallback if the Worker is unreachable.",
+  "_comment": "Manual config: training_state + next_race, plus per-distance goal targets. All Strava-derived data (live stats AND personal_records) comes from the strava-worker /data endpoint via src/lib/strava.js; personal_records below is the fallback if the Worker is unreachable and the source of each distance's goal.",
   "training_state": "maintaining",
   "next_race": "manchester.2027.apr",
   "personal_records": [
@@ -31,6 +31,5 @@
       "date": "2025-03-16",
       "note": "Barcelona Marathon"
     }
-  ],
-  "marathon_pb": "4:11:11"
+  ]
 }
