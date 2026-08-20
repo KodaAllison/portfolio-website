@@ -36,7 +36,7 @@ flowchart TB
 
 Why it's split this way:
 
-- **No secrets in the portfolio.** Strava OAuth tokens live only in the Worker; this repo needs zero credentials to build and run.
+- **No Strava secrets in the portfolio.** Strava's API is auth-only, and its OAuth tokens grant access to the whole account — so they live exclusively in the Worker. This repo builds and runs with zero required credentials; the only token it can use (`GITHUB_TOKEN`) is optional and read-only for public data.
 - **Fast renders.** Pages never wait on Strava's slow, rate-limited API — a render is a KV read behind a 5-minute edge cache.
 - **Always fresh.** `/` and `/run` are server-rendered per request (`cache: "no-store"`), so visitors see the latest synced data rather than whatever was baked in at the last deploy. (Learned that one the hard way — ISR quietly served months-old stats to cold visitors on a low-traffic site.)
 
