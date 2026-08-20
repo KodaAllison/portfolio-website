@@ -60,11 +60,14 @@ export default async function Home() {
   const { stats, currently, stack, stack_tags, links } = about;
 
   let weeklyKm;
+  let ytdKm;
   try {
     const strava = await fetchStravaData();
     weeklyKm = strava.weekly_km;
+    ytdKm = strava.ytd_km;
   } catch {
     weeklyKm = "rip gps";
+    ytdKm = "—";
   }
 
   let commits_30d = stats.commits_30d;
@@ -94,9 +97,6 @@ export default async function Home() {
           <div className="space-y-8">
             {/* status row */}
             <div className="flex flex-wrap items-center gap-3">
-              <StatusChip pulse glow>
-                online
-              </StatusChip>
               <span className="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">
                 {about.location.city}
               </span>
@@ -242,8 +242,8 @@ export default async function Home() {
             accent="text-terminal"
           />
           <StatCell
-            label="coffee.consumed"
-            value="∞"
+            label="ytd_km"
+            value={ytdKm}
             accent="text-cyan"
           />
         </div>
@@ -463,11 +463,7 @@ export default async function Home() {
         <div className="mx-auto flex max-w-container-max flex-col items-start justify-between gap-2 px-margin-mobile py-3 font-mono text-[10px] uppercase tracking-widest text-outline md:flex-row md:items-center md:px-margin-desktop">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-terminal">●</span>
-            <span>sys_build · 0x_redesign_v1</span>
-            <span className="text-outline-variant">|</span>
-            <span>uptime · {stats.uptime}</span>
-            <span className="text-outline-variant">|</span>
-            <span>portfolio_os</span>
+            <span>portfolio_os · v3</span>
           </div>
           <div className="flex items-center gap-4">
             <a

@@ -117,7 +117,6 @@ export default async function RunPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap gap-2">
-              <StatusChip color="terminal" pulse glow>training</StatusChip>
               <SyntaxTag color="terminal" variant="raw">{training_state}</SyntaxTag>
               <SyntaxTag color="cyan" variant="raw">{`next → ${next_race}`}</SyntaxTag>
               <SyntaxTag color="signal" variant="flag">strava-live</SyntaxTag>
