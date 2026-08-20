@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 
 const USERNAME = "KodaAllison";
 const API = "https://api.github.com";
+const WINDOW_DAYS = 48; // heatmap is 12×4 tiles, one day each
 
 function headers() {
   return {
@@ -12,7 +13,9 @@ function headers() {
   };
 }
 
-function relativeTime(isoString) {
+// Exported so callers can format at render time — the cached blob stores raw
+// timestamps, otherwise the "Xd ago" string freezes for the cache lifetime.
+export function relativeTime(isoString) {
   const hours = Math.floor((Date.now() - new Date(isoString)) / 3_600_000);
   if (hours < 1) return "just now";
   if (hours < 24) return `${hours}h ago`;
@@ -27,30 +30,45 @@ function toIntensity(count) {
   return 4;
 }
 
+async function gh(path) {
+  const res = await fetch(`${API}${path}`, {
+    headers: headers(),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`github ${path} failed: ${res.status}`);
+  return res.json();
+}
+
 async function _fetchGitHubData() {
-  // 3 pages × 100 events covers 30+ days for typical activity
-  const pages = await Promise.all(
-    [1, 2, 3].map((page) =>
-      fetch(`${API}/users/${USERNAME}/events?per_page=100&page=${page}`, {
-        headers: headers(),
-        cache: "no-store",
-      }).then((r) => (r.ok ? r.json() : []))
+  const since = new Date(Date.now() - WINDOW_DAYS * 86_400_000);
+  const sinceIso = since.toISOString();
+
+  // This used to read the events feed, but GitHub delays or drops PushEvents
+  // unpredictably and PR-button merges never emit one at all — the live site
+  // showed "last commit 19d ago" on a day with six pushes. The commits API is
+  // the source of truth: every non-fork repo pushed within the window, commits
+  // I authored on its default branch. Branch-only work appears once merged.
+  const repos = await gh(`/users/${USERNAME}/repos?sort=pushed&per_page=30`);
+  const active = repos.filter((r) => !r.fork && new Date(r.pushed_at) >= since);
+
+  const perRepo = await Promise.all(
+    active.map((r) =>
+      gh(
+        `/repos/${r.full_name}/commits?author=${USERNAME}&since=${sinceIso}&per_page=100`
+      ).catch(() => []) // empty repos 409; one bad repo shouldn't sink the rest
     )
   );
+  const commits = perRepo.flat();
 
-  const pushEvents = pages.flat().filter((e) => e.type === "PushEvent");
-
-  // date → commit count
+  // date → commit count, plus the newest author timestamp
   const dayMap = new Map();
-  for (const event of pushEvents) {
-    const key = new Date(event.created_at).toISOString().slice(0, 10);
-    // `commits` array requires auth; `size`/`distinct_size` are authenticated fallbacks;
-    // fall back to 1 so push events still register without a token
-    const count = event.payload?.commits?.length
-      ?? event.payload?.size
-      ?? event.payload?.distinct_size
-      ?? 1;
-    dayMap.set(key, (dayMap.get(key) ?? 0) + count);
+  let last_commit_at = null;
+  for (const c of commits) {
+    const date = c.commit?.author?.date;
+    if (!date) continue;
+    const key = date.slice(0, 10);
+    dayMap.set(key, (dayMap.get(key) ?? 0) + 1);
+    if (!last_commit_at || date > last_commit_at) last_commit_at = date;
   }
 
   const now = new Date();
@@ -60,11 +78,6 @@ async function _fetchGitHubData() {
   const commits_30d = [...dayMap.entries()]
     .filter(([k]) => new Date(k) >= cutoff)
     .reduce((sum, [, n]) => sum + n, 0);
-
-  // last commit as relative string
-  const last_commit = pushEvents.length > 0
-    ? relativeTime(pushEvents[0].created_at)
-    : "n/a";
 
   // longest consecutive-day streak within the fetched window
   const activeDays = [...dayMap.keys()].filter((k) => dayMap.get(k) > 0).sort();
@@ -87,7 +100,7 @@ async function _fetchGitHubData() {
     return toIntensity(dayMap.get(d.toISOString().slice(0, 10)) ?? 0);
   });
 
-  return { commits_30d, last_commit, longest_streak, heatmap };
+  return { commits_30d, last_commit_at, longest_streak, heatmap };
 }
 
 export const fetchGitHubData = unstable_cache(
