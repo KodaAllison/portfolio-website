@@ -17,7 +17,6 @@ const FaLinkedin = (props) => (
 
 import Navbar from "../components/Navbar";
 import TerminalWindow from "../components/TerminalWindow";
-import StatusChip from "../components/StatusChip";
 import SyntaxTag from "../components/SyntaxTag";
 
 import social from "../../data/social-links.json";
@@ -163,7 +162,7 @@ export default function ContactPage() {
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <span className="font-mono text-label-md text-cyan">/* 04 · contact */</span>
           <span className="text-outline">•</span>
-          <span className="font-mono text-label-sm text-on-surface-variant">contact.sh — stable v3</span>
+          <span className="font-mono text-label-sm text-on-surface-variant">contact.sh</span>
         </div>
 
         <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
@@ -182,7 +181,6 @@ export default function ContactPage() {
         <div className="mt-10">
           <TerminalWindow
             title="contact.sh"
-            subtitle="UTF-8 · LF"
             glow
             bodyClass="p-6 md:p-10"
           >
@@ -195,19 +193,6 @@ export default function ContactPage() {
                 className="ml-1 inline-block h-7 w-3 animate-pulse bg-terminal md:h-9 md:w-4"
                 aria-hidden
               />
-            </div>
-
-            {/* status row */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <StatusChip color="terminal" pulse glow>
-                channel open
-              </StatusChip>
-              <SyntaxTag variant="raw" color="muted">
-                reply window: ~24h
-              </SyntaxTag>
-              <SyntaxTag variant="raw" color="muted">
-                timezone: GMT
-              </SyntaxTag>
             </div>
 
             <hr className="my-8 border-outline-variant" />
@@ -306,18 +291,9 @@ export default function ContactPage() {
         </div>
 
         {/* tiny footer crumb */}
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant pt-4 font-mono text-label-sm text-outline">
-          <div className="flex items-center gap-3">
-            <span className="text-terminal">●</span>
-            <span>no forms, no tracking · just say hi</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span>UTF-8</span>
-            <span>·</span>
-            <span>LF</span>
-            <span>·</span>
-            <span className="text-signal">ZSH</span>
-          </div>
+        <div className="mt-12 flex items-center gap-3 border-t border-outline-variant pt-4 font-mono text-label-sm text-outline">
+          <span className="text-terminal">●</span>
+          <span>no forms, no tracking · just say hi</span>
         </div>
       </section>
     </main>
