@@ -6,7 +6,7 @@ import SyntaxTag from "./components/SyntaxTag";
 import CommitHeatmap from "./components/CommitHeatmap";
 import about from "../data/about.json";
 import { fetchStravaData } from "../lib/strava";
-import { fetchGitHubData } from "../lib/github";
+import { fetchGitHubData, relativeTime } from "../lib/github";
 
 /* --- inline atoms (kept local; not shared components) -------------------- */
 
@@ -77,7 +77,7 @@ export default async function Home() {
   try {
     const gh = await fetchGitHubData();
     commits_30d = gh.commits_30d;
-    last_commit = gh.last_commit;
+    last_commit = gh.last_commit_at ? relativeTime(gh.last_commit_at) : "n/a";
     longest_streak = `${gh.longest_streak}d`;
     heatmap = gh.heatmap;
   } catch {
