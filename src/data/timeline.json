@@ -1,0 +1,60 @@
+[
+  {
+    "hash": "9e4c1a7",
+    "date": "2025-09",
+    "type": "feat",
+    "message": "joined virgin money as technical graduate",
+    "body": "typescript + deno · built the repo-health dashboard teams use to triage tech debt",
+    "refs": ["HEAD -> main", "origin/main"]
+  },
+  {
+    "hash": "3f8b2d5",
+    "date": "2025-07",
+    "type": "release",
+    "message": "bsc computer science — first class honours",
+    "body": "dissertation: surveyed teachers → openai-api lesson planner · prompt engineering did the heavy lifting",
+    "refs": ["tag: v1.0.0"]
+  },
+  {
+    "hash": "c7a0e93",
+    "date": "2024-09",
+    "type": "feat",
+    "message": "shipped first client site — crook community centre",
+    "body": "requirements and figma prototypes straight from the client · next.js on vercel · still maintaining it",
+    "refs": []
+  },
+  {
+    "hash": "8a2d4f6",
+    "date": "2023-07",
+    "until": "2025-09",
+    "type": "chore",
+    "message": "back of house @ nando's",
+    "body": "kitchen shifts around a full-time degree · trained new starters",
+    "refs": []
+  },
+  {
+    "hash": "5d1f8b4",
+    "date": "2022-09",
+    "type": "feat",
+    "message": "started bsc computer science @ newcastle",
+    "body": "software engineering pathway · java, python and sql before javascript took over",
+    "refs": []
+  },
+  {
+    "hash": "b3e7c15",
+    "date": "2021-03",
+    "until": "2023-01",
+    "type": "chore",
+    "message": "customer service → shift leader @ one stop",
+    "body": "started on tills · promoted to shift leader after 8 months · keyholder",
+    "refs": []
+  },
+  {
+    "hash": "1b6e0c2",
+    "date": "2020-09",
+    "type": "init",
+    "message": "a-levels @ st john's sixth form",
+    "body": "computer science (A) · history (B) · btec sport (D*) · co-founded the IT & coding club",
+    "refs": []
+  }
+]
