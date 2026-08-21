@@ -3,9 +3,11 @@ import React from "react";
 // Conventional-commit prefixes double as the colour key: `release` is the
 // milestone (graduation), `init` the first entry, `feat` everything since.
 // `chore` is the work that ran alongside it all — dim, so the build log leads.
+// `merge` is an acquisition: something that happened to the org, not a milestone.
 const TYPE_COLOR = {
   init: "text-outline",
   chore: "text-outline",
+  merge: "text-cyan",
   feat: "text-terminal",
   release: "text-signal",
 };

@@ -1,11 +1,19 @@
 [
   {
+    "hash": "4c9b0f2",
+    "date": "2026-04",
+    "type": "merge",
+    "message": "virgin money → nationwide",
+    "body": "role and team unchanged · virgin money still a separate entity",
+    "refs": ["HEAD -> main", "origin/main"]
+  },
+  {
     "hash": "9e4c1a7",
     "date": "2025-09",
     "type": "feat",
     "message": "joined virgin money as technical graduate",
     "body": "typescript + deno · built the repo-health dashboard teams use to triage tech debt",
-    "refs": ["HEAD -> main", "origin/main"]
+    "refs": []
   },
   {
     "hash": "3f8b2d5",
