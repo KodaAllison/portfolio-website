@@ -4,7 +4,9 @@ import TerminalWindow from "./components/TerminalWindow";
 import StatusChip from "./components/StatusChip";
 import SyntaxTag from "./components/SyntaxTag";
 import CommitHeatmap from "./components/CommitHeatmap";
+import Timeline from "./components/Timeline";
 import about from "../data/about.json";
+import timeline from "../data/timeline.json";
 import { fetchStravaData } from "../lib/strava";
 import { fetchGitHubData, relativeTime } from "../lib/github";
 
@@ -367,6 +369,33 @@ export default async function Home() {
             </div>
           </TerminalWindow>
         </div>
+      </section>
+
+      {/* ============================================================
+          TIMELINE
+          ============================================================ */}
+      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
+        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+          <h2 className="font-display text-2xl font-bold tracking-tight text-on-surface md:text-3xl">
+            <span className="text-outline">{"// "}</span>
+            timeline
+          </h2>
+          <span className="font-mono text-[11px] uppercase tracking-widest text-outline">
+            {timeline.length} commits · {timeline[timeline.length - 1].date.slice(0, 4)} →
+            present
+          </span>
+        </div>
+
+        <TerminalWindow title="~/koda-allison" subtitle="git · main">
+          <div className="mb-5 flex items-center gap-2 text-[12px]">
+            <span className="text-terminal">$</span>
+            <span className="text-on-surface-variant">
+              git log --graph --oneline --decorate
+            </span>
+          </div>
+
+          <Timeline entries={timeline} />
+        </TerminalWindow>
       </section>
 
       {/* ============================================================
