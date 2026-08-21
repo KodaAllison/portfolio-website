@@ -46,7 +46,9 @@ const CommitRow = ({ entry, isLast }) => (
       </div>
 
       <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-[11px] text-outline">
-        <span>{entry.date}</span>
+        {/* `until` only on the roles nothing else closes off — the rest are
+            either still running or ended by the commit above them. */}
+        <span>{entry.until ? `${entry.date} → ${entry.until}` : entry.date}</span>
         <span className="min-w-0 text-on-surface-variant">{entry.body}</span>
       </div>
     </div>
