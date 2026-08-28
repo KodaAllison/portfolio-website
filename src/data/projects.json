@@ -115,12 +115,17 @@
     "size": "189k",
     "category": "web",
     "status": "live",
-    "tagline": "Client site. Resend + Upstash rate-limiting. What's On section.",
-    "description": "First real client project — built and shipped a full website for a local community centre. Handled everything: client meetings, content structure, design decisions, and deployment. The contact form uses Resend with Upstash Redis rate limiting to handle spam. There's a What's On section with a weekly events schedule, an image carousel, and Vitest unit tests covering the form and API route. Still live and maintained.",
+    "tagline": "Client site. Keystatic CMS. Resend + Upstash rate-limiting.",
+    "description": "First real client project — built and shipped a full website for a local community centre. Handled everything: client meetings, content structure, design decisions, and deployment. The contact form uses Resend with Upstash Redis rate limiting to handle spam. There's a What's On section with a weekly events schedule, an image carousel, and Vitest unit tests covering the form and API route. Later added Keystatic as a git-backed CMS so the client updates content themselves — edits commit straight to the repo and trigger a redeploy, with no developer in the loop. Still live and maintained.",
     "tags": [
       {
         "label": "next-js",
         "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "keystatic",
+        "color": "cyan",
         "variant": "flag"
       },
       {

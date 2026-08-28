@@ -28,7 +28,7 @@
     "date": "2024-09",
     "type": "feat",
     "message": "shipped first client site — crook community centre",
-    "body": "requirements and figma prototypes straight from the client · next.js on vercel · still maintaining it",
+    "body": "requirements straight from the client · next.js + keystatic so they update it themselves",
     "refs": []
   },
   {
