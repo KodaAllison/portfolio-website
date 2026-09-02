@@ -30,22 +30,22 @@ export default function ContactPage() {
         </p>
       </header>
 
-      <section className="grid gap-12 px-5 pt-[76px] md:grid-cols-[1.4fr_1fr] md:px-[72px]">
-        <div>
-          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Email</h2>
-          <div className="mt-space-4">
-            <CopyEmail email={social.email.address} />
-          </div>
-          <div className="mt-space-5 flex flex-wrap gap-space-3">
-            <Link href={`mailto:${social.email.address}`} className="bg-accent px-space-5 py-space-3 font-mono text-mono-m font-medium text-bg transition-colors duration-hover hover:bg-accent-hover">
-              Open mail client
-            </Link>
-            <Link href="/CV.pdf" className="border border-line px-space-5 py-space-3 font-mono text-mono-m text-ink transition-colors duration-hover hover:border-line-strong hover:text-accent">
-              Download CV
-            </Link>
-          </div>
+      <section className="px-5 pt-[76px] md:px-[72px]">
+        <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Email</h2>
+        <div className="mt-space-4">
+          <CopyEmail email={social.email.address} />
         </div>
+        <div className="mt-space-5 flex flex-wrap gap-space-3">
+          <Link href={`mailto:${social.email.address}`} className="bg-accent px-space-5 py-space-3 font-mono text-mono-m font-medium text-bg transition-colors duration-hover hover:bg-accent-hover">
+            Open mail client
+          </Link>
+          <Link href="/CV.pdf" className="border border-line px-space-5 py-space-3 font-mono text-mono-m text-ink transition-colors duration-hover hover:border-line-strong hover:text-accent">
+            Download CV
+          </Link>
+        </div>
+      </section>
 
+      <section className="grid gap-12 px-5 pt-[76px] md:grid-cols-2 md:px-[72px]">
         <div>
           <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Elsewhere</h2>
           <ul className="mt-space-4 border-t border-line">
@@ -60,15 +60,14 @@ export default function ContactPage() {
             ))}
           </ul>
         </div>
-      </section>
-
-      <section className="px-5 pt-[76px] md:px-[72px]">
-        <h2 className="mb-space-5 font-display text-heading-l text-ink">Reply times</h2>
-        <dl className="grid border-y border-line md:grid-cols-3 md:divide-x md:divide-line">
-          <div className="py-space-5 md:pr-space-6"><dt className="font-mono text-mono-xs text-ink-muted">Weekdays</dt><dd className="mt-space-2 font-display text-heading-m text-ink">~24h</dd></div>
-          <div className="border-t border-line py-space-5 md:border-0 md:px-space-6"><dt className="font-mono text-mono-xs text-ink-muted">Weekends</dt><dd className="mt-space-2 font-display text-heading-m text-ink">~48h</dd></div>
-          <div className="border-t border-line py-space-5 md:border-0 md:pl-space-6"><dt className="font-mono text-mono-xs text-ink-muted">Timezone</dt><dd className="mt-space-2 font-display text-heading-m text-ink">Glasgow · GMT/BST</dd></div>
-        </dl>
+        <div>
+          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reply times</h2>
+          <dl className="mt-space-4 border-t border-line">
+            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Weekdays</dt><dd className="font-display text-heading-s text-ink">~24h</dd></div>
+            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Weekends</dt><dd className="font-display text-heading-s text-ink">~48h</dd></div>
+            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Timezone</dt><dd className="font-display text-heading-s text-ink">GMT/BST</dd></div>
+          </dl>
+        </div>
       </section>
 
       <SiteFooter />

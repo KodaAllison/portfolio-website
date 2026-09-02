@@ -7,6 +7,8 @@ import CommitHeatmap from "./components/CommitHeatmap";
 import ProjectCard from "./components/ProjectCard";
 import SectionHeading from "./components/SectionHeading";
 import SiteFooter from "./components/SiteFooter";
+import TravelGlobe from "./components/TravelGlobe";
+import Bookshelf from "./components/Bookshelf";
 import about from "../data/about.json";
 import projects from "../data/projects.json";
 import timeline from "../data/timeline.json";
@@ -61,6 +63,7 @@ export default async function Home() {
     strava?.generated_at && { name: "strava", age: relativeTime(strava.generated_at) },
     github?.last_commit_at && { name: "github", age: relativeTime(github.last_commit_at) },
   ].filter(Boolean);
+  const travelProject = projects.find((project) => project.id === "holitrackr");
 
   return (
     <main className="min-h-screen">
@@ -108,34 +111,39 @@ export default async function Home() {
 
       <section className="px-5 pt-[76px] md:px-[72px]">
         <SectionHeading title="Away from the keyboard" />
-        <div className="grid border-y border-line md:grid-cols-3 md:divide-x md:divide-line">
+        <div className="grid border-y border-line md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line">
           <article className="py-space-6 md:pr-space-6">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reading</p>
-            <p className="mt-space-4 font-display text-heading-s text-ink">{about.currently.reading}</p>
-            <p className="mt-space-2 text-body-m text-ink-secondary">The current book on the shelf.</p>
+            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Travel</p>
+            <div className="mt-space-4 grid items-center gap-space-6 sm:grid-cols-[minmax(0,1fr)_150px]">
+              <TravelGlobe />
+              <div>
+                <Metric value={about.stats.countries_visited} label="countries" />
+                <div className="mt-space-6"><Metric value="4" label="continents" /></div>
+                <p className="mt-space-6 font-mono text-mono-s text-ink-secondary"><span className="text-ink-muted">home →</span> Glasgow</p>
+                {travelProject?.previewUrl ? (
+                  <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">open the map →</Link>
+                ) : null}
+              </div>
+            </div>
           </article>
-          <article className="border-t border-line py-space-6 md:border-0 md:px-space-6">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Running</p>
-            <p className="mt-space-4 font-display text-heading-s text-ink">{about.currently.training}</p>
+          <article className="border-t border-line py-space-6 md:border-0 md:pl-space-6">
+            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reading</p>
+            <div className="mt-space-4"><Bookshelf /></div>
+          </article>
+        </div>
+        <article className="flex flex-col gap-space-5 border-b border-line py-space-5 md:flex-row md:items-center">
+            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted md:w-32">Running</p>
+            <p className="font-display text-heading-s text-ink">{about.currently.training}</p>
             {strava ? (
-              <div className="mt-space-5 grid grid-cols-2 gap-space-5">
+              <div className="grid grid-cols-2 gap-space-6 md:ml-auto">
                 <Metric value={`${strava.weekly_km} km`} label="this week" />
                 <Metric value={`${strava.ytd_km} km`} label="this year" />
               </div>
             ) : null}
-            <Link href="/run" className="mt-space-5 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">
+            <Link href="/run" className="font-mono text-mono-s text-accent hover:text-accent-hover">
               the full log →
             </Link>
-          </article>
-          <article className="border-t border-line py-space-6 md:border-0 md:pl-space-6">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Currently</p>
-            <dl className="mt-space-4 space-y-space-3 font-mono text-mono-s">
-              <div><dt className="text-ink-muted">shipping</dt><dd className="text-ink">{about.currently.shipping}</dd></div>
-              <div><dt className="text-ink-muted">learning</dt><dd className="text-ink">{about.currently.learning}</dd></div>
-              <div><dt className="text-ink-muted">listening</dt><dd className="text-ink">{about.currently.listening}</dd></div>
-            </dl>
-          </article>
-        </div>
+        </article>
       </section>
 
       {github ? (

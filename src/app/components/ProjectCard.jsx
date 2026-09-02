@@ -60,7 +60,7 @@ export default function ProjectCard({ project, featured = false }) {
               alt=""
               width={520}
               height={320}
-              className="max-h-64 w-full object-contain opacity-80 grayscale transition duration-300 group-hover:grayscale-0"
+              className="max-h-64 w-full object-contain opacity-80 grayscale transition duration-spine group-hover:grayscale-0"
             />
           ) : (
             <div className="w-full font-mono text-mono-s leading-loose text-ink-muted">

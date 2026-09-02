@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import SiteFooter from "../components/SiteFooter";
 import WeeklyLine from "../components/WeeklyLine";
+import WeeklyBars from "../components/WeeklyBars";
 import runData from "../../data/run.json";
 import { fetchStravaData } from "@/lib/strava";
 
@@ -76,7 +77,8 @@ export default async function RunPage() {
                 <span className="font-mono text-mono-xs text-ink-muted">last {strava.weekly_bars.length} weeks</span>
               </div>
               <div className="h-[340px] border-y border-line py-space-5">
-                <WeeklyLine data={strava.weekly_bars} />
+                <div className="h-full md:hidden"><WeeklyBars data={strava.weekly_bars.slice(-8)} /></div>
+                <div className="hidden h-full md:block"><WeeklyLine data={strava.weekly_bars} /></div>
               </div>
             </section>
           ) : null}
@@ -119,7 +121,7 @@ export default async function RunPage() {
                 <h2 className="font-display text-heading-l text-ink">Recent activity</h2>
                 <span className="font-mono text-mono-xs text-ink-muted">last {strava.recent_activity.length} runs</span>
               </div>
-              <div className="overflow-x-auto border-t border-line">
+              <div className="hidden overflow-x-auto border-t border-line md:block">
                 <div className="min-w-[680px]">
                   <div className="grid grid-cols-[120px_1fr_100px_110px_90px] gap-space-5 border-b border-line py-space-3 font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">
                     <span>Date</span><span>Run</span><span>Dist</span><span>Pace</span><span>Type</span>
@@ -137,6 +139,21 @@ export default async function RunPage() {
                   </ol>
                 </div>
               </div>
+              <ol className="border-t border-line md:hidden">
+                {strava.recent_activity.map((activity) => (
+                  <li key={`mobile-${activity.date}-${activity.distance_km}`} className="border-b border-line-subtle py-space-4">
+                    <div className="flex items-baseline justify-between gap-space-4">
+                      <span className="font-mono text-mono-xs text-ink-muted">{activity.date}</span>
+                      <span className="font-mono text-mono-xs text-accent">{activity.type ?? "run"}</span>
+                    </div>
+                    <div className="mt-space-2 flex items-baseline justify-between gap-space-4">
+                      <span className="font-display text-heading-s text-ink">{activity.name ?? "Run"}</span>
+                      <span className="font-mono text-mono-m text-ink">{activity.distance_km.toFixed(1)} km</span>
+                    </div>
+                    <p className="mt-space-1 font-mono text-mono-xs text-ink-secondary">{activity.pace} /km</p>
+                  </li>
+                ))}
+              </ol>
             </section>
           ) : null}
         </>
