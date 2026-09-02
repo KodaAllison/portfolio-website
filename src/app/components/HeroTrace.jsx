@@ -22,7 +22,7 @@ import {
 // that no two labels overlap can be tested against the same numbers that
 // render here rather than against a copy of them.
 const { w: W } = HERO_BOX;
-const VIEW_H = 300; // room for the below-axis label tier
+const VIEW_H = 306; // matches the artboard; the below tier baselines at 296.4
 
 export default function HeroTrace({ series }) {
   /* No data, no chart. The design sheet is explicit that a module which cannot
@@ -47,7 +47,7 @@ export default function HeroTrace({ series }) {
   return (
     <svg
       viewBox={`0 0 ${W} ${VIEW_H}`}
-      className="block w-full"
+      className="hero-chart block w-full"
       role="img"
       aria-label={`Monthly running distance, ${monthLabel(series[0].month)} to ${monthLabel(
         last.month
@@ -76,6 +76,7 @@ export default function HeroTrace({ series }) {
         stroke="var(--text-primary)"
         strokeOpacity="0.92"
         strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
         strokeLinejoin="round"
         strokeLinecap="round"
       />

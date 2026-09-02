@@ -181,3 +181,68 @@ test("a multi-line label is as wide as its longest line", () => {
   const wide = synthetic("above", 0, "start", "ab", "0123456789");
   assert.equal(box(wide).right, 10 * LABEL_FONT_SIZE * ADVANCE);
 });
+
+/* Tiers are fixed bands, and this is the test that keeps them that way.
+
+   They were briefly offsets from the annotated point, which coupled the
+   label's height to the ratio of its km to the nice-tick yMax and let it walk
+   out of the viewBox entirely. Both directions were reachable with ordinary
+   data rather than contrived data: a peak landing exactly on a tick (100 km
+   against yMax 100) put the top line at y=-12, and the below tier was already
+   clipping descenders at the real 9.5 km trough, with a 0 km month — which the
+   Worker emits explicitly rather than omitting — putting it at y=310.
+
+   So the assertion is about the viewBox, not about neighbours: whatever the
+   data does, every line stays inside it. */
+const VIEW_H = 306;
+
+function seriesWith(peakKm, troughKm) {
+  const out = [];
+  for (let i = 0; i < 31; i++) {
+    const m = 1 + i;
+    const year = 2024 + Math.floor(m / 12);
+    const month = (m % 12) + 1;
+    out.push({ month: `${year}-${String(month).padStart(2, "0")}`, km: 20 + (i % 5), runs: 3 });
+  }
+  // The two months layoutHeroLabels knows about.
+  out.find((d) => d.month === "2025-09").km = peakKm;
+  out.find((d) => d.month === "2025-07").km = troughKm;
+  return out;
+}
+
+function labelsFor(peakKm, troughKm) {
+  const series = seriesWith(peakKm, troughKm);
+  const peakDatum = series.reduce((a, b) => (b.km > a.km ? b : a));
+  const ticks = niceYTicks(peakDatum.km);
+  const { pts } = buildTrace(series, { ...HERO_BOX, yMax: ticks[ticks.length - 1] });
+  return layoutHeroLabels({ pts, peak: pts.find((p) => p.month === peakDatum.month) });
+}
+
+test("no label escapes the viewBox, whatever the data does", () => {
+  // [peak, trough] — the middle two are the cases that used to clip.
+  for (const [peak, trough] of [
+    [130.6, 9.5], // today
+    [100, 9.5], // peak exactly on a tick: top line was y=-12
+    [100, 0], // a zero month: bottom line was y=310
+    [11, 0], // a very quiet year
+    [75, 2.6],
+  ]) {
+    for (const label of labelsFor(peak, trough)) {
+      for (const { y } of label.lines) {
+        assert.ok(
+          y >= 12 && y <= VIEW_H - 6,
+          `peak=${peak} trough=${trough}: line at y=${y} is outside the viewBox`
+        );
+      }
+    }
+  }
+});
+
+test("a tier's band does not move when the data does", () => {
+  const a = labelsFor(130.6, 9.5);
+  const b = labelsFor(100, 0);
+  for (const tier of ["above", "below"]) {
+    const first = (ls) => ls.find((l) => l.tier === tier)?.lines[0].y;
+    assert.equal(first(a), first(b), `${tier} tier moved with the data`);
+  }
+});

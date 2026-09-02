@@ -41,9 +41,25 @@ const MILESTONES = [
    labels hang off the axis rule at a fixed y rather than off their point, so
    its geometry is a different shape from these two and is better written
    against a real marker than guessed at now. */
+/* A tier is a FIXED horizontal band, and the leader stretches to reach it.
+
+   These were originally offsets from the annotated point, which is subtly
+   wrong: the point's height depends on the ratio of its km to the nice-tick
+   yMax, so the label moved with the data and could walk straight out of the
+   viewBox. Both ends were reachable, not theoretical — a peak that lands
+   exactly on a tick (100 km against yMax 100) put the top line at y=-12, and
+   the below tier was already clipping its descenders at today's 9.5 km trough,
+   with a 0 km month — which the series emits explicitly — landing at y=310.
+
+   Fixed bands make that impossible by construction, and they are what the
+   design means by a tier: the label sits in its band, the leader does the
+   work of connecting it to whatever height the point happens to be at.
+
+   `textY` is the baseline of the label's first line; `leaderPad` is where the
+   leader stops relative to the label so it does not run through the text. */
 const TIERS = {
-  above: { leaderFrom: -6, leaderTo: -31, textFrom: -22, dx: 9, textAnchor: "start" },
-  below: { leaderFrom: 6, leaderTo: 36, textFrom: 12, dx: -9, textAnchor: "end" },
+  above: { textY: 16.4, dx: 9, textAnchor: "start", leaderGap: -6, leaderPad: 7 },
+  below: { textY: 296.4, dx: -9, textAnchor: "end", leaderGap: 6, leaderPad: -12 },
 };
 
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -104,7 +120,12 @@ export function layoutHeroLabels({ pts, peak }) {
           ? [`${monthLabel(month)} · ${text}`, `${fmtKm(point.km)} — the biggest month in the log`]
           : [`${monthLabel(month)} · ${text} · ${fmtKm(point.km)}`];
 
-      const textY = point.y + t.leaderTo + t.textFrom;
+      const lines = texts.map((line, i) => ({ text: line, y: t.textY + i * LINE_HEIGHT }));
+
+      // The leader spans from just off the curve to just short of the label's
+      // nearest edge — for `above` that is below the last line, for `below` it
+      // is above the first one.
+      const nearestLineY = t.leaderPad > 0 ? lines[lines.length - 1].y : lines[0].y;
 
       return {
         month,
@@ -114,8 +135,8 @@ export function layoutHeroLabels({ pts, peak }) {
         x: point.x + t.dx,
         // The leader runs from just off the curve out to the tier, so the label
         // never sits on the line it is annotating.
-        leader: { x: point.x, y1: point.y + t.leaderFrom, y2: point.y + t.leaderTo },
-        lines: texts.map((line, i) => ({ text: line, y: textY + i * LINE_HEIGHT })),
+        leader: { x: point.x, y1: point.y + t.leaderGap, y2: nearestLineY + t.leaderPad },
+        lines,
       };
     });
 }
