@@ -156,8 +156,11 @@ body {
    -------------------------------------------------------------------------- */
 
 .hero-trace-line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
+  /* Chromium's pathLength approximation can run a few percent beyond the
+     normalized value. The 10% overscan keeps both the opening gap and closing
+     dash outside that error margin, preventing a tail fragment on first paint. */
+  stroke-dasharray: 1.1;
+  stroke-dashoffset: 1.1;
   animation: hero-draw var(--draw-hero) var(--ease-hero) var(--draw-hero-delay) forwards;
 }
 

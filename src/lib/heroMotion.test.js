@@ -15,6 +15,20 @@ function cssToken(name) {
   return css.match(new RegExp(`${name}:\\s*([\\d.]+m?s)`))?.[1];
 }
 
+function heroTraceProperty(name) {
+  return css.match(new RegExp(`\\.hero-trace-line\\s*\\{[\\s\\S]*?${name}:\\s*([\\d.]+)`))?.[1];
+}
+
+test("the initial dash and gap extend beyond the normalized path", () => {
+  const dashLength = Number.parseFloat(heroTraceProperty("stroke-dasharray"));
+  const dashOffset = Number.parseFloat(heroTraceProperty("stroke-dashoffset"));
+
+  assert.ok(
+    dashLength >= 1.05 && dashOffset >= 1.05,
+    `dash ${dashLength} and offset ${dashOffset} leave no allowance beyond pathLength=1`,
+  );
+});
+
 test("the current-point reveal cannot start before the trace finishes drawing", () => {
   const drawDuration = milliseconds(cssToken("--draw-hero"));
   const drawDelay = milliseconds(
