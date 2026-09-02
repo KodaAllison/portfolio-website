@@ -1,25 +1,52 @@
 import Navbar from "../components/Navbar";
+import CommitHeatmap from "../components/CommitHeatmap";
 import ProjectCard from "../components/ProjectCard";
 import SiteFooter from "../components/SiteFooter";
 import projects from "../../data/projects.json";
+import { fetchGitHubData, relativeTime } from "../../lib/github";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
   const active = projects.filter((project) => project.status !== "archived");
   const archive = projects.filter((project) => project.status === "archived");
+  let github;
+
+  try {
+    github = await fetchGitHubData();
+  } catch {
+    github = undefined;
+  }
 
   return (
     <main className="min-h-screen">
       <Navbar />
 
       <header className="border-b border-line px-5 pb-space-7 pt-[88px] md:px-[72px] md:pb-14 md:pt-28">
-        <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Projects</p>
-        <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
-          Things I built<span className="text-accent">.</span>
-        </h1>
-        <p className="mt-space-5 max-w-2xl text-body-l text-ink-lead">
-          {projects.length} projects, newest first. Each one says what it is, what was actually
-          hard, and where to read the code.
-        </p>
+        <div className={`grid gap-space-7 ${github ? "lg:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] lg:items-end lg:gap-16" : ""}`}>
+          <div>
+            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Projects</p>
+            <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
+              Things I built<span className="text-accent">.</span>
+            </h1>
+            <p className="mt-space-5 max-w-2xl text-body-l text-ink-lead">
+              {projects.length} projects, newest first. Each one says what it is, what was actually
+              hard, and where to read the code.
+            </p>
+          </div>
+
+          {github ? (
+            <aside className="border-y border-line py-space-4" aria-label="Recent GitHub activity">
+              <div className="mb-space-3 flex items-baseline justify-between gap-space-4 font-mono text-mono-xs text-ink-muted">
+                <span>GitHub activity</span>
+                {github.last_commit_at ? <span>{relativeTime(github.last_commit_at)}</span> : null}
+              </div>
+              <CommitHeatmap data={github.heatmap} columns={12} />
+              <div className="mt-space-3 flex justify-between gap-space-5 border-t border-line-subtle pt-space-3 font-mono text-mono-xs text-ink-muted">
+                <span><strong className="font-normal text-ink">{github.commits_30d}</strong> commits · 30d</span>
+                <span><strong className="font-normal text-ink">{github.longest_streak}d</strong> longest streak</span>
+              </div>
+            </aside>
+          ) : null}
+        </div>
         <div className="mt-space-7 flex flex-wrap gap-space-6 border-t border-line pt-space-4 font-mono text-mono-s text-ink-muted">
           <span>all · {projects.length}</span>
           <span>live · {projects.filter((project) => project.status === "live").length}</span>

@@ -5,10 +5,10 @@ const API = "https://api.github.com";
 const WINDOW_DAYS = 48; // heatmap is 12×4 tiles, one day each
 const MS_PER_DAY = 86_400_000;
 
-function headers() {
+function headers({ authenticated = true } = {}) {
   return {
     Accept: "application/vnd.github.v3+json",
-    ...(process.env.GITHUB_TOKEN && {
+    ...(authenticated && process.env.GITHUB_TOKEN && {
       Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
     }),
   };
@@ -34,10 +34,22 @@ function toIntensity(count) {
 }
 
 async function gh(path) {
-  const res = await fetch(`${API}${path}`, {
+  let res = await fetch(`${API}${path}`, {
     headers: headers(),
     cache: "no-store",
   });
+
+  // A stale local token must not make public portfolio data less available
+  // than GitHub's anonymous API. Retry only rejected credentials; rate limits
+  // and server failures still fail the complete module rather than returning a
+  // partial heatmap.
+  if (res.status === 401 && process.env.GITHUB_TOKEN) {
+    res = await fetch(`${API}${path}`, {
+      headers: headers({ authenticated: false }),
+      cache: "no-store",
+    });
+  }
+
   if (!res.ok) {
     const err = new Error(`github ${path} failed: ${res.status}`);
     err.status = res.status;
