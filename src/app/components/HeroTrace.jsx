@@ -58,48 +58,91 @@ function TraceLine({ d, clipId, width, height }) {
   );
 }
 
-/* The phone chart: the line, its full stop, and nothing else.
+/* The phone chart: a compact running log rather than an unexplained squiggle.
 
    Rendered alongside the full chart rather than instead of it, with CSS
    choosing between them. The component is server-rendered and cannot know the
    viewport, and the two charts have genuinely different geometry — a media
-   query cannot reshape a viewBox. Both carry the same aria-label, and since the
-   hidden one is display:none it is ignored by assistive tech, so exactly one is
-   ever exposed. */
+   query cannot reshape a viewBox. The visible caption gives the trace its
+   measure, timeframe and source; the axis labels then make its direction clear
+   without importing the desktop chart's dense event annotations. */
 function CompactTrace({ series, yMax, label }) {
   const { d, pts } = buildTrace(series, { ...HERO_BOX_COMPACT, yMax });
   const last = pts[pts.length - 1];
 
   return (
-    <svg
-      viewBox={`0 0 ${HERO_BOX_COMPACT.w} ${HERO_COMPACT_VIEW_H}`}
-      className="block w-full md:hidden"
-      role="img"
-      aria-label={label}
-    >
-      <line
-        x1="0"
-        y1={HERO_COMPACT_BASELINE}
-        x2={HERO_BOX_COMPACT.w}
-        y2={HERO_COMPACT_BASELINE}
-        stroke="var(--border)"
-        strokeWidth="1"
-      />
-      <TraceLine
-        d={d}
-        clipId="hero-trace-clip-compact"
-        width={HERO_BOX_COMPACT.w}
-        height={HERO_COMPACT_VIEW_H}
-      />
-      <circle className="hero-pulse" cx={last.x} cy={last.y} r="4.5" fill="none" stroke="var(--accent)" aria-hidden="true" />
-      <circle
-        className="hero-endpoint"
-        cx={last.x}
-        cy={last.y}
-        r="4.5"
-        fill="var(--accent)"
-      />
-    </svg>
+    <figure className="hero-compact-trace md:hidden">
+      <figcaption className="flex items-end justify-between font-mono">
+        <span>
+          <span className="block text-[11px] text-ink">Monthly distance</span>
+          <span className="mt-1 block text-[9px] uppercase tracking-[0.14em] text-ink-muted">
+            {series.length} months · Strava
+          </span>
+        </span>
+        <span className="text-right">
+          <span className="block text-[12px] font-medium text-ink">{fmtKm(last.km)}</span>
+          <span className="mt-1 block text-[9px] uppercase tracking-[0.1em] text-ink-muted">
+            {monthLabel(last.month)}
+          </span>
+        </span>
+      </figcaption>
+
+      <svg
+        viewBox={`0 0 ${HERO_BOX_COMPACT.w} ${HERO_COMPACT_VIEW_H}`}
+        className="mt-3 block w-full"
+        role="img"
+        aria-label={label}
+      >
+        <line
+          x1="0"
+          y1={HERO_COMPACT_BASELINE}
+          x2={HERO_BOX_COMPACT.w}
+          y2={HERO_COMPACT_BASELINE}
+          stroke="var(--border)"
+          strokeWidth="1"
+        />
+        <TraceLine
+          d={d}
+          clipId="hero-trace-clip-compact"
+          width={HERO_BOX_COMPACT.w}
+          height={HERO_COMPACT_VIEW_H}
+        />
+        <circle
+          className="hero-pulse"
+          cx={last.x}
+          cy={last.y}
+          r="4.5"
+          fill="none"
+          stroke="var(--accent)"
+          aria-hidden="true"
+        />
+        <circle
+          className="hero-endpoint"
+          cx={last.x}
+          cy={last.y}
+          r="4.5"
+          fill="var(--accent)"
+        />
+
+        <text
+          x="0"
+          y={HERO_COMPACT_BASELINE + 16}
+          className="fill-ink-muted font-mono"
+          fontSize="9"
+        >
+          {monthLabel(series[0].month).toUpperCase()}
+        </text>
+        <text
+          x={HERO_BOX_COMPACT.w}
+          y={HERO_COMPACT_BASELINE + 16}
+          textAnchor="end"
+          className="fill-ink-muted font-mono"
+          fontSize="9"
+        >
+          NOW
+        </text>
+      </svg>
+    </figure>
   );
 }
 

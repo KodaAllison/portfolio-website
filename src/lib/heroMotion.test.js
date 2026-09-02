@@ -32,6 +32,14 @@ test("the hero intentionally limits the Strava history to two years", () => {
   assert.match(component, /MONTHLY KM · \{visibleSeries\.length\} MONTHS · STRAVA/);
 });
 
+test("the compact trace explains its metric, timeframe, source, and endpoint", () => {
+  assert.match(component, /<figure className="hero-compact-trace md:hidden">/);
+  assert.match(component, />Monthly distance</);
+  assert.match(component, /\{series\.length\} months · Strava/);
+  assert.match(component, /\{fmtKm\(last\.km\)\}/);
+  assert.match(component, />\s*NOW\s*</);
+});
+
 test("live personal records reach the hero annotations", () => {
   assert.match(home, /<Hero series=\{strava\?\.monthly_km\} records=\{strava\?\.personal_records\} \/>/);
   assert.match(hero, /<HeroTrace series=\{series\} records=\{records\} \/>/);

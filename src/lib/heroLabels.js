@@ -193,14 +193,13 @@ export { monthLabel };
 
    An SVG scales with its viewBox, so reusing the desktop box at 390px would
    reduce it 3.7x and render its 11px annotations at about 3px. The mobile
-   artboard does not attempt that: it has its own box at 1:1 with no labels in
-   it at all, because on a phone the trace is decorative and the numbers belong
-   in the copy beneath it.
+   artboard does not attempt that: it has its own box at 1:1 and only the two
+   time-axis anchors. Its metric, source and current value live in the figure
+   caption above, where they remain readable without competing with the line.
 
-   Solved from that artboard the same way the desktop box was — its plotted
-   peak sits at y=40.1 and its axis rule at y=144, which against yMax=150 gives
-   innerH=119.33 and padTop=24.67. The 196 tall viewBox is what fixes the
-   chart's aspect ratio, and so its rendered height, at any width. */
-export const HERO_BOX_COMPACT = { w: 346, padX: 24, padTop: 24.67, innerH: 119.33 };
-export const HERO_COMPACT_VIEW_H = 196;
+   The shorter plot gives the caption and the trace equal visual weight and
+   removes the unexplained empty space that previously separated the graph
+   from the headline. */
+export const HERO_BOX_COMPACT = { w: 346, padX: 24, padTop: 10, innerH: 104 };
+export const HERO_COMPACT_VIEW_H = 136;
 export const HERO_COMPACT_BASELINE = HERO_BOX_COMPACT.padTop + HERO_BOX_COMPACT.innerH;
