@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
 import TerminalWindow from "./components/TerminalWindow";
 import StatusChip from "./components/StatusChip";
 import SyntaxTag from "./components/SyntaxTag";
@@ -63,10 +64,15 @@ export default async function Home() {
 
   let weeklyKm;
   let ytdKm;
+  // The hero series. Left undefined on failure on purpose: HeroTrace renders
+  // nothing without it and the headline rises into the space, which is the
+  // degraded state the design sheet asks for. Never a placeholder shape.
+  let monthlyKm;
   try {
     const strava = await fetchStravaData();
     weeklyKm = strava.weekly_km;
     ytdKm = strava.ytd_km;
+    monthlyKm = strava.monthly_km;
   } catch {
     weeklyKm = "rip gps";
     ytdKm = "—";
@@ -89,6 +95,8 @@ export default async function Home() {
   return (
     <main className="flex min-h-screen flex-col">
       <Navbar />
+
+      <Hero series={monthlyKm} />
 
       {/* ============================================================
           HERO

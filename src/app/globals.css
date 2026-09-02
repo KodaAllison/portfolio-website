@@ -117,6 +117,87 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Hero motion
+   ==========================================================================
+   All of it CSS, so the hero ships no client JavaScript at all. The path
+   carries pathLength="1", which normalises the dash units and lets one
+   keyframe draw a path of any real length.
+
+   These start from a hidden state, which is only safe because they are pure
+   CSS with no feature gate: there is no support check that can fail and leave
+   the content stuck at opacity 0. Anything JS-driven must invert this and
+   start visible — see the Reveal component.
+   -------------------------------------------------------------------------- */
+
+.hero-trace-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: hero-draw var(--draw-hero) var(--ease-hero) 300ms forwards;
+}
+
+@keyframes hero-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Annotations fade in on delays set per element, all of them after the line
+   has drawn past the point they label. */
+.hero-marker {
+  opacity: 0;
+  animation: hero-fade var(--fade-label) ease forwards;
+}
+
+@keyframes hero-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+/* The endpoint dot scales up as it arrives rather than fading, so it reads as
+   the line stopping somewhere rather than as another label appearing. */
+.hero-endpoint {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-endpoint var(--fade-label) var(--ease-spine) forwards;
+}
+
+@keyframes hero-endpoint {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-trace-line,
+  .hero-marker,
+  .hero-endpoint {
+    animation: none;
+  }
+
+  .hero-endpoint {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Final state, not the initial one: reduced motion means arrive instantly,
+     never disappear. */
+  .hero-trace-line {
+    stroke-dashoffset: 0;
+  }
+
+  .hero-marker {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
    DEPRECATED — Terminal OS leftovers
    ==========================================================================
    These belong to the build being replaced and are kept only so `trunk` still

@@ -113,6 +113,17 @@ module.exports = {
         "space-5": "24px",  // inside a card
         "space-6": "32px",  // card padding
         "space-7": "44px",  // between sub-blocks
+
+        // DEPRECATED — the old layout scale, still load-bearing for the 35
+        // call sites in the sections that have not been rebuilt yet (removing
+        // them silently drops every page's padding and max width, which
+        // renders but looks broken). Out with the terminal-era components.
+        // Note max-w-container-max works because Tailwind 3.4's maxWidth
+        // scale spreads theme('spacing').
+        gutter: "24px",
+        "margin-desktop": "48px",
+        "margin-mobile": "20px",
+        "container-max": "1440px",
       },
 
       transitionDuration: {
