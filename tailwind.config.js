@@ -1,4 +1,57 @@
 /** @type {import('tailwindcss').Config} */
+
+// The token sheet is the complete set of legal values. A value that is not in
+// here is a design decision, not an implementation one — so once a component is
+// on the new system it must not reach for an arbitrary Tailwind value
+// (`text-[13.5px]`, `bg-[#e0a355]`). That constraint is the mechanism that stops
+// the drift this sheet was built to fix.
+const tokens = {
+  bg: "#0d0f11", // page background — cold graphite, no green cast
+  surface: "#14171a", // raised cards, code cards, the current-role band
+  "surface-sunken": "#0a0c0d", // image wells, globe interior
+  land: "#262b2f", // globe: unvisited landmass
+
+  border: "#242a2e", // section rules
+  "border-subtle": "#1b2023", // dividers inside a group
+  "border-strong": "#39424a", // globe edge, emphasis rules
+
+  "text-primary": "#e8e5e0", // headings, key values, the hero trace itself
+  "text-lead": "#b6b3ac", // lead paragraph under the h1
+  "text-secondary": "#9a978f", // body copy
+  "text-muted": "#87847d", // labels, captions, axis text — do not go darker
+
+  // One accent. Amber means live, interactive, or current — never decoration.
+  // The previous #3ecf8e was Supabase's brand green exactly, which is a large
+  // part of why the old site read as a template.
+  accent: "#e0a355",
+  "accent-hover": "#f0bd7d",
+  "accent-dim": "#6b4d24", // borders on accent-tinted chips
+  "accent-wash": "#2a1f10", // accent-tinted fills
+};
+
+// Legacy keys from the "Terminal OS" palette, aliased onto the new tokens so
+// pages still render while they are rebuilt page by page. Three separate accent
+// hues (terminal / signal / cyan) all collapse onto the single accent, which is
+// the point of the new system. DELETE these once no component references them.
+const deprecated = {
+  background: tokens.bg,
+  "surface-container-lowest": tokens["surface-sunken"],
+  "surface-container-low": tokens.surface,
+  "surface-container": tokens.surface,
+  "surface-container-high": tokens.border,
+  "surface-container-highest": tokens["border-strong"],
+  "surface-bright": tokens["border-strong"],
+  "terminal-header": tokens.surface,
+  terminal: tokens.accent,
+  "terminal-dim": tokens.accent,
+  signal: tokens.accent,
+  cyan: tokens.accent,
+  "on-surface": tokens["text-primary"],
+  "on-surface-variant": tokens["text-secondary"],
+  outline: tokens["text-muted"],
+  "outline-variant": tokens.border,
+};
+
 module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,72 +60,58 @@ module.exports = {
   ],
   theme: {
     extend: {
-      colors: {
-        // Terminal OS palette
-        background: "#020617", // slate-950 — canvas (matches Stitch render)
-        surface: "#0f1419",
-        "surface-container-lowest": "#0a0f14",
-        "surface-container-low": "#171c21",
-        "surface-container": "#1b2025",
-        "surface-container-high": "#252a30",
-        "surface-container-highest": "#30353b",
-        "surface-bright": "#353a3f",
-        "terminal-header": "#1e293b",
+      colors: { ...tokens, ...deprecated },
 
-        // Brand accents
-        terminal: "#00ffc2", // primary teal — actions, active state
-        "terminal-dim": "#00e1ab",
-        signal: "#ffe600", // secondary yellow — warnings, highlights
-        cyan: "#22d3ee", // tertiary cyan — links, variables (matches Stitch render)
-
-        // Foreground
-        "on-surface": "#dee3ea",
-        "on-surface-variant": "#b9cbc1",
-        outline: "#83958c",
-        "outline-variant": "#3a4a43",
-      },
       fontFamily: {
         display: ["var(--font-space-grotesk)", "ui-sans-serif", "system-ui"],
+        sans: ["var(--font-plex-sans)", "ui-sans-serif", "system-ui"],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],
       },
+
+      // 12 steps, and nothing between them. `-m` variants are the mobile sizes
+      // from the token sheet; anything without one is the same at both widths.
       fontSize: {
-        "headline-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "headline-lg-mobile": ["40px", { lineHeight: "1.1", fontWeight: "700" }],
-        "headline-md": ["32px", { lineHeight: "1.2", fontWeight: "600" }],
-        "code-display": ["48px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "500" }],
-        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
-        "body-md": ["15px", { lineHeight: "1.6", fontWeight: "400" }],
-        "label-md": ["13px", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "500" }],
-        "label-sm": ["11px", { lineHeight: "1.4", fontWeight: "500" }],
+        "display-xl": ["96px", { lineHeight: "0.95", letterSpacing: "-0.045em", fontWeight: "700" }],
+        "display-xl-m": ["44px", { lineHeight: "0.98", letterSpacing: "-0.04em", fontWeight: "700" }],
+        "display-l": ["84px", { lineHeight: "0.98", letterSpacing: "-0.04em", fontWeight: "700" }],
+        "display-l-m": ["40px", { lineHeight: "1.0", letterSpacing: "-0.035em", fontWeight: "700" }],
+        "display-m": ["46px", { lineHeight: "1.05", letterSpacing: "-0.03em", fontWeight: "700" }],
+        "display-m-m": ["34px", { lineHeight: "1.1", letterSpacing: "-0.025em", fontWeight: "700" }],
+        "heading-l": ["34px", { lineHeight: "1.15", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "heading-l-m": ["25px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "heading-m": ["26px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "heading-m-m": ["21px", { lineHeight: "1.25", letterSpacing: "-0.015em", fontWeight: "700" }],
+        "heading-s": ["22px", { lineHeight: "1.25", letterSpacing: "-0.01em", fontWeight: "700" }],
+        "heading-s-m": ["19px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "700" }],
+        "body-l": ["18px", { lineHeight: "1.55", fontWeight: "400" }],
+        "body-l-m": ["16px", { lineHeight: "1.55", fontWeight: "400" }],
+        "body-m": ["15px", { lineHeight: "1.65", fontWeight: "400" }],
+        "mono-m": ["13px", { lineHeight: "1.9", fontWeight: "400" }],
+        "mono-s": ["12px", { lineHeight: "1.7", fontWeight: "400" }],
+        "mono-xs": ["11px", { lineHeight: "1.7", fontWeight: "400" }],
+        label: ["10px", { lineHeight: "1.4", letterSpacing: "0.14em", fontWeight: "500" }],
       },
+
       spacing: {
         gutter: "24px",
-        "margin-desktop": "48px",
-        "margin-mobile": "20px",
+        "margin-desktop": "72px", // page padding on the 1440 artboards
+        "margin-mobile": "22px",
         "container-max": "1440px",
       },
+
+      // Radius is 0 everywhere. Corners are not a design lever in this system.
       borderRadius: {
-        DEFAULT: "0.25rem",
-        sm: "0.125rem",
-        md: "0.375rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
+        none: "0",
+        DEFAULT: "0",
+        sm: "0",
+        md: "0",
+        lg: "0",
+        xl: "0",
+        full: "9999px", // dots and the status pill only
       },
-      boxShadow: {
-        glow: "0 0 20px rgba(0, 255, 194, 0.15)",
-        "glow-lg": "0 0 40px rgba(0, 255, 194, 0.25)",
-        terminal: "0 20px 50px -12px rgba(0, 0, 0, 0.5)",
-      },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        grid: "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
-      },
-      backgroundSize: {
-        grid: "24px 24px",
-        "grid-lg": "48px 48px",
-      },
+
+      // Rules are 1px. There is no 2px border in the system.
+      borderWidth: { DEFAULT: "1px" },
     },
   },
   plugins: [],

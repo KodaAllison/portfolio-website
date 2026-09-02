@@ -1,4 +1,4 @@
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import about from "../data/about.json";
@@ -8,6 +8,16 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+// Prose face. The old site set body copy in mono, which is a large part of why
+// it read as a terminal skin rather than a site; Plex Sans carries every
+// paragraph now and mono is reserved for data, labels and identifiers.
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-plex-sans",
   display: "swap",
 });
 
@@ -79,8 +89,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-mono bg-background text-on-surface antialiased">
+    <html lang="en" className={`${spaceGrotesk.variable} ${plexSans.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans bg-bg text-text-primary antialiased">
         {children}
         <Analytics />
       </body>

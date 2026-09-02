@@ -2,30 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* The same tokens as tailwind.config.js, exposed as custom properties so that
+   contexts Tailwind cannot reach can still read them: SVG fills and strokes,
+   and the globe's canvas, which paints with getComputedStyle rather than
+   hardcoded hex so it tracks this sheet. */
 :root {
-  --background: #020617;
-  --surface: #0f1419;
-  --on-surface: #dee3ea;
-  --terminal: #00ffc2;
-  --signal: #ffe600;
-  --cyan: #22d3ee;
+  --bg: #0d0f11;
+  --surface: #14171a;
+  --surface-sunken: #0a0c0d;
+  --land: #262b2f;
+
+  --border: #242a2e;
+  --border-subtle: #1b2023;
+  --border-strong: #39424a;
+
+  --text-primary: #e8e5e0;
+  --text-lead: #b6b3ac;
+  --text-secondary: #9a978f;
+  --text-muted: #87847d;
+
+  --accent: #e0a355;
+  --accent-hover: #f0bd7d;
+  --accent-dim: #6b4d24;
+  --accent-wash: #2a1f10;
 }
 
 html,
 body {
-  background-color: var(--background);
-  color: var(--on-surface);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-color: var(--bg);
+  color: var(--text-primary);
+}
+
+/* Motion is opt-in per element and always has a reduced-motion answer. This is
+   the global floor: anything that slipped through stops moving. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
+  /* DEPRECATED — terminal chrome, on components being removed. Delete with
+     TerminalWindow.jsx. Repointed at --accent so they stop painting teal. */
   .terminal-shadow {
     box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
   }
@@ -33,7 +56,7 @@ body {
   .blink-cursor::after {
     content: "_";
     animation: blink 1s step-end infinite;
-    color: var(--terminal);
+    color: var(--accent);
   }
 
   @keyframes blink {
