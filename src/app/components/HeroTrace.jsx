@@ -16,7 +16,7 @@ import {
 
    Deliberately a server component with no "use client". The draw-on is
    stroke-dashoffset, the annotation stagger is animation-delay and the endpoint
-   is a static dot — none of that needs JavaScript, and keeping it out means the
+   is a CSS-timed dot — none of that needs JavaScript, and keeping it out means the
    trace ships inside the HTML: no layout shift, no flash of an empty hero, and
    it still renders with JS disabled. It is also almost certainly part of the
    LCP, so it must not wait on a bundle. */
@@ -26,6 +26,29 @@ import {
 // render here rather than against a copy of them.
 const { w: W } = HERO_BOX;
 const VIEW_H = 306; // matches the artboard; the below tier baselines at 296.4
+
+function TraceLine({ d }) {
+  const stroke = {
+    d,
+    fill: "none",
+    stroke: "var(--text-primary)",
+    strokeOpacity: "0.92",
+    strokeWidth: "2",
+    vectorEffect: "non-scaling-stroke",
+    strokeLinejoin: "round",
+    strokeLinecap: "round",
+  };
+
+  return (
+    <>
+      {/* Chromium can leave the tail of a pathLength-normalised dash unpainted
+          even at dashoffset 0. This undashed layer takes over once the draw
+          finishes, so the persistent line always reaches its endpoint. */}
+      <path className="hero-trace-final" {...stroke} />
+      <path className="hero-trace-line" pathLength="1" {...stroke} />
+    </>
+  );
+}
 
 /* The phone chart: the line, its full stop, and nothing else.
 
@@ -54,18 +77,7 @@ function CompactTrace({ series, yMax, label }) {
         stroke="var(--border)"
         strokeWidth="1"
       />
-      <path
-        className="hero-trace-line"
-        d={d}
-        pathLength="1"
-        fill="none"
-        stroke="var(--text-primary)"
-        strokeOpacity="0.92"
-        strokeWidth="2"
-        vectorEffect="non-scaling-stroke"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
+      <TraceLine d={d} />
       <circle className="hero-pulse" cx={last.x} cy={last.y} r="4.5" fill="none" stroke="var(--accent)" aria-hidden="true" />
       <circle
         className="hero-endpoint"
@@ -73,7 +85,6 @@ function CompactTrace({ series, yMax, label }) {
         cy={last.y}
         r="4.5"
         fill="var(--accent)"
-        style={{ animationDelay: "2.6s" }}
       />
     </svg>
   );
@@ -127,18 +138,7 @@ export default function HeroTrace({ series }) {
 
       {/* pathLength normalises the dash units to 1, so the draw-on keyframe is
           correct regardless of how long the real path turns out to be. */}
-      <path
-        className="hero-trace-line"
-        d={d}
-        pathLength="1"
-        fill="none"
-        stroke="var(--text-primary)"
-        strokeOpacity="0.92"
-        strokeWidth="2"
-        vectorEffect="non-scaling-stroke"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
+      <TraceLine d={d} />
 
       {labels.map(({ month, tier, x, textAnchor, lines, point, leader }) => (
         <g
@@ -184,8 +184,9 @@ export default function HeroTrace({ series }) {
       </text>
 
       {/* The trace's full stop: the artboard's 10px amber dot, which sits on
-          the final point rather than in the headline. It arrives with the line
-          and then holds — the one element allowed to draw the eye to "now". */}
+          the final point rather than in the headline. It arrives just after
+          the line settles and then holds — the one element allowed to draw
+          the eye to "now". */}
       {/* The artboard pulses this with an expanding box-shadow ring, which does
           not apply to SVG shapes — so the ring is a real concentric circle that
           animates its radius instead. It is the only looping animation in the
@@ -205,12 +206,10 @@ export default function HeroTrace({ series }) {
         cy={last.y}
         r="5"
         fill="var(--accent)"
-        style={{ animationDelay: "2.6s" }}
       />
 
       <text
-        className="hero-marker fill-ink font-mono"
-        style={{ animationDelay: "2.6s" }}
+        className="hero-current-label hero-marker fill-ink font-mono"
         x={W}
         y={last.y - 20}
         textAnchor="end"

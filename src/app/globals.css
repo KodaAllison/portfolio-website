@@ -73,6 +73,10 @@
 
   /* -- motion ------------------------------------------------------------ */
   --draw-hero: 2400ms;
+  --draw-hero-delay: 300ms;
+  --reveal-hero-trace: 2700ms;
+  --reveal-hero-endpoint: 3200ms;
+  --start-hero-pulse: 3650ms;
   --ease-hero: cubic-bezier(0.65, 0, 0.35, 1);
   --fade-label: 450ms;
   --spin-globe: 12s;
@@ -154,11 +158,28 @@ body {
 .hero-trace-line {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: hero-draw var(--draw-hero) var(--ease-hero) 300ms forwards;
+  animation: hero-draw var(--draw-hero) var(--ease-hero) var(--draw-hero-delay) forwards;
+}
+
+.hero-trace-final {
+  opacity: 0;
+  animation: hero-trace-finish 1ms step-end var(--reveal-hero-trace) forwards;
+}
+
+@keyframes hero-trace-finish {
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes hero-draw {
+  0%,
+  99.9% {
+    opacity: 1;
+  }
+
   to {
+    opacity: 0;
     stroke-dashoffset: 0;
   }
 }
@@ -183,6 +204,11 @@ body {
   transform-box: fill-box;
   transform-origin: center;
   animation: hero-endpoint var(--fade-label) var(--ease-spine) forwards;
+  animation-delay: var(--reveal-hero-endpoint);
+}
+
+.hero-current-label {
+  animation-delay: var(--reveal-hero-endpoint);
 }
 
 @keyframes hero-endpoint {
@@ -208,7 +234,7 @@ body {
   .hero-pulse {
     transform-box: fill-box;
     transform-origin: center;
-    animation: hero-pulse 2400ms ease-out 3200ms infinite;
+    animation: hero-pulse 2400ms ease-out var(--start-hero-pulse) infinite;
   }
 }
 
@@ -226,6 +252,7 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-trace-line,
+  .hero-trace-final,
   .hero-marker,
   .hero-endpoint {
     animation: none;
@@ -239,7 +266,12 @@ body {
   /* Final state, not the initial one: reduced motion means arrive instantly,
      never disappear. */
   .hero-trace-line {
+    opacity: 0;
     stroke-dashoffset: 0;
+  }
+
+  .hero-trace-final {
+    opacity: 1;
   }
 
   .hero-marker {
