@@ -1,43 +1,199 @@
-const VISITED_POINTS = [
-  [91, 82], [105, 72], [77, 104], [130, 96], [151, 80], [166, 88], [175, 101],
-  [158, 118], [178, 132], [193, 98], [211, 111], [224, 145], [246, 185], [174, 169],
-];
+"use client";
 
-export default function TravelGlobe() {
+import { useEffect, useRef, useState } from "react";
+import world from "world-atlas/countries-110m.json";
+import { topologyFeatureCollection } from "../../lib/topology";
+
+function secondsFromToken(value, fallback) {
+  const seconds = Number.parseFloat(value);
+  return Number.isFinite(seconds) ? seconds : fallback;
+}
+
+export default function TravelGlobe({ countries }) {
+  const frameRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [mapState, setMapState] = useState("loading");
+  const countryNames = countries.map((country) => country.name).join(", ");
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const container = canvas?.parentElement;
+    if (!canvas || !container) return undefined;
+
+    let disposed = false;
+    let resizeObserver;
+    let motionQuery;
+    let desktopQuery;
+    let applyMotionPreference;
+
+    async function initialise() {
+      try {
+        const d3 = await import("d3-geo");
+        const geography = topologyFeatureCollection(world, "countries");
+        if (disposed || !Array.isArray(geography.features)) return;
+
+        const context = canvas.getContext("2d");
+        const rootStyles = getComputedStyle(document.documentElement);
+        const colours = {
+          accent: rootStyles.getPropertyValue("--accent").trim(),
+          accentDim: rootStyles.getPropertyValue("--accent-dim").trim(),
+          border: rootStyles.getPropertyValue("--border").trim(),
+          borderStrong: rootStyles.getPropertyValue("--border-strong").trim(),
+          surface: rootStyles.getPropertyValue("--surface").trim(),
+          sunken: rootStyles.getPropertyValue("--surface-sunken").trim(),
+        };
+        const spinSeconds = secondsFromToken(
+          rootStyles.getPropertyValue("--spin-globe"),
+          12,
+        );
+        const visited = new Set(countries.map((country) => country.name));
+        const projection = d3.geoOrthographic().clipAngle(90).precision(0.4);
+        const graticule = d3.geoGraticule10();
+        let size = 0;
+        let currentRotation = 28;
+        let startedAt = 0;
+        let lastFrame = 0;
+
+        function resize() {
+          size = Math.min(container.clientWidth, 420);
+          const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.round(size * pixelRatio);
+          canvas.height = Math.round(size * pixelRatio);
+          canvas.style.width = `${size}px`;
+          canvas.style.height = `${size}px`;
+          context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+          projection.translate([size / 2, size / 2]).scale(size * 0.44);
+        }
+
+        function draw(rotation) {
+          projection.rotate([rotation, -28]);
+          const path = d3.geoPath(projection, context);
+          context.clearRect(0, 0, size, size);
+
+          context.beginPath();
+          path({ type: "Sphere" });
+          context.fillStyle = colours.sunken;
+          context.fill();
+
+          context.beginPath();
+          path(graticule);
+          context.strokeStyle = colours.border;
+          context.lineWidth = 0.7;
+          context.stroke();
+
+          for (const feature of geography.features) {
+            const isVisited = visited.has(feature.properties?.name);
+            context.beginPath();
+            path(feature);
+            context.fillStyle = isVisited ? colours.accentDim : colours.surface;
+            context.fill();
+            context.strokeStyle = isVisited ? colours.accent : colours.borderStrong;
+            context.lineWidth = isVisited ? 1.25 : 0.55;
+            context.stroke();
+          }
+
+          context.beginPath();
+          path({ type: "Sphere" });
+          context.strokeStyle = colours.borderStrong;
+          context.lineWidth = 1.5;
+          context.stroke();
+        }
+
+        resize();
+        motionQuery = window.matchMedia("(prefers-reduced-motion: no-preference)");
+        desktopQuery = window.matchMedia("(min-width: 768px)");
+
+        function stopAnimation() {
+          if (frameRef.current) cancelAnimationFrame(frameRef.current);
+          frameRef.current = null;
+        }
+
+        function animate(now) {
+          if (now - lastFrame >= 1000 / 16) {
+            const progress = ((now - startedAt) / (spinSeconds * 1000)) % 1;
+            currentRotation = 28 + progress * 360;
+            draw(currentRotation);
+            lastFrame = now;
+          }
+          frameRef.current = requestAnimationFrame(animate);
+        }
+
+        applyMotionPreference = function applyMotionPreferenceHandler() {
+          stopAnimation();
+          if (motionQuery.matches && desktopQuery.matches) {
+            startedAt = performance.now();
+            lastFrame = 0;
+            frameRef.current = requestAnimationFrame(animate);
+          } else {
+            currentRotation = 28;
+            draw(currentRotation);
+          }
+        };
+
+        if (motionQuery.matches && desktopQuery.matches) {
+          startedAt = performance.now();
+          frameRef.current = requestAnimationFrame(animate);
+        } else {
+          draw(currentRotation);
+        }
+
+        motionQuery.addEventListener("change", applyMotionPreference);
+        desktopQuery.addEventListener("change", applyMotionPreference);
+
+        resizeObserver = new ResizeObserver(() => {
+          resize();
+          draw(currentRotation);
+        });
+        resizeObserver.observe(container);
+        setMapState("ready");
+      } catch (error) {
+        if (!disposed) setMapState("error");
+      }
+    }
+
+    initialise();
+
+    return () => {
+      disposed = true;
+      resizeObserver?.disconnect();
+      if (applyMotionPreference) {
+        motionQuery?.removeEventListener("change", applyMotionPreference);
+        desktopQuery?.removeEventListener("change", applyMotionPreference);
+      }
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+    };
+  }, [countries]);
+
   return (
-    <svg viewBox="0 0 320 320" className="mx-auto aspect-square w-full max-w-[360px]" role="img" aria-label="Globe marking fourteen countries visited across four continents">
-      <defs>
-        <clipPath id="globe-sphere"><circle cx="160" cy="160" r="132" /></clipPath>
-      </defs>
-
-      <circle cx="160" cy="160" r="132" fill="var(--surface-sunken)" stroke="var(--border-strong)" strokeWidth="1.5" />
-      <g clipPath="url(#globe-sphere)" className="globe-drift">
-        <g fill="none" stroke="var(--border)" strokeWidth="1">
-          <ellipse cx="160" cy="160" rx="132" ry="44" />
-          <ellipse cx="160" cy="160" rx="132" ry="88" />
-          <ellipse cx="160" cy="160" rx="52" ry="132" />
-          <ellipse cx="160" cy="160" rx="98" ry="132" />
-          <line x1="28" y1="160" x2="292" y2="160" />
-          <line x1="160" y1="28" x2="160" y2="292" />
-        </g>
-
-        <g fill="var(--surface)" stroke="var(--border-strong)" strokeWidth="1">
-          <path d="M48 91 63 66 91 49 124 52 137 68 125 84 103 91 93 113 73 122 58 111Z" />
-          <path d="M106 129 128 137 139 158 131 181 119 199 113 230 98 250 91 219 82 190 88 157Z" />
-          <path d="M144 72 166 59 187 66 188 79 171 88 158 84Z" />
-          <path d="M148 101 175 94 196 107 202 137 188 164 180 205 159 226 145 198 137 164 143 135Z" />
-          <path d="M186 71 221 59 258 73 278 98 267 122 238 118 222 135 199 119 190 94Z" />
-          <path d="M233 190 258 183 276 198 269 221 243 229 225 213Z" />
-          <path d="M278 139 288 144 284 158 276 153Z" />
-        </g>
-
-        <path d="M91 82 C 124 51, 144 110, 166 88 S 214 78, 246 185" fill="none" stroke="var(--accent-dim)" strokeWidth="1.5" strokeDasharray="3 6" className="globe-route" />
-        {VISITED_POINTS.map(([x, y], index) => (
-          <circle key={`${x}-${y}`} cx={x} cy={y} r={index === 4 ? 4 : 2.8} fill="var(--accent)" opacity={index === 4 ? 1 : 0.78} />
-        ))}
-      </g>
-      <circle cx="160" cy="160" r="132" fill="none" stroke="var(--border-strong)" strokeWidth="1.5" />
-      <circle cx="151" cy="80" r="10" fill="none" stroke="var(--accent)" strokeOpacity="0.28" className="globe-home-pulse" />
-    </svg>
+    <div>
+      <div className="relative mx-auto aspect-square w-full max-w-[420px]">
+        <svg
+          viewBox="0 0 320 320"
+          className={`absolute inset-0 h-full w-full ${mapState === "ready" ? "hidden" : "block"}`}
+          role="img"
+          aria-label="Static globe fallback; live country codes are listed below"
+        >
+          <circle cx="160" cy="160" r="132" fill="var(--surface-sunken)" stroke="var(--border-strong)" strokeWidth="1.5" />
+          <g fill="none" stroke="var(--border)" strokeWidth="1">
+            <ellipse cx="160" cy="160" rx="132" ry="44" />
+            <ellipse cx="160" cy="160" rx="132" ry="88" />
+            <ellipse cx="160" cy="160" rx="52" ry="132" />
+            <ellipse cx="160" cy="160" rx="98" ry="132" />
+          </g>
+        </svg>
+        <canvas
+          ref={canvasRef}
+          className={mapState === "ready" ? "block" : "invisible"}
+          role="img"
+          aria-label={`${countries.length} countries highlighted from HoliTrackr: ${countryNames}`}
+        />
+        {mapState === "error" ? (
+          <p className="absolute inset-x-0 bottom-space-5 text-center font-mono text-mono-xs text-ink-muted">Static view · country list remains available</p>
+        ) : null}
+      </div>
+      <p className="mt-space-3 font-mono text-mono-xs leading-relaxed text-ink-muted">
+        {countries.map((country) => country.alpha3).join(" · ")}
+      </p>
+    </div>
   );
 }

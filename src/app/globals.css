@@ -129,53 +129,6 @@ body {
   }
 }
 
-.book-spine {
-  transform-origin: bottom center;
-  transition: transform var(--tilt-spine) var(--ease-spine), border-color var(--hover) ease;
-}
-
-.book-spine:hover {
-  transform: rotate(-7deg) translateY(-8px);
-  border-color: var(--accent);
-}
-
-.book-spine-current {
-  transform: rotate(-4deg) translateY(-6px);
-}
-
-.globe-route {
-  animation: globe-route 9s linear infinite;
-}
-
-.globe-home-pulse {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: globe-home-pulse 2.8s ease-out infinite;
-}
-
-@keyframes globe-route {
-  to { stroke-dashoffset: -90; }
-}
-
-@keyframes globe-home-pulse {
-  0%, 100% { opacity: 0.2; transform: scale(0.7); }
-  55% { opacity: 0.65; transform: scale(1.25); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .book-spine,
-  .book-spine-current,
-  .book-spine:hover {
-    transform: none;
-    transition: none;
-  }
-
-  .globe-route,
-  .globe-home-pulse {
-    animation: none;
-  }
-}
-
 /* The previous build painted a 40px linear-gradient grid across the whole
    body. A faint grid behind everything is one of the loudest generated-site
    tells there is, and it actively fights a page whose structure is supposed to

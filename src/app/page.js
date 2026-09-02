@@ -14,6 +14,7 @@ import projects from "../data/projects.json";
 import timeline from "../data/timeline.json";
 import { fetchStravaData } from "../lib/strava";
 import { fetchGitHubData, relativeTime } from "../lib/github";
+import { fetchHoliTrackrStats } from "../lib/holitrackr";
 
 function Metric({ value, label }) {
   return (
@@ -44,24 +45,31 @@ function DataRoute({ label, route, note }) {
 }
 
 export default async function Home() {
-  let strava;
-  let github;
-
-  try {
-    strava = await fetchStravaData();
-  } catch {
-    strava = undefined;
-  }
-
-  try {
-    github = await fetchGitHubData();
-  } catch {
-    github = undefined;
-  }
+  const [stravaResult, githubResult, travelResult] = await Promise.allSettled([
+    fetchStravaData(),
+    fetchGitHubData(),
+    fetchHoliTrackrStats(),
+  ]);
+  const strava = stravaResult.status === "fulfilled" ? stravaResult.value : undefined;
+  const github = githubResult.status === "fulfilled" ? githubResult.value : undefined;
+  const liveTravel = travelResult.status === "fulfilled" ? travelResult.value : undefined;
+  const fallbackCountries = about.travel?.countries ?? [];
+  const travel = liveTravel
+    ? { ...liveTravel, source: "live" }
+    : fallbackCountries.length
+      ? {
+          countries: fallbackCountries,
+          countryCount: fallbackCountries.length,
+          continentCount: new Set(fallbackCountries.map((country) => country.continent)).size,
+          generatedAt: about.travel.generatedAt,
+          source: "snapshot",
+        }
+      : undefined;
 
   const sources = [
     strava?.generated_at && { name: "strava", age: relativeTime(strava.generated_at) },
     github?.last_commit_at && { name: "github", age: relativeTime(github.last_commit_at) },
+    liveTravel?.generatedAt && { name: "holitrackr", age: relativeTime(liveTravel.generatedAt) },
   ].filter(Boolean);
   const travelProject = projects.find((project) => project.id === "holitrackr");
 
@@ -111,24 +119,30 @@ export default async function Home() {
 
       <section className="px-5 pt-[76px] md:px-[72px]">
         <SectionHeading title="Away from the keyboard" />
-        <div className="grid border-y border-line md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line">
-          <article className="py-space-6 md:pr-space-6">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Travel</p>
-            <div className="mt-space-4 grid items-center gap-space-6 sm:grid-cols-[minmax(0,1fr)_150px]">
-              <TravelGlobe />
-              <div>
-                <Metric value={about.stats.countries_visited} label="countries" />
-                <div className="mt-space-6"><Metric value="4" label="continents" /></div>
-                <p className="mt-space-6 font-mono text-mono-s text-ink-secondary"><span className="text-ink-muted">home →</span> Glasgow</p>
-                {travelProject?.previewUrl ? (
-                  <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">open the map →</Link>
-                ) : null}
+        <div className={`grid border-y border-line ${travel ? "md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line" : ""}`}>
+          {travel ? (
+            <article className="py-space-6 md:pr-space-6">
+              <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">
+                {travel.source === "live"
+                  ? "Travel · live from HoliTrackr"
+                  : `Travel · snapshot ${relativeTime(travel.generatedAt)}`}
+              </p>
+              <div className="mt-space-4 grid items-center gap-space-6 sm:grid-cols-[minmax(0,1fr)_150px]">
+                <TravelGlobe countries={travel.countries} />
+                <div>
+                  <Metric value={travel.countryCount} label="countries" />
+                  <div className="mt-space-6"><Metric value={travel.continentCount} label="continents" /></div>
+                  <p className="mt-space-6 font-mono text-mono-s text-ink-secondary"><span className="text-ink-muted">home →</span> Glasgow</p>
+                  {travelProject?.previewUrl ? (
+                    <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">open the map →</Link>
+                  ) : null}
+                </div>
               </div>
-            </div>
-          </article>
-          <article className="border-t border-line py-space-6 md:border-0 md:pl-space-6">
+            </article>
+          ) : null}
+          <article className={travel ? "border-t border-line py-space-6 md:border-0 md:pl-space-6" : "py-space-6"}>
             <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reading</p>
-            <div className="mt-space-4"><Bookshelf /></div>
+            <div className="mt-space-4"><Bookshelf current={about.currently.reading} /></div>
           </article>
         </div>
         <article className="flex flex-col gap-space-5 border-b border-line py-space-5 md:flex-row md:items-center">
@@ -165,6 +179,7 @@ export default async function Home() {
           <div className="border-t border-line">
             <DataRoute label="Running" route={["strava", "cloudflare worker", "KV", "this page"]} note="my worker · 3-hourly cron" />
             <DataRoute label="Commits" route={["github api", "48-day window", "contribution data"]} note="commits API, not the events feed" />
+            <DataRoute label="Travel" route={["holitrackr", "public stats", "country geometry", "canvas"]} note="read-only owner snapshot · one-hour edge cache" />
           </div>
           <div className="border-t border-line pt-space-4">
             <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">This site</p>

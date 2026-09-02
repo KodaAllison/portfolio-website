@@ -61,11 +61,11 @@ export default function ContactPage() {
           </ul>
         </div>
         <div>
-          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reply times</h2>
+          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Working together</h2>
           <dl className="mt-space-4 border-t border-line">
-            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Weekdays</dt><dd className="font-display text-heading-s text-ink">~24h</dd></div>
-            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Weekends</dt><dd className="font-display text-heading-s text-ink">~48h</dd></div>
-            <div className="flex items-baseline justify-between border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Timezone</dt><dd className="font-display text-heading-s text-ink">GMT/BST</dd></div>
+            <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Rhythm</dt><dd className="font-display text-heading-s text-ink">Asynchronous</dd></div>
+            <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Timezone</dt><dd className="font-display text-heading-s text-ink">Glasgow · GMT/BST</dd></div>
+            <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Start with</dt><dd className="font-display text-heading-s text-ink">A short email</dd></div>
           </dl>
         </div>
       </section>

@@ -21,6 +21,18 @@ function goalLabel(time) {
   return time.endsWith(":00") ? time.slice(0, -3) : time;
 }
 
+function goalDelta(current, target) {
+  const difference = current - target;
+  if (difference <= 0) return "goal met";
+  const hours = Math.floor(difference / 3600);
+  const minutes = Math.floor((difference % 3600) / 60);
+  const seconds = difference % 60;
+  return [hours, minutes, seconds]
+    .filter((part, index) => part > 0 || index > 0)
+    .map((part, index) => (index === 0 ? String(part) : String(part).padStart(2, "0")))
+    .join(":");
+}
+
 function Stat({ label, value }) {
   return (
     <div className="border-t border-line pt-space-4">
@@ -50,7 +62,9 @@ export default async function RunPage() {
       <Navbar />
 
       <header className="border-b border-line px-5 pb-space-7 pt-[88px] md:px-[72px] md:pb-14 md:pt-28">
-        <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-accent">Running · via Strava</p>
+        <p className={`font-mono text-mono-xs uppercase tracking-[0.14em] ${strava ? "text-accent" : "text-ink-muted"}`}>
+          {strava ? "Running · live via Strava" : "Running"}
+        </p>
         <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
           Chasing sub-4:00<span className="text-accent">.</span>
         </h1>
@@ -74,7 +88,8 @@ export default async function RunPage() {
             <section className="px-5 pt-[76px] md:px-[72px]">
               <div className="mb-space-5 flex items-baseline justify-between gap-space-3">
                 <h2 className="font-display text-heading-l text-ink">Weekly mileage</h2>
-                <span className="font-mono text-mono-xs text-ink-muted">last {strava.weekly_bars.length} weeks</span>
+                <span className="font-mono text-mono-xs text-ink-muted md:hidden">last {Math.min(8, strava.weekly_bars.length)} weeks</span>
+                <span className="hidden font-mono text-mono-xs text-ink-muted md:inline">last {strava.weekly_bars.length} weeks</span>
               </div>
               <div className="h-[340px] border-y border-line py-space-5">
                 <div className="h-full md:hidden"><WeeklyBars data={strava.weekly_bars.slice(-8)} /></div>
@@ -93,19 +108,16 @@ export default async function RunPage() {
                 {records.map((record) => {
                   const current = timeToSeconds(record.time);
                   const target = timeToSeconds(record.goal);
-                  const progress = Math.max(0, Math.min(100, Math.round(((target * 1.3 - current) / (target * 0.3)) * 100)));
+                  const remaining = goalDelta(current, target);
                   return (
                     <article key={record.distance} className="border-b border-line-subtle py-space-5 md:odd:pr-space-6 md:even:border-l md:even:border-line md:even:pl-space-6">
                       <div className="flex items-baseline justify-between gap-space-4">
                         <h3 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">{record.distance}</h3>
                         <p className="font-display text-heading-m tabular-nums text-ink">{record.time}</p>
                       </div>
-                      <div className="mt-space-4 h-1 bg-surface">
-                        <div className="h-full bg-accent" style={{ width: `${progress}%` }} />
-                      </div>
-                      <div className="mt-space-2 flex justify-between gap-space-4 font-mono text-mono-xs text-ink-muted">
+                      <div className="mt-space-4 flex justify-between gap-space-4 border-t border-line-subtle pt-space-2 font-mono text-mono-xs text-ink-muted">
                         <span>goal sub-{goalLabel(record.goal)}</span>
-                        <span>{progress}%</span>
+                        <span>{remaining === "goal met" ? remaining : `${remaining} to close`}</span>
                       </div>
                       <p className="mt-space-3 text-body-m text-ink-secondary">{record.note} · {record.date}</p>
                     </article>
@@ -119,7 +131,8 @@ export default async function RunPage() {
             <section className="px-5 pt-[76px] md:px-[72px]">
               <div className="mb-space-5 flex items-baseline justify-between gap-space-3">
                 <h2 className="font-display text-heading-l text-ink">Recent activity</h2>
-                <span className="font-mono text-mono-xs text-ink-muted">last {strava.recent_activity.length} runs</span>
+                <span className="font-mono text-mono-xs text-ink-muted md:hidden">last {Math.min(5, strava.recent_activity.length)} runs</span>
+                <span className="hidden font-mono text-mono-xs text-ink-muted md:inline">last {strava.recent_activity.length} runs</span>
               </div>
               <div className="hidden overflow-x-auto border-t border-line md:block">
                 <div className="min-w-[680px]">
@@ -140,7 +153,7 @@ export default async function RunPage() {
                 </div>
               </div>
               <ol className="border-t border-line md:hidden">
-                {strava.recent_activity.map((activity) => (
+                {strava.recent_activity.slice(0, 5).map((activity) => (
                   <li key={`mobile-${activity.date}-${activity.distance_km}`} className="border-b border-line-subtle py-space-4">
                     <div className="flex items-baseline justify-between gap-space-4">
                       <span className="font-mono text-mono-xs text-ink-muted">{activity.date}</span>
@@ -157,16 +170,7 @@ export default async function RunPage() {
             </section>
           ) : null}
         </>
-      ) : (
-        <section className="px-5 pt-[76px] md:px-[72px]">
-          <div className="border-y border-line py-space-6">
-            <p className="font-display text-heading-m text-ink">The live log is between syncs.</p>
-            <p className="mt-space-2 max-w-xl text-body-m text-ink-secondary">
-              The Strava worker did not answer this request, so this page is not substituting old records or zeroes.
-            </p>
-          </div>
-        </section>
-      )}
+      ) : null}
 
       <SiteFooter />
     </main>
