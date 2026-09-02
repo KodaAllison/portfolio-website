@@ -113,11 +113,11 @@ export default async function RunPage() {
             <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
               <span className="block text-cyan">const</span>
               <span className="block text-terminal">running.log</span>
-              <span className="block italic text-on-surface">// chasing sub-4:00.</span>
+              <span className="block italic text-on-surface">{"// chasing sub-4:00."}</span>
             </h1>
 
             <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
-              <span className="text-cyan">// </span>
+              <span className="text-cyan">{"// "}</span>
               live data via strava-worker — synced from Strava every 3h.
             </p>
 

@@ -31,7 +31,7 @@ export default function WeeklyLine({ data = [], className = "" }) {
       <div
         className={`flex min-h-36 flex-1 items-center justify-center border-b border-outline-variant font-mono text-label-sm text-outline ${className}`}
       >
-        // no data
+        {"// no data"}
       </div>
     );
   }

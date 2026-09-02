@@ -111,7 +111,7 @@ export default function ProjectsPage() {
         <div className="mb-12">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="font-mono text-label-md text-cyan">
-              /* 02 · projects */
+              {"/* 02 · projects */"}
             </span>
             <span className="text-outline">•</span>
             <StatusChip color="terminal" pulse>
@@ -257,7 +257,7 @@ export default function ProjectsPage() {
 
                   {/* Description */}
                   <p className="font-mono text-body-md leading-relaxed text-on-surface-variant">
-                    <span className="text-cyan">// </span>
+                    <span className="text-cyan">{"// "}</span>
                     {selected.description}
                   </p>
 
@@ -307,7 +307,7 @@ export default function ProjectsPage() {
                     ) : null}
                     {!selected.previewUrl && !selected.gitUrl ? (
                       <span className="font-mono text-label-sm text-outline">
-                        // no public links
+                        {"// no public links"}
                       </span>
                     ) : null}
                     <span className="ml-auto font-mono text-label-sm text-outline">
@@ -322,7 +322,7 @@ export default function ProjectsPage() {
 
         {/* Footer breadcrumb */}
         <div className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-outline-variant pt-5 font-mono text-label-sm text-outline">
-          <span className="text-cyan">/* eof */</span>
+          <span className="text-cyan">{"/* eof */"}</span>
           <span>{filtered.length} of {projects.length} files shown</span>
           <span>•</span>
           <span>

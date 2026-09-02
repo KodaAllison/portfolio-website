@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import about from "../../data/about.json";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import MenuOverlay from "./MenuOverlay";
 
 // Inline SVGs (formerly @heroicons/react 24/solid Bars3Icon + XMarkIcon)
@@ -37,10 +37,14 @@ const Navbar = () => {
   const pathname = usePathname();
   const [navbarOpen, setNavbarOpen] = useState(false);
 
-  // close the overlay whenever the route changes
-  useEffect(() => {
+  // close the overlay whenever the route changes. Adjusted during render rather
+  // than in an effect: React re-runs this component before committing, so the
+  // stale-open overlay never paints and we avoid a cascading render pass.
+  const [openedOnPath, setOpenedOnPath] = useState(pathname);
+  if (openedOnPath !== pathname) {
+    setOpenedOnPath(pathname);
     setNavbarOpen(false);
-  }, [pathname]);
+  }
 
   const isActive = (path) =>
     path === "/" ? pathname === "/" : pathname?.startsWith(path);

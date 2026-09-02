@@ -160,7 +160,7 @@ export default function ContactPage() {
       <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-20 pt-24 md:px-margin-desktop">
         {/* route stamp */}
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <span className="font-mono text-label-md text-cyan">/* 04 · contact */</span>
+          <span className="font-mono text-label-md text-cyan">{"/* 04 · contact */"}</span>
           <span className="text-outline">•</span>
           <span className="font-mono text-label-sm text-on-surface-variant">contact.sh</span>
         </div>
@@ -170,7 +170,7 @@ export default function ContactPage() {
           <span className="block text-terminal">hello.</span>
         </h1>
         <p className="mt-6 max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
-          <span className="text-cyan">// </span>
+          <span className="text-cyan">{"// "}</span>
           grab my email below, or find me on the socials. work, runs, or anything
           in between — I read everything.
         </p>
@@ -208,7 +208,7 @@ export default function ContactPage() {
               <CopyField value={social.email.address} />
 
               <p className="font-mono text-label-sm text-outline">
-                <span className="text-cyan">// </span>
+                <span className="text-cyan">{"// "}</span>
                 click to copy — nothing stored, nothing tracked. or hit the
                 <span className="text-signal"> mailto</span> card below to open
                 your mail client.
@@ -218,7 +218,7 @@ export default function ContactPage() {
             {/* typical response window */}
             <div className="mt-8 border-t border-outline-variant pt-6">
               <div className="mb-2 font-mono text-[10px] uppercase tracking-widest text-outline">
-                // typical response window
+                {"// typical response window"}
               </div>
               <div className="grid grid-cols-3 gap-2 font-mono text-label-sm">
                 <div className="border border-outline-variant bg-surface-container-low p-2">
