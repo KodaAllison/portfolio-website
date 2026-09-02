@@ -39,6 +39,11 @@ test("live personal records reach the hero annotations", () => {
   assert.match(component, /Personal bests: \$\{raceSummary\}/);
 });
 
+test("race labels use a background halo instead of a callout box or leader", () => {
+  assert.match(css, /\.hero-marker-race text\s*\{[\s\S]*?paint-order:\s*stroke fill/);
+  assert.match(css, /\.hero-marker-race text\s*\{[\s\S]*?stroke:\s*var\(--bg\)/);
+});
+
 test("the current-point reveal cannot start before the trace finishes drawing", () => {
   const drawDuration = milliseconds(cssToken("--draw-hero"));
   const drawDelay = milliseconds(

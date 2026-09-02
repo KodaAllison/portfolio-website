@@ -176,6 +176,16 @@ body {
   animation: hero-fade var(--fade-label) ease forwards;
 }
 
+/* Race labels sit directly beside their diamonds. The background-colour
+   stroke is a typographic knockout, not a box: it keeps the text legible when
+   a neighbouring part of the trace passes behind it. */
+.hero-marker-race text {
+  paint-order: stroke fill;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
 @keyframes hero-fade {
   to {
     opacity: 1;

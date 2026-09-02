@@ -134,6 +134,14 @@ test("race PBs use blue trace markers without duplicating an event split", () =>
   assert.ok(races.every((label) => label.marker.shape === "diamond"));
   assert.ok(races.every((label) => label.marker.y === label.point.y));
   assert.ok(races.every((label) => label.leader === null));
+  assert.ok(races.every((label) => label.lines[0].y === label.marker.y - 12));
+  assert.ok(
+    races.every((label) =>
+      label.textAnchor === "end"
+        ? label.x === label.marker.x - 9
+        : label.x === label.marker.x + 9,
+    ),
+  );
   assert.equal(firstOverlap(races), null);
 });
 
@@ -142,11 +150,13 @@ test("no two labels overlap within a tier", () => {
   assert.equal(hit, null, hit && `${hit.tier}: "${hit.a.text}" collides with "${hit.b.text}"`);
 });
 
-test("no label is drawn inside the plot band", () => {
+test("career labels are not drawn inside the plot band", () => {
   // The invariant that actually protects the trace. Measured on the ink, not
   // the baseline: a label clears the band only if its ascenders and descenders
   // clear it too.
-  for (const { month, lines } of layout(SERIES.slice(-24), RACE_RECORDS)) {
+  const milestones = layout(SERIES.slice(-24), RACE_RECORDS)
+    .filter(({ kind }) => kind === "milestone");
+  for (const { month, lines } of milestones) {
     for (const { text, y } of lines) {
       const top = y - LABEL_FONT_SIZE;
       const bottom = y + LABEL_FONT_SIZE * 0.3;
