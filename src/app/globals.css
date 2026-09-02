@@ -2,30 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------------------------------------------------------------
+   Design tokens — kodaallison.dev
+   ==========================================================================
+   Source of truth: the "Design tokens" artboard (page-2) of the Portfolio
+   Redesign Directions canvas. Its own header states the contract: these are
+   the only values. If something needs a value that is not on this sheet, that
+   is a design decision, not an implementation one — go and change the sheet.
+
+   Tokens live here as CSS custom properties rather than only in the Tailwind
+   config for two reasons: the globe renders to a <canvas> and has to read its
+   colours back out with getComputedStyle (a Tailwind class cannot help it),
+   and it keeps one grep-able list of every value the site is allowed to use.
+   tailwind.config.js maps utilities onto these vars; it never restates a hex.
+   -------------------------------------------------------------------------- */
+
 :root {
-  --background: #020617;
-  --surface: #0f1419;
-  --on-surface: #dee3ea;
-  --terminal: #00ffc2;
-  --signal: #ffe600;
-  --cyan: #22d3ee;
+  color-scheme: dark;
+
+  /* -- colour ------------------------------------------------------------ */
+  --bg: #0d0f11;              /* page background */
+  --surface: #14171a;         /* raised cards, code cards */
+  --surface-sunken: #0a0c0d;  /* image wells, globe interior */
+
+  --border: #242a2e;          /* section rules, card borders */
+  --border-subtle: #1b2023;   /* dividers inside a card */
+  --border-strong: #39424a;   /* globe edge, emphasis rules */
+
+  --text-primary: #e8e5e0;    /* headings, key values      15.26:1 on bg */
+  --text-lead: #b6b3ac;       /* lead paragraph under h1    9.61:1 on bg */
+  --text-secondary: #9a978f;  /* body copy, descriptions    7.20:1 on bg */
+  --text-muted: #87847d;      /* labels, captions, axis     4.79:1 on bg */
+
+  /* One accent. Amber means live, interactive, or current — never
+     decoration. There is no second hue: no cyan, no yellow, no red-for-error.
+     Status is carried by text, not by colour alone. */
+  --accent: #e0a355;
+  --accent-hover: #f0bd7d;    /* link + CTA hover only */
+  --accent-dim: #6b4d24;      /* borders on accent-tinted chips */
+
+  /* Sequential, single hue, light to dark. Used identically by the commits
+     grid and the runs grid so the two can be compared by eye: same scale,
+     same cell size, same order on both. Never recolour one of them. */
+  --heat-0: #14171a;          /* no activity */
+  --heat-1: #3a2b14;          /* 1 */
+  --heat-2: #6b4d24;          /* 2-3 */
+  --heat-3: #a87838;          /* 4-7 */
+  --heat-4: #e0a355;          /* 8+ */
+
+  /* -- type scale -------------------------------------------------------- */
+  /* Three families, three jobs. Space Grotesk is display and numerals only,
+     IBM Plex Sans is prose only, JetBrains Mono is data, labels, links and
+     anything machine-derived. Never set a paragraph in mono.
+
+     Each step carries its desktop size here and its mobile size in the media
+     query below, so a call site writes one class (`text-display-xl`) and gets
+     the right size at every width. Line height and weight do not change
+     between the two. */
+  --display-xl: 96px;
+  --display-l: 84px;
+  --display-m: 46px;
+  --heading-l: 34px;
+  --heading-m: 26px;
+  --heading-s: 22px;
+  --body-l: 18px;
+  --body-m: 15px;
+  --mono-m: 13px;
+  --mono-s: 12px;
+  --mono-xs: 11px;
+
+  /* -- motion ------------------------------------------------------------ */
+  --draw-hero: 2400ms;
+  --ease-hero: cubic-bezier(0.65, 0, 0.35, 1);
+  --fade-label: 450ms;
+  --spin-globe: 12s;
+  --tilt-spine: 280ms;
+  --ease-spine: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --hover: 150ms;
+  --reveal: 400ms;
+  --reveal-rise: 12px;
+}
+
+/* The sheet gives a second size for every display and heading step. 767px is
+   the switch: it is the same breakpoint the globe uses to decide whether to
+   run its rotation loop at all, and keeping one mobile boundary across the
+   site means "mobile" always means the same thing. */
+@media (max-width: 767px) {
+  :root {
+    --display-xl: 44px;
+    --display-l: 40px;
+    --display-m: 34px;
+    --heading-l: 25px;
+    --heading-m: 21px;
+    --heading-s: 19px;
+    --body-l: 16px;
+  }
 }
 
 html,
 body {
-  background-color: var(--background);
-  color: var(--on-surface);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-color: var(--bg);
+  color: var(--text-primary);
 }
+
+/* The previous build painted a 40px linear-gradient grid across the whole
+   body. A faint grid behind everything is one of the loudest generated-site
+   tells there is, and it actively fights a page whose structure is supposed to
+   come from alignment. It is deliberately not replaced by anything. */
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
 
+/* --------------------------------------------------------------------------
+   DEPRECATED — Terminal OS leftovers
+   ==========================================================================
+   These belong to the build being replaced and are kept only so `trunk` still
+   renders while the rebuild lands section by section. Nothing new may use
+   them. They come out with the terminal-era components (Koder ticket
+   t_mtk6uycb_6831c), by which point the greps below should return nothing:
+
+     grep -rn "terminal-shadow\|blink-cursor" src/
+
+   Remaining call sites at time of writing: TerminalWindow.jsx, page.js,
+   projects/page.js, run/page.js.
+   -------------------------------------------------------------------------- */
+
+@layer utilities {
   .terminal-shadow {
     box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
   }
@@ -33,7 +138,7 @@ body {
   .blink-cursor::after {
     content: "_";
     animation: blink 1s step-end infinite;
-    color: var(--terminal);
+    color: #00ffc2;
   }
 
   @keyframes blink {
