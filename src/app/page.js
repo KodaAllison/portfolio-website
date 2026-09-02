@@ -250,30 +250,20 @@ export default async function Home() {
       </section>
 
       {/* ============================================================
-          TIMELINE
+          EXPERIENCE
           ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
-        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="font-display text-2xl font-bold tracking-tight text-on-surface md:text-3xl">
-            <span className="text-outline">{"// "}</span>
-            timeline
-          </h2>
-          <span className="font-mono text-[11px] uppercase tracking-widest text-outline">
-            {timeline.length} commits · {timeline[timeline.length - 1].date.slice(0, 4)} →
-            present
-          </span>
+      <section className="px-5 pb-space-7 pt-[76px] md:px-[72px]">
+        <div className="mb-space-5 flex flex-wrap items-baseline justify-between gap-space-3">
+          <h2 className="font-display text-heading-l text-ink">Experience</h2>
+          <a
+            href="/CV.pdf"
+            className="font-mono text-mono-s text-ink-muted transition-colors duration-hover hover:text-accent"
+          >
+            full history → cv
+          </a>
         </div>
 
-        <TerminalWindow title="~/koda-allison" subtitle="git · main">
-          <div className="mb-5 flex items-center gap-2 text-[12px]">
-            <span className="text-terminal">$</span>
-            <span className="text-on-surface-variant">
-              git log --graph --oneline --decorate
-            </span>
-          </div>
-
-          <Timeline entries={timeline} />
-        </TerminalWindow>
+        <Timeline entries={timeline} />
       </section>
 
       {/* ============================================================

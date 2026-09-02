@@ -1,3 +1,4 @@
+import { monthLabel } from "./date.js";
 // Where each hero annotation's text lands, and what it says.
 //
 // This is separate from HeroTrace.jsx so the placement rules can be tested
@@ -62,14 +63,9 @@ const TIERS = {
   below: { textY: 296.4, dx: -9, textAnchor: "end", leaderGap: 6, leaderPad: -12 },
 };
 
-const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
 // "2025-09" -> "sep 2025". Kept local and total: the series is the only source
 // of month strings, and it is always YYYY-MM.
-export function monthLabel(month) {
-  const [y, m] = month.split("-");
-  return `${MONTHS[Number(m) - 1]} ${y}`;
-}
 
 export const fmtKm = (km) => `${km.toFixed(1)} km`;
 
@@ -140,3 +136,5 @@ export function layoutHeroLabels({ pts, peak }) {
       };
     });
 }
+
+export { monthLabel };

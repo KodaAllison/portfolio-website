@@ -92,18 +92,6 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${spaceGrotesk.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
     >
-      <head>
-        {/* Marks the document as JS-capable before first paint, which is what
-            lets .reveal start hidden without a flash of visible-then-hidden
-            content. It is deliberately the only thing gating that: if this
-            script never runs, every revealed section stays visible and the
-            page loses an animation rather than its content. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `document.documentElement.classList.add('js')`,
-          }}
-        />
-      </head>
       {/* Colours come from globals.css so the token sheet stays the only place
           they are written down. font-mono is a leftover default from the
           terminal build — sections keep setting their own family until the

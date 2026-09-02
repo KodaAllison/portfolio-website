@@ -235,20 +235,28 @@ body {
    simply failed to load, shows a blank page.
    -------------------------------------------------------------------------- */
 
-/* .js is set by an inline script in the document head, before first paint, so
-   there is no flash of visible-then-hidden content. If that script never runs,
-   every .reveal simply stays visible and nothing is lost but the animation. */
-.js .reveal {
-  opacity: 0;
-  transform: translateY(var(--reveal-rise));
-}
+/* `scripting: enabled` is the proof of support here, and it is CSS asking the
+   question rather than JavaScript answering it. The alternative — an inline
+   script stamping a class onto <html> before paint — works, but it makes the
+   server's markup and the client's disagree by construction, which is a
+   hydration mismatch React reports and suppressHydrationWarning did not
+   silence on the root element. This needs no script at all.
 
-.js .reveal[data-shown] {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity var(--reveal) ease,
-    transform var(--reveal) ease;
+   A browser that does not understand the query does not match it, so the
+   content stays visible and loses only the animation. */
+@media (scripting: enabled) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-rise));
+  }
+
+  .reveal[data-shown] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--reveal) ease,
+      transform var(--reveal) ease;
+  }
 }
 
 /* The rail is the one genuinely continuous mapping on the page. It is fully
@@ -278,8 +286,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .reveal,
-  .js .reveal[data-shown] {
+  .reveal,
+  .reveal[data-shown] {
     opacity: 1;
     transform: none;
     transition: none;

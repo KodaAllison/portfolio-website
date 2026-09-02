@@ -17,6 +17,15 @@ export default function Reveal({ children, delay = 0, as: Tag = "div", className
     const el = ref.current;
     if (!el) return;
 
+    /* The .js class has already hidden this by the time we get here, so any
+       path that cannot observe must reveal it rather than leave it hidden.
+       The stylesheet fails safe on its own; this is the same guarantee for the
+       case where the stylesheet's assumption held but the API is missing. */
+    if (typeof IntersectionObserver === "undefined") {
+      el.setAttribute("data-shown", "");
+      return;
+    }
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
