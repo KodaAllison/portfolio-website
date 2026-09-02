@@ -20,7 +20,7 @@ export default async function ProjectsPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      <header className="border-b border-line px-5 pb-space-7 pt-[88px] md:px-[72px] md:pb-14 md:pt-28">
+      <header className="border-b border-line px-5 pb-space-7 pt-space-7 md:px-[72px] md:pb-14 md:pt-28">
         <div className={`grid gap-space-7 ${github ? "lg:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] lg:items-end lg:gap-16" : ""}`}>
           <div>
             <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Projects</p>
@@ -55,7 +55,7 @@ export default async function ProjectsPage() {
         </div>
       </header>
 
-      <section className="px-5 pt-[76px] md:px-[72px]">
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <h2 className="mb-space-5 font-display text-heading-l text-ink">Selected work</h2>
         <ProjectCard project={projects[0]} featured />
         <div className="grid gap-x-12 md:grid-cols-2">
@@ -64,7 +64,7 @@ export default async function ProjectsPage() {
       </section>
 
       {archive.length ? (
-        <section className="px-5 pt-[76px] md:px-[72px]">
+        <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
           <div className="mb-space-5 flex items-baseline justify-between border-b border-line pb-space-4">
             <h2 className="font-display text-heading-l text-ink">Archive</h2>
             <span className="font-mono text-mono-xs text-ink-muted">still up, no longer maintained</span>

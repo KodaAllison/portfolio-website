@@ -61,7 +61,7 @@ export default async function RunPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      <header className="border-b border-line px-5 pb-space-7 pt-[88px] md:px-[72px] md:pb-14 md:pt-28">
+      <header className="border-b border-line px-5 pb-space-7 pt-space-7 md:px-[72px] md:pb-14 md:pt-28">
         <p className={`font-mono text-mono-xs uppercase tracking-[0.14em] ${strava ? "text-accent" : "text-ink-muted"}`}>
           {strava ? "Running · live via Strava" : "Running"}
         </p>
@@ -75,7 +75,7 @@ export default async function RunPage() {
 
       {strava ? (
         <>
-          <section className="px-5 pt-[76px] md:px-[72px]">
+          <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
             <dl className="grid grid-cols-2 gap-x-space-6 gap-y-space-7 md:grid-cols-4">
               {marathon ? <Stat label="Marathon PB" value={marathon.time} /> : null}
               <Stat label="This week" value={`${strava.weekly_km} km`} />
@@ -85,7 +85,7 @@ export default async function RunPage() {
           </section>
 
           {strava.weekly_bars?.length > 1 ? (
-            <section className="px-5 pt-[76px] md:px-[72px]">
+            <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
               <div className="mb-space-5 flex items-baseline justify-between gap-space-3">
                 <h2 className="font-display text-heading-l text-ink">Weekly mileage</h2>
                 <span className="font-mono text-mono-xs text-ink-muted md:hidden">last {Math.min(8, strava.weekly_bars.length)} weeks</span>
@@ -99,7 +99,7 @@ export default async function RunPage() {
           ) : null}
 
           {records.length ? (
-            <section className="px-5 pt-[76px] md:px-[72px]">
+            <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
               <div className="mb-space-5 flex items-baseline justify-between gap-space-3">
                 <h2 className="font-display text-heading-l text-ink">Personal records</h2>
                 <span className="font-mono text-mono-xs text-ink-muted">progress to goal</span>
@@ -128,7 +128,7 @@ export default async function RunPage() {
           ) : null}
 
           {strava.recent_activity?.length ? (
-            <section className="px-5 pt-[76px] md:px-[72px]">
+            <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
               <div className="mb-space-5 flex items-baseline justify-between gap-space-3">
                 <h2 className="font-display text-heading-l text-ink">Recent activity</h2>
                 <span className="font-mono text-mono-xs text-ink-muted md:hidden">last {Math.min(5, strava.recent_activity.length)} runs</span>

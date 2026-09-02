@@ -79,7 +79,7 @@ export default async function Home() {
       <Hero series={strava?.monthly_km} records={strava?.personal_records} />
       <LiveStrip sources={sources} />
 
-      <section className="px-5 pt-[76px] md:px-[72px]">
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Experience" link="/CV.pdf" label="full history" />
 
         <article className="-mx-5 bg-surface px-5 py-space-6 md:-mx-[72px] md:px-[72px] md:py-space-7">
@@ -107,7 +107,7 @@ export default async function Home() {
         <Timeline entries={timeline.slice(1)} showCurrent={false} />
       </section>
 
-      <section className="px-5 pt-[76px] md:px-[72px]">
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Personal projects" link="/projects" label={`all ${projects.length}`} />
         <ProjectCard project={projects[0]} featured />
         <div className="grid gap-x-12 md:grid-cols-2">
@@ -117,7 +117,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="px-5 pt-[76px] md:px-[72px]">
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Away from the keyboard" />
         <div className={`grid border-y border-line ${travel ? "md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line" : ""}`}>
           {travel ? (
@@ -161,7 +161,7 @@ export default async function Home() {
       </section>
 
       {github ? (
-        <section className="px-5 pt-[76px] md:px-[72px]">
+        <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
           <SectionHeading title="Recent commits" />
           <div className="grid gap-space-6 border-y border-line py-space-6 md:grid-cols-[280px_1fr] md:items-end">
             <div className="grid grid-cols-2 gap-space-6">
@@ -173,7 +173,7 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section className="px-5 pt-[76px] md:px-[72px]">
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Colophon" />
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr]">
           <div className="border-t border-line">

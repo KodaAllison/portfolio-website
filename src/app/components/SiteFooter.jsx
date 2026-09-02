@@ -5,7 +5,7 @@ const SOCIALS = ["github", "linkedin", "strava"];
 
 export default function SiteFooter() {
   return (
-    <footer className="mt-[88px] border-t border-line px-5 py-space-7 md:px-[72px] md:py-12">
+    <footer className="mt-space-7 border-t border-line px-5 py-space-7 md:mt-[88px] md:px-[72px] md:py-12">
       <div className="flex flex-col gap-space-6 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="font-display text-heading-m text-ink">Say hello.</p>
