@@ -15,18 +15,19 @@ function cssToken(name) {
   return css.match(new RegExp(`${name}:\\s*([\\d.]+m?s)`))?.[1];
 }
 
-function heroTraceProperty(name) {
-  return css.match(new RegExp(`\\.hero-trace-line\\s*\\{[\\s\\S]*?${name}:\\s*([\\d.]+)`))?.[1];
-}
+test("the trace uses a non-wrapping clip reveal with a hidden HTML fallback", () => {
+  assert.match(component, /<clipPath id=\{clipId\}>/);
+  assert.match(component, /className="hero-trace-reveal"/);
+  assert.match(component, /transform="scale\(0 1\)"/);
+  assert.match(component, /clipPath=\{`url\(#\$\{clipId\}\)`\}/);
+  assert.doesNotMatch(component, /pathLength=/);
+  assert.doesNotMatch(css, /stroke-dasharray|stroke-dashoffset/);
+});
 
-test("the initial dash and gap extend beyond the normalized path", () => {
-  const dashLength = Number.parseFloat(heroTraceProperty("stroke-dasharray"));
-  const dashOffset = Number.parseFloat(heroTraceProperty("stroke-dashoffset"));
-
-  assert.ok(
-    dashLength >= 1.05 && dashOffset >= 1.05,
-    `dash ${dashLength} and offset ${dashOffset} leave no allowance beyond pathLength=1`,
-  );
+test("the hero intentionally limits the Strava history to two years", () => {
+  assert.match(component, /const HERO_MONTHS = 24/);
+  assert.match(component, /const visibleSeries = series\.slice\(-HERO_MONTHS\)/);
+  assert.match(component, /MONTHLY KM · \{visibleSeries\.length\} MONTHS · STRAVA/);
 });
 
 test("the current-point reveal cannot start before the trace finishes drawing", () => {
@@ -46,19 +47,15 @@ test("the current-point reveal cannot start before the trace finishes drawing", 
   );
 });
 
-test("an undashed final trace replaces the draw layer before the endpoint appears", () => {
+test("one clipped trace stays visible when the draw finishes", () => {
   const drawDuration = milliseconds(cssToken("--draw-hero"));
   const drawDelay = milliseconds(cssToken("--draw-hero-delay"));
-  const finalTraceDelay = milliseconds(cssToken("--reveal-hero-trace"));
   const endpointDelay = milliseconds(cssToken("--reveal-hero-endpoint"));
 
-  assert.match(component, /className="hero-trace-final"/);
+  assert.doesNotMatch(component, /hero-trace-final/);
+  assert.match(css, /@keyframes hero-draw\s*\{[\s\S]*?to\s*\{[\s\S]*?transform:\s*scaleX\(1\)/);
   assert.ok(
-    finalTraceDelay >= drawDuration + drawDelay,
-    `final trace appears at ${finalTraceDelay}ms; draw finishes at ${drawDuration + drawDelay}ms`,
-  );
-  assert.ok(
-    finalTraceDelay <= endpointDelay,
-    `endpoint appears at ${endpointDelay}ms before the final trace at ${finalTraceDelay}ms`,
+    drawDuration + drawDelay <= endpointDelay,
+    `endpoint appears at ${endpointDelay}ms before the clipped trace finishes at ${drawDuration + drawDelay}ms`,
   );
 });

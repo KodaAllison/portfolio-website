@@ -11,41 +11,49 @@ import {
   monthLabel,
 } from "../../lib/heroLabels";
 
-/* The hero chart: 31-ish months of running distance, drawn from the Strava
-   Worker's monthly_km series.
+/* The hero chart: the latest two years of running distance, drawn from the
+   Strava Worker's monthly_km series.
 
-   Deliberately a server component with no "use client". The draw-on is
-   stroke-dashoffset, the annotation stagger is animation-delay and the endpoint
-   is a CSS-timed dot — none of that needs JavaScript, and keeping it out means the
-   trace ships inside the HTML: no layout shift, no flash of an empty hero, and
-   it still renders with JS disabled. It is also almost certainly part of the
-   LCP, so it must not wait on a bundle. */
+   Deliberately a server component with no "use client". An animated clip reveals
+   the line, the annotation stagger is animation-delay and the endpoint is a
+   CSS-timed dot — none of that needs JavaScript, and keeping it out means the
+   trace ships inside the HTML with no layout shift. It is also almost certainly
+   part of the LCP, so it must not wait on a bundle. */
 
 // The plot box and every label position live in lib/heroLabels, so the rule
 // that no two labels overlap can be tested against the same numbers that
 // render here rather than against a copy of them.
 const { w: W } = HERO_BOX;
 const VIEW_H = 306; // matches the artboard; the below tier baselines at 296.4
+const HERO_MONTHS = 24;
 
-function TraceLine({ d }) {
-  const stroke = {
-    d,
-    fill: "none",
-    stroke: "var(--text-primary)",
-    strokeOpacity: "0.92",
-    strokeWidth: "2",
-    vectorEffect: "non-scaling-stroke",
-    strokeLinejoin: "round",
-    strokeLinecap: "round",
-  };
-
+function TraceLine({ d, clipId, width, height }) {
   return (
     <>
-      {/* Chromium can leave the tail of a pathLength-normalised dash unpainted
-          even at dashoffset 0. This undashed layer takes over once the draw
-          finishes, so the persistent line always reaches its endpoint. */}
-      <path className="hero-trace-final" {...stroke} />
-      <path className="hero-trace-line" pathLength="1" {...stroke} />
+      <defs>
+        <clipPath id={clipId}>
+          {/* The SVG transform attribute hides the trace before CSS arrives.
+              CSS owns the animated transform once the stylesheet is ready. */}
+          <rect
+            className="hero-trace-reveal"
+            width={width}
+            height={height}
+            transform="scale(0 1)"
+          />
+        </clipPath>
+      </defs>
+      <path
+        className="hero-trace-line"
+        d={d}
+        clipPath={`url(#${clipId})`}
+        fill="none"
+        stroke="var(--text-primary)"
+        strokeOpacity="0.92"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
     </>
   );
 }
@@ -77,7 +85,12 @@ function CompactTrace({ series, yMax, label }) {
         stroke="var(--border)"
         strokeWidth="1"
       />
-      <TraceLine d={d} />
+      <TraceLine
+        d={d}
+        clipId="hero-trace-clip-compact"
+        width={HERO_BOX_COMPACT.w}
+        height={HERO_COMPACT_VIEW_H}
+      />
       <circle className="hero-pulse" cx={last.x} cy={last.y} r="4.5" fill="none" stroke="var(--accent)" aria-hidden="true" />
       <circle
         className="hero-endpoint"
@@ -98,25 +111,26 @@ export default function HeroTrace({ series }) {
      simply absence — the headline rises to fill the space. */
   if (!Array.isArray(series) || series.length === 0) return null;
 
-  const peak = series.reduce((a, b) => (b.km > a.km ? b : a));
+  const visibleSeries = series.slice(-HERO_MONTHS);
+  const peak = visibleSeries.reduce((a, b) => (b.km > a.km ? b : a));
 
   // yMax comes from the same nice-tick logic WeeklyLine uses rather than a
   // constant, so an unusually big month cannot clip off the top of the chart.
   const ticks = niceYTicks(peak.km);
   const yMax = ticks[ticks.length - 1];
 
-  const { d, pts } = buildTrace(series, { ...HERO_BOX, yMax });
+  const { d, pts } = buildTrace(visibleSeries, { ...HERO_BOX, yMax });
 
   const last = pts[pts.length - 1];
   const labels = layoutHeroLabels({ pts, peak });
 
-  const label = `Monthly running distance, ${monthLabel(series[0].month)} to ${monthLabel(
+  const label = `Monthly running distance, ${monthLabel(visibleSeries[0].month)} to ${monthLabel(
     last.month
   )}. Highest month ${monthLabel(peak.month)} at ${fmtKm(peak.km)}.`;
 
   return (
     <>
-      <CompactTrace series={series} yMax={yMax} label={label} />
+      <CompactTrace series={visibleSeries} yMax={yMax} label={label} />
     <svg
       viewBox={`0 0 ${W} ${VIEW_H}`}
       className="hero-chart hidden w-full md:block"
@@ -124,7 +138,7 @@ export default function HeroTrace({ series }) {
       aria-label={label}
     >
       <text x="0" y="14" className="fill-ink-muted font-mono" fontSize="10" letterSpacing="1.4">
-        MONTHLY KM · {series.length} MONTHS · STRAVA
+        MONTHLY KM · {visibleSeries.length} MONTHS · STRAVA
       </text>
 
       <line
@@ -136,9 +150,7 @@ export default function HeroTrace({ series }) {
         strokeWidth="1"
       />
 
-      {/* pathLength normalises the dash units to 1, so the draw-on keyframe is
-          correct regardless of how long the real path turns out to be. */}
-      <TraceLine d={d} />
+      <TraceLine d={d} clipId="hero-trace-clip-wide" width={W} height={VIEW_H} />
 
       {labels.map(({ month, tier, x, textAnchor, lines, point, leader }) => (
         <g
@@ -171,7 +183,7 @@ export default function HeroTrace({ series }) {
       ))}
 
       <text x="0" y={HERO_BASELINE + 12} className="fill-ink-muted font-mono" fontSize="10">
-        {monthLabel(series[0].month).toUpperCase()}
+        {monthLabel(visibleSeries[0].month).toUpperCase()}
       </text>
       <text
         x={W}
