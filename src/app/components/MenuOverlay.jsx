@@ -1,41 +1,32 @@
 "use client";
 import Link from "next/link";
-import React from "react";
 
 const MenuOverlay = ({ links, pathname, onClose }) => {
-  const isActive = (path) =>
-    path === "/" ? pathname === "/" : pathname?.startsWith(path);
+  const isActive = (path) => (path === "/" ? pathname === "/" : pathname?.startsWith(path));
 
   return (
-    <div className="md:hidden border-t border-outline-variant bg-background/95 backdrop-blur-lg">
-      <ul className="flex flex-col py-4">
-        {links.map((link) => {
-          const active = isActive(link.path);
+    <div className="border-t border-line md:hidden">
+      <ul className="flex flex-col py-space-3">
+        {links.map(({ title, path, external }) => {
+          const active = !external && isActive(path);
           return (
-            <li key={link.path}>
+            <li key={path}>
               <Link
-                href={link.path}
+                href={path}
                 onClick={onClose}
-                className={[
-                  "block px-margin-mobile py-3 font-mono text-sm uppercase tracking-widest border-l-2 transition-colors",
+                aria-current={active ? "page" : undefined}
+                className={`block border-l px-5 py-space-3 font-mono text-mono-m transition-colors duration-hover ${
                   active
-                    ? "text-terminal border-terminal bg-surface-container/40"
-                    : "text-on-surface-variant border-transparent hover:text-terminal hover:border-terminal/40 hover:bg-surface-container/30",
-                ].join(" ")}
+                    ? "border-accent text-ink"
+                    : "border-transparent text-ink-secondary hover:border-line-strong hover:text-accent"
+                }`}
               >
-                {active ? (
-                  <>
-                    <span className="text-outline">[</span>
-                    <span className="px-1">{link.title}</span>
-                    <span className="text-outline">]</span>
-                  </>
-                ) : (
-                  <>/{link.title}</>
-                )}
+                {title}
               </Link>
             </li>
           );
         })}
+        <li className="px-5 py-space-3 font-mono text-mono-m text-accent">open to work</li>
       </ul>
     </div>
   );

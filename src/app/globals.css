@@ -154,25 +154,6 @@ body {
   }
 }
 
-/* Below the mobile breakpoint the chart carries no text at all.
-
-   The SVG scales with its viewBox, so at 390px wide the desktop chart is
-   reduced 3.7x and its 11px annotations would render at about 3px. The mobile
-   artboard does not reuse this chart — it has its own viewBox at 1:1 with no
-   labels in it, because on a phone the trace is decorative and the numbers
-   belong in the copy. This is the interim of that: the line and its full stop
-   survive, everything that would be illegible is dropped, and the path keeps a
-   real 2px stroke via vector-effect rather than thinning to half a pixel.
-
-   The proper treatment is its own viewBox and plot box for this breakpoint,
-   which is a layout decision rather than a tweak — tracked separately. */
-@media (max-width: 767px) {
-  .hero-chart .hero-marker,
-  .hero-chart text {
-    display: none;
-  }
-}
-
 /* The endpoint dot scales up as it arrives rather than fading, so it reads as
    the line stopping somewhere rather than as another label appearing. */
 .hero-endpoint {
@@ -190,6 +171,34 @@ body {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* The trace's one loop. Guarded on no-preference rather than merely switched
+   off under reduce, because the token sheet's rule is absolute: under reduced
+   motion nothing loops and nothing moves. Guarding here means the animation is
+   never even declared for those users. */
+.hero-pulse {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: hero-pulse 2400ms ease-out 3200ms infinite;
+  }
+}
+
+@keyframes hero-pulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(3.8);
   }
 }
 

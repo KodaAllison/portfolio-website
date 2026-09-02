@@ -2,6 +2,9 @@ import { buildTrace, niceYTicks } from "../../lib/trace";
 import {
   HERO_BOX,
   HERO_BASELINE,
+  HERO_BOX_COMPACT,
+  HERO_COMPACT_VIEW_H,
+  HERO_COMPACT_BASELINE,
   LABEL_FONT_SIZE,
   fmtKm,
   layoutHeroLabels,
@@ -24,6 +27,58 @@ import {
 const { w: W } = HERO_BOX;
 const VIEW_H = 306; // matches the artboard; the below tier baselines at 296.4
 
+/* The phone chart: the line, its full stop, and nothing else.
+
+   Rendered alongside the full chart rather than instead of it, with CSS
+   choosing between them. The component is server-rendered and cannot know the
+   viewport, and the two charts have genuinely different geometry — a media
+   query cannot reshape a viewBox. Both carry the same aria-label, and since the
+   hidden one is display:none it is ignored by assistive tech, so exactly one is
+   ever exposed. */
+function CompactTrace({ series, yMax, label }) {
+  const { d, pts } = buildTrace(series, { ...HERO_BOX_COMPACT, yMax });
+  const last = pts[pts.length - 1];
+
+  return (
+    <svg
+      viewBox={`0 0 ${HERO_BOX_COMPACT.w} ${HERO_COMPACT_VIEW_H}`}
+      className="block w-full md:hidden"
+      role="img"
+      aria-label={label}
+    >
+      <line
+        x1="0"
+        y1={HERO_COMPACT_BASELINE}
+        x2={HERO_BOX_COMPACT.w}
+        y2={HERO_COMPACT_BASELINE}
+        stroke="var(--border)"
+        strokeWidth="1"
+      />
+      <path
+        className="hero-trace-line"
+        d={d}
+        pathLength="1"
+        fill="none"
+        stroke="var(--text-primary)"
+        strokeOpacity="0.92"
+        strokeWidth="2"
+        vectorEffect="non-scaling-stroke"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+      <circle className="hero-pulse" cx={last.x} cy={last.y} r="4.5" fill="none" stroke="var(--accent)" aria-hidden="true" />
+      <circle
+        className="hero-endpoint"
+        cx={last.x}
+        cy={last.y}
+        r="4.5"
+        fill="var(--accent)"
+        style={{ animationDelay: "2.6s" }}
+      />
+    </svg>
+  );
+}
+
 export default function HeroTrace({ series }) {
   /* No data, no chart. The design sheet is explicit that a module which cannot
      get its data does not render: no placeholder value, no zero it did not
@@ -44,14 +99,18 @@ export default function HeroTrace({ series }) {
   const last = pts[pts.length - 1];
   const labels = layoutHeroLabels({ pts, peak });
 
+  const label = `Monthly running distance, ${monthLabel(series[0].month)} to ${monthLabel(
+    last.month
+  )}. Highest month ${monthLabel(peak.month)} at ${fmtKm(peak.km)}.`;
+
   return (
+    <>
+      <CompactTrace series={series} yMax={yMax} label={label} />
     <svg
       viewBox={`0 0 ${W} ${VIEW_H}`}
-      className="hero-chart block w-full"
+      className="hero-chart hidden w-full md:block"
       role="img"
-      aria-label={`Monthly running distance, ${monthLabel(series[0].month)} to ${monthLabel(
-        last.month
-      )}. Highest month ${monthLabel(peak.month)} at ${fmtKm(peak.km)}.`}
+      aria-label={label}
     >
       <text x="0" y="14" className="fill-ink-muted font-mono" fontSize="10" letterSpacing="1.4">
         MONTHLY KM · {series.length} MONTHS · STRAVA
@@ -127,6 +186,19 @@ export default function HeroTrace({ series }) {
       {/* The trace's full stop: the artboard's 10px amber dot, which sits on
           the final point rather than in the headline. It arrives with the line
           and then holds — the one element allowed to draw the eye to "now". */}
+      {/* The artboard pulses this with an expanding box-shadow ring, which does
+          not apply to SVG shapes — so the ring is a real concentric circle that
+          animates its radius instead. It is the only looping animation in the
+          design, and it starts only after the line has finished drawing. */}
+      <circle
+        className="hero-pulse"
+        cx={last.x}
+        cy={last.y}
+        r="5"
+        fill="none"
+        stroke="var(--accent)"
+        aria-hidden="true"
+      />
       <circle
         className="hero-endpoint"
         cx={last.x}
@@ -147,5 +219,6 @@ export default function HeroTrace({ series }) {
         {monthLabel(last.month)} · {fmtKm(last.km)}
       </text>
     </svg>
+    </>
   );
 }

@@ -8,13 +8,22 @@ import about from "../../data/about.json";
    into the space — the degraded state the design sheet asks for. There is no
    empty frame and no error text, so this component needs no branch of its own. */
 export default function Hero({ series }) {
+  const hasChart = Array.isArray(series) && series.length > 0;
+
   return (
-    <header className="border-b border-line">
-      <div className="px-5 pt-space-7 md:px-[72px]">
+    /* The artboard's hero is a fixed 660px band with the headline pinned to its
+       bottom edge. That height is only correct while there is a chart to fill
+       it: the design's failed state is "graph removed, headline rises", and a
+       fixed height would leave the headline stranded at the bottom of an empty
+       band instead. So the minimum height is conditional and the headline is
+       pushed down by mt-auto, which pins it when there is room and lets it rise
+       when there is not. */
+    <header className={`flex flex-col border-b border-line ${hasChart ? "md:min-h-[660px]" : ""}`}>
+      <div className="px-5 pt-[44px] md:px-[72px]">
         <HeroTrace series={series} />
       </div>
 
-      <div className="px-5 pb-space-5 pt-space-6 md:px-[72px]">
+      <div className="mt-auto px-5 pb-space-5 pt-space-6 md:px-[72px]">
         {/* Two weights of the same line: the claim solid, the promise outlined.
             Not animated — this is the LCP text, and fading it in would delay
             LCP by exactly the length of the fade in exchange for nothing. */}

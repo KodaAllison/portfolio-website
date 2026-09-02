@@ -138,3 +138,19 @@ export function layoutHeroLabels({ pts, peak }) {
 }
 
 export { monthLabel };
+
+/* The mobile chart is a different chart, not this one scaled down.
+
+   An SVG scales with its viewBox, so reusing the desktop box at 390px would
+   reduce it 3.7x and render its 11px annotations at about 3px. The mobile
+   artboard does not attempt that: it has its own box at 1:1 with no labels in
+   it at all, because on a phone the trace is decorative and the numbers belong
+   in the copy beneath it.
+
+   Solved from that artboard the same way the desktop box was — its plotted
+   peak sits at y=40.1 and its axis rule at y=144, which against yMax=150 gives
+   innerH=119.33 and padTop=24.67. The 196 tall viewBox is what fixes the
+   chart's aspect ratio, and so its rendered height, at any width. */
+export const HERO_BOX_COMPACT = { w: 346, padTop: 24.67, innerH: 119.33 };
+export const HERO_COMPACT_VIEW_H = 196;
+export const HERO_COMPACT_BASELINE = HERO_BOX_COMPACT.padTop + HERO_BOX_COMPACT.innerH;
