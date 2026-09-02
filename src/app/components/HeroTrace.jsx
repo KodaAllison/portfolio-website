@@ -1,4 +1,12 @@
 import { buildTrace, niceYTicks } from "../../lib/trace";
+import {
+  HERO_BOX,
+  HERO_BASELINE,
+  LABEL_FONT_SIZE,
+  fmtKm,
+  layoutHeroLabels,
+  monthLabel,
+} from "../../lib/heroLabels";
 
 /* The hero chart: 31-ish months of running distance, drawn from the Strava
    Worker's monthly_km series.
@@ -10,53 +18,11 @@ import { buildTrace, niceYTicks } from "../../lib/trace";
    it still renders with JS disabled. It is also almost certainly part of the
    LCP, so it must not wait on a bundle. */
 
-// The plot box, in the artboard's own coordinate space. These are not taste:
-// solving the artboard's plotted points (130.6 km at y=69.4, 9.5 km at y=248.4)
-// against yMax=150 gives innerH=221.72 and padTop=40.72, which puts the zero
-// line at y=262.44 — the artboard's axis rule sits at 262.
-const W = 1296;
-const PAD_TOP = 40.72;
-const INNER_H = 221.72;
-const BASELINE = PAD_TOP + INNER_H;
+// The plot box and every label position live in lib/heroLabels, so the rule
+// that no two labels overlap can be tested against the same numbers that
+// render here rather than against a copy of them.
+const { w: W } = HERO_BOX;
 const VIEW_H = 300; // room for the below-axis label tier
-
-// Milestones are a fixed, hand-written list because a career event genuinely is
-// editorial — but only the *text* is written here. Every position, every
-// number, and the superlative itself come from the series at render time.
-//
-// `tier` is the horizontal band the label hangs in. Nothing is ever placed on
-// the trace itself: labels go above the plot, just under the axis, or below
-// that. Label collision happened twice while designing this chart.
-const MILESTONES = [
-  { month: "2025-07", tier: "below", text: "graduated, first class" },
-  { month: "2025-09", tier: "above", text: "started at virgin money" },
-];
-
-const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
-
-// "2025-09" -> "sep 2025". Kept local and total: the series is the only source
-// of month strings, and it is always YYYY-MM.
-function monthLabel(month) {
-  const [y, m] = month.split("-");
-  return `${MONTHS[Number(m) - 1]} ${y}`;
-}
-
-const fmtKm = (km) => `${km.toFixed(1)} km`;
-
-/* A milestone earns an annotation only if its height on the curve carries
-   meaning. A career date has no y-value of its own, so any height we give it is
-   invented — unless the series independently puts that month at an extreme.
-   Two qualify today: the all-time peak, and a trough at 30th of 31 months.
-
-   Anything that lands mid-range is decoration, and belongs in the timeline
-   further down the page, where dates do not need heights. */
-function qualifies(point, sorted) {
-  const n = sorted.length;
-  if (n === 0) return false;
-  if (point.km === sorted[n - 1].km) return true; // the peak
-  const troughBand = Math.max(2, Math.ceil(n * 0.1));
-  return sorted.indexOf(point) < troughBand;
-}
 
 export default function HeroTrace({ series }) {
   /* No data, no chart. The design sheet is explicit that a module which cannot
@@ -73,26 +39,10 @@ export default function HeroTrace({ series }) {
   const ticks = niceYTicks(peak.km);
   const yMax = ticks[ticks.length - 1];
 
-  const { d, pts, at } = buildTrace(series, { w: W, padTop: PAD_TOP, innerH: INNER_H, yMax });
+  const { d, pts } = buildTrace(series, { ...HERO_BOX, yMax });
 
-  const sorted = [...pts].sort((a, b) => a.km - b.km);
   const last = pts[pts.length - 1];
-
-  const annotations = MILESTONES.map((m) => ({ ...m, pt: at(m.month) }))
-    .filter(({ pt }) => pt && qualifies(pt, sorted))
-    .map((m) => {
-      /* The superlative is attached only while it actually holds. Hardcoding
-         "the biggest month in the log" would mean that on the day it stops
-         being true, the site starts lying — which on a page whose whole claim
-         is that every number is fetched, not typed, is the worst bug available. */
-      const isPeak = m.pt.month === peak.month;
-      return {
-        ...m,
-        lines: isPeak
-          ? [`${monthLabel(m.month)} · ${m.text}`, `${fmtKm(m.pt.km)} — the biggest month in the log`]
-          : [`${monthLabel(m.month)} · ${m.text} · ${fmtKm(m.pt.km)}`],
-      };
-    });
+  const labels = layoutHeroLabels({ pts, peak });
 
   return (
     <svg
@@ -107,7 +57,14 @@ export default function HeroTrace({ series }) {
         MONTHLY KM · {series.length} MONTHS · STRAVA
       </text>
 
-      <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} stroke="var(--border)" strokeWidth="1" />
+      <line
+        x1="0"
+        y1={HERO_BASELINE}
+        x2={W}
+        y2={HERO_BASELINE}
+        stroke="var(--border)"
+        strokeWidth="1"
+      />
 
       {/* pathLength normalises the dash units to 1, so the draw-on keyframe is
           correct regardless of how long the real path turns out to be. */}
@@ -123,37 +80,46 @@ export default function HeroTrace({ series }) {
         strokeLinecap="round"
       />
 
-      {annotations.map(({ month, tier, lines, pt }) => {
-        const above = tier === "above";
-        // The leader runs from just off the curve out to its tier, so the label
-        // never sits on the line it is annotating.
-        const y1 = above ? pt.y - 6 : pt.y + 6;
-        const y2 = above ? pt.y - 31 : pt.y + 36;
-        const textY = above ? y2 - 22 : y2 + 12;
-        return (
-          <g key={month} className="hero-marker" style={{ animationDelay: above ? "1.9s" : "1.5s" }}>
-            <line x1={pt.x} y1={y1} x2={pt.x} y2={y2} stroke="var(--accent)" strokeWidth="1" />
-            <circle cx={pt.x} cy={pt.y} r="3.8" fill="var(--accent)" />
-            {lines.map((line, i) => (
-              <text
-                key={line}
-                x={above ? pt.x + 9 : pt.x - 9}
-                y={textY + i * 15}
-                textAnchor={above ? "start" : "end"}
-                className="fill-accent font-mono"
-                fontSize="11"
-              >
-                {line}
-              </text>
-            ))}
-          </g>
-        );
-      })}
+      {labels.map(({ month, tier, x, textAnchor, lines, point, leader }) => (
+        <g
+          key={month}
+          className="hero-marker"
+          style={{ animationDelay: tier === "above" ? "1.9s" : "1.5s" }}
+        >
+          <line
+            x1={leader.x}
+            y1={leader.y1}
+            x2={leader.x}
+            y2={leader.y2}
+            stroke="var(--accent)"
+            strokeWidth="1"
+          />
+          <circle cx={point.x} cy={point.y} r="3.8" fill="var(--accent)" />
+          {lines.map(({ text, y }) => (
+            <text
+              key={text}
+              x={x}
+              y={y}
+              textAnchor={textAnchor}
+              className="fill-accent font-mono"
+              fontSize={LABEL_FONT_SIZE}
+            >
+              {text}
+            </text>
+          ))}
+        </g>
+      ))}
 
-      <text x="0" y={BASELINE + 12} className="fill-ink-muted font-mono" fontSize="10">
+      <text x="0" y={HERO_BASELINE + 12} className="fill-ink-muted font-mono" fontSize="10">
         {monthLabel(series[0].month).toUpperCase()}
       </text>
-      <text x={W} y={BASELINE + 12} textAnchor="end" className="fill-ink-muted font-mono" fontSize="10">
+      <text
+        x={W}
+        y={HERO_BASELINE + 12}
+        textAnchor="end"
+        className="fill-ink-muted font-mono"
+        fontSize="10"
+      >
         {monthLabel(last.month).toUpperCase()}
       </text>
 

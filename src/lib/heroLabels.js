@@ -1,0 +1,121 @@
+// Where each hero annotation's text lands, and what it says.
+//
+// This is separate from HeroTrace.jsx so the placement rules can be tested
+// without a DOM: the component renders exactly what layoutHeroLabels returns,
+// so a test against this function is a test against the chart. Every hero
+// label is JetBrains Mono at a fixed size, which makes a label's width
+// arithmetic (0.6em per character) rather than a measurement — that is what
+// makes the no-overlap rule cheap enough to assert on every run.
+
+// The plot box, in the artboard's own coordinate space. These are not taste:
+// solving the artboard's plotted points (130.6 km at y=69.4, 9.5 km at y=248.4)
+// against yMax=150 gives innerH=221.72 and padTop=40.72, which puts the zero
+// line at y=262.44 — the artboard's axis rule sits at 262.
+export const HERO_BOX = { w: 1296, padTop: 40.72, innerH: 221.72 };
+export const HERO_BASELINE = HERO_BOX.padTop + HERO_BOX.innerH;
+
+// Exported because the width of a label is a function of this: change the font
+// size here and the collision test re-measures every label with it.
+export const LABEL_FONT_SIZE = 11;
+const LINE_HEIGHT = 15;
+
+// Milestones are a fixed, hand-written list because a career event genuinely is
+// editorial — but only the *text* is written here. Every position, every
+// number, and the superlative itself come from the series at render time.
+const MILESTONES = [
+  { month: "2025-07", tier: "below", text: "graduated, first class" },
+  { month: "2025-09", tier: "above", text: "started at virgin money" },
+];
+
+/* A tier is the horizontal band a label hangs in, reached by a leader line off
+   the point. Nothing is ever placed on the trace itself: labels go above the
+   plot, just under the axis rule, or below that. Label collision happened twice
+   while this chart was being designed — and a label sitting on the curve it
+   annotates is the same failure with a different neighbour.
+
+   Offsets are signed distances from the annotated point: where the leader
+   starts and ends, where the first text baseline sits past the leader, and
+   which side of the point the text runs off towards.
+
+   The third tier — `axis`, for race markers — has no entry yet on purpose. Its
+   labels hang off the axis rule at a fixed y rather than off their point, so
+   its geometry is a different shape from these two and is better written
+   against a real marker than guessed at now. */
+const TIERS = {
+  above: { leaderFrom: -6, leaderTo: -31, textFrom: -22, dx: 9, textAnchor: "start" },
+  below: { leaderFrom: 6, leaderTo: 36, textFrom: 12, dx: -9, textAnchor: "end" },
+};
+
+const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+// "2025-09" -> "sep 2025". Kept local and total: the series is the only source
+// of month strings, and it is always YYYY-MM.
+export function monthLabel(month) {
+  const [y, m] = month.split("-");
+  return `${MONTHS[Number(m) - 1]} ${y}`;
+}
+
+export const fmtKm = (km) => `${km.toFixed(1)} km`;
+
+/* A milestone earns an annotation only if its height on the curve carries
+   meaning. A career date has no y-value of its own, so any height we give it is
+   invented — unless the series independently puts that month at an extreme.
+   Two qualify today: the all-time peak, and a trough at 30th of 31 months.
+
+   Anything that lands mid-range is decoration, and belongs in the timeline
+   further down the page, where dates do not need heights. */
+function qualifies(point, sorted) {
+  const n = sorted.length;
+  if (n === 0) return false;
+  if (point.km === sorted[n - 1].km) return true; // the peak
+  const troughBand = Math.max(2, Math.ceil(n * 0.1));
+  return sorted.indexOf(point) < troughBand;
+}
+
+/**
+ * Resolve the milestone list against plotted points into ready-to-draw labels.
+ *
+ * `pts` is what buildTrace returned — each point carries its month, km and
+ * plotted x/y. `peak` is the series maximum, passed in because the caller has
+ * already had to find it to pick the y axis.
+ *
+ * Returns one entry per qualifying milestone: `{ month, tier, x, textAnchor,
+ * lines, point, leader }`, where `lines` is `{ text, y }` per rendered line and
+ * `x`/`textAnchor` together fix the label's horizontal extent. The caller adds
+ * nothing to these numbers — everything a collision could come from is here.
+ */
+export function layoutHeroLabels({ pts, peak }) {
+  if (!Array.isArray(pts) || pts.length === 0) return [];
+
+  const sorted = [...pts].sort((a, b) => a.km - b.km);
+  const top = peak ?? sorted[sorted.length - 1];
+
+  return MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
+    .filter(({ point, tier }) => point && TIERS[tier] && qualifies(point, sorted))
+    .map(({ month, tier, text, point }) => {
+      const t = TIERS[tier];
+
+      /* The superlative is attached only while it actually holds. Hardcoding
+         "the biggest month in the log" would mean that on the day it stops
+         being true, the site starts lying — which on a page whose whole claim
+         is that every number is fetched, not typed, is the worst bug available. */
+      const texts =
+        point.month === top.month
+          ? [`${monthLabel(month)} · ${text}`, `${fmtKm(point.km)} — the biggest month in the log`]
+          : [`${monthLabel(month)} · ${text} · ${fmtKm(point.km)}`];
+
+      const textY = point.y + t.leaderTo + t.textFrom;
+
+      return {
+        month,
+        tier,
+        point,
+        textAnchor: t.textAnchor,
+        x: point.x + t.dx,
+        // The leader runs from just off the curve out to the tier, so the label
+        // never sits on the line it is annotating.
+        leader: { x: point.x, y1: point.y + t.leaderFrom, y2: point.y + t.leaderTo },
+        lines: texts.map((line, i) => ({ text: line, y: textY + i * LINE_HEIGHT })),
+      };
+    });
+}
