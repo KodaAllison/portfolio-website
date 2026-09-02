@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
+import LiveStrip from "./components/LiveStrip";
 import TerminalWindow from "./components/TerminalWindow";
 import StatusChip from "./components/StatusChip";
-import SyntaxTag from "./components/SyntaxTag";
 import CommitHeatmap from "./components/CommitHeatmap";
 import Timeline from "./components/Timeline";
 import about from "../data/about.json";
@@ -13,15 +13,6 @@ import { fetchGitHubData, relativeTime } from "../lib/github";
 
 /* --- inline atoms (kept local; not shared components) -------------------- */
 
-// One row in the about.json terminal window. Renders `  key: <value>,`
-const JsonRow = ({ k, value, depth = 1, valueColor = "text-cyan", trailing = "," }) => (
-  <div style={{ paddingLeft: `${depth * 16}px` }} className="leading-relaxed">
-    <span className="text-on-surface">{k}</span>
-    <span className="text-outline">: </span>
-    <span className={valueColor}>{value}</span>
-    <span className="text-outline">{trailing}</span>
-  </div>
-);
 
 // A stat cell for the strip beneath the hero.
 const StatCell = ({ label, value, accent = "text-terminal", align = "left" }) => (
@@ -68,11 +59,13 @@ export default async function Home() {
   // nothing without it and the headline rises into the space, which is the
   // degraded state the design sheet asks for. Never a placeholder shape.
   let monthlyKm;
+  let stravaAge;
   try {
     const strava = await fetchStravaData();
     weeklyKm = strava.weekly_km;
     ytdKm = strava.ytd_km;
     monthlyKm = strava.monthly_km;
+    stravaAge = strava.generated_at ? relativeTime(strava.generated_at) : undefined;
   } catch {
     weeklyKm = "rip gps";
     ytdKm = "—";
@@ -80,12 +73,14 @@ export default async function Home() {
 
   let commits_30d = stats.commits_30d;
   let last_commit = "n/a";
+  let githubAge;
   let longest_streak = "n/a";
   let heatmap;
   try {
     const gh = await fetchGitHubData();
     commits_30d = gh.commits_30d;
     last_commit = gh.last_commit_at ? relativeTime(gh.last_commit_at) : "n/a";
+    githubAge = gh.last_commit_at ? relativeTime(gh.last_commit_at) : undefined;
     longest_streak = `${gh.longest_streak}d`;
     heatmap = gh.heatmap;
   } catch {
@@ -98,138 +93,13 @@ export default async function Home() {
 
       <Hero series={monthlyKm} />
 
-      {/* ============================================================
-          HERO
-          ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pt-24 pb-10 md:px-margin-desktop md:pb-16">
-        <div className="grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-16">
-          {/* hero left ----------------------------------------------- */}
-          <div className="space-y-8">
-            {/* status row */}
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="font-mono text-[11px] uppercase tracking-widest text-on-surface-variant">
-                {about.location.city}
-              </span>
-              <span className="text-outline">•</span>
-              <span className="font-mono text-[11px] uppercase tracking-widest text-cyan">
-                {about.location.coords}
-              </span>
-            </div>
-
-            {/* headline */}
-            <h1 className="font-display text-5xl font-extrabold leading-[1.05] tracking-tighter md:text-7xl">
-              <span className="block text-terminal">shipping code,</span>
-              <span className="block text-cyan">logging miles</span>
-            </h1>
-
-            {/* tagline */}
-            <p className="max-w-xl font-mono text-body-md leading-relaxed text-on-surface-variant">
-              <span className="text-cyan">{"// "}</span>
-              First-class CS grad · {about.title} at{" "}
-              <a
-                href={about.employer.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan hover:text-terminal hover:underline"
-              >
-                {about.employer.label}
-              </a>
-              . {about.bio}
-            </p>
-
-            {/* stack tags */}
-            <div className="flex flex-wrap gap-2">
-              {stack_tags.map(({ label, color, variant }) => (
-                <SyntaxTag key={label} color={color} variant={variant}>{label}</SyntaxTag>
-              ))}
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link
-                href="/contact"
-                className="group inline-flex items-center gap-2 bg-terminal px-5 py-3 font-mono text-[13px] font-bold text-background transition-all hover:bg-terminal-dim hover:shadow-glow-lg"
-              >
-                <span className="opacity-60 group-hover:opacity-100">$</span>
-                <span>./hello.sh</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* hero right — about.json terminal ------------------------ */}
-          <div className="lg:pl-4">
-            <TerminalWindow title="~/about.json" subtitle="json · 24 lines" glow>
-              <div className="relative">
-                {/* faint line gutter */}
-                <div className="text-[13px] leading-relaxed">
-                  <div>
-                    <span className="text-outline">{"{"}</span>
-                  </div>
-                  <JsonRow k="&quot;name&quot;" value={`"${about.name}"`} />
-                  <JsonRow k="&quot;role&quot;" value={`"${about.role}"`} />
-                  <JsonRow
-                    k="&quot;employer&quot;"
-                    value={`"${about.employer.label}"`}
-                  />
-                  <JsonRow
-                    k="&quot;title&quot;"
-                    value={`"${about.title}"`}
-                  />
-                  <JsonRow
-                    k="&quot;location&quot;"
-                    value={`"${about.location.city}, ${about.location.country}"`}
-                  />
-                  <JsonRow
-                    k="&quot;degree&quot;"
-                    value={`"${about.education.degree}"`}
-                  />
-                  <JsonRow
-                    k="&quot;result&quot;"
-                    value={`"${about.education.result}"`}
-                    valueColor="text-signal"
-                  />
-                  <div className="pl-4 leading-relaxed">
-                    <span className="text-on-surface">&quot;stack&quot;</span>
-                    <span className="text-outline">: [</span>
-                  </div>
-                  {stack.map((tech, i) => (
-                    <div
-                      key={tech}
-                      className="leading-relaxed"
-                      style={{ paddingLeft: "32px" }}
-                    >
-                      <span className="text-terminal">&quot;{tech}&quot;</span>
-                      <span className="text-outline">
-                        {i < stack.length - 1 ? "," : ""}
-                      </span>
-                    </div>
-                  ))}
-                  <div className="pl-4 leading-relaxed">
-                    <span className="text-outline">],</span>
-                  </div>
-                  <div className="pl-4 leading-relaxed">
-                    <span className="text-on-surface">&quot;status&quot;</span>
-                    <span className="text-outline">: </span>
-                    <span className="text-terminal">&quot;available&quot;</span>
-                  </div>
-                  <div>
-                    <span className="text-outline">{"}"}</span>
-                  </div>
-
-                  {/* prompt cursor */}
-                  <div className="mt-4 flex items-center gap-2 border-t border-outline-variant pt-3 text-[12px]">
-                    <span className="text-terminal">koda@portfolio-os</span>
-                    <span className="text-outline">:</span>
-                    <span className="text-cyan">~</span>
-                    <span className="text-outline">$</span>
-                    <span className="blink-cursor" />
-                  </div>
-                </div>
-              </div>
-            </TerminalWindow>
-          </div>
-        </div>
-      </section>
+      {/* Only sources that actually answered this render appear here. */}
+      <LiveStrip
+        sources={[
+          { name: "strava", age: stravaAge },
+          { name: "github", age: githubAge },
+        ]}
+      />
 
       {/* ============================================================
           STATS STRIP
@@ -431,7 +301,7 @@ export default async function Home() {
             {/* left — big echo */}
             <div className="min-w-0 space-y-6">
               <div className="font-mono text-[11px] uppercase tracking-widest text-outline">
-                // get_in_touch.sh
+                {"// get_in_touch.sh"}
               </div>
               <h2 className="font-display text-2xl font-extrabold leading-[1.05] tracking-tighter sm:text-4xl md:text-4xl lg:text-6xl">
                 <span className="block text-cyan">$ echo &quot;hello&quot;</span>
@@ -450,7 +320,7 @@ export default async function Home() {
             {/* right — link list */}
             <div className="space-y-5 md:border-l md:border-outline-variant md:pl-10">
               <div className="font-mono text-[10px] uppercase tracking-widest text-outline">
-                // links
+                {"// links"}
               </div>
               <ul className="space-y-3">
                 <LinkRow
