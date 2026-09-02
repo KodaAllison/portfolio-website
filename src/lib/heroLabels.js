@@ -45,9 +45,9 @@ const HERO_RACE_DISTANCES = new Set(["10K", "Half", "Marathon"]);
    which side of the point the text runs off towards.
 
    The `race` tier is intentionally different: its blue diamond sits on the
-   trace at the event month, while a leader carries the eye down to a dedicated
-   PB row. The marker belongs to the curve; the finish time remains visually
-   separate from the monthly-distance scale. */
+   trace at the event month and the matching text occupies a dedicated PB row.
+   The marker belongs to the curve; the finish time remains visually separate
+   from the monthly-distance scale. */
 /* A tier is a FIXED horizontal band, and the leader stretches to reach it.
 
    These were originally offsets from the annotated point, which is subtly
@@ -180,11 +180,7 @@ export function layoutHeroLabels({ pts, peak, records = [] }) {
         marker: { x: point.x, y: point.y, shape: "diamond" },
         textAnchor,
         x,
-        leader: {
-          x: point.x,
-          y1: point.y + 5,
-          y2: t.textY - LABEL_FONT_SIZE - 1,
-        },
+        leader: null,
         lines: [{ text, y: t.textY }],
       };
     });

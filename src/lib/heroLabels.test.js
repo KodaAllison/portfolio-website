@@ -133,6 +133,7 @@ test("race PBs use blue trace markers without duplicating an event split", () =>
   assert.ok(races.every((label) => label.tier === "race"));
   assert.ok(races.every((label) => label.marker.shape === "diamond"));
   assert.ok(races.every((label) => label.marker.y === label.point.y));
+  assert.ok(races.every((label) => label.leader === null));
   assert.equal(firstOverlap(races), null);
 });
 

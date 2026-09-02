@@ -170,14 +170,16 @@ export default function HeroTrace({ series, records }) {
                   : `${Math.round(900 + (marker.x / W) * 1900)}ms`,
           }}
         >
-          <line
-            x1={leader.x}
-            y1={leader.y1}
-            x2={leader.x}
-            y2={leader.y2}
-            stroke={color}
-            strokeWidth="1"
-          />
+          {leader ? (
+            <line
+              x1={leader.x}
+              y1={leader.y1}
+              x2={leader.x}
+              y2={leader.y2}
+              stroke={color}
+              strokeWidth="1"
+            />
+          ) : null}
           {marker.shape === "diamond" ? (
             <rect
               x={marker.x - 3}
