@@ -217,6 +217,76 @@ body {
 }
 
 /* --------------------------------------------------------------------------
+   Scroll motion
+   ==========================================================================
+   Two mechanisms, because two different things are being animated, and the
+   distinction is most of the work.
+
+   A section arriving is BINARY — it is either revealed or it is not — so it is
+   an IntersectionObserver. The timeline rail drawing downward in proportion to
+   scroll position is CONTINUOUS, a genuine mapping from scroll offset to a
+   property, which is exactly what CSS scroll-driven animations are for.
+
+   THE RULE THAT PREVENTS THE CLASSIC BUG: never hide content behind a feature
+   that might not exist. Everything here is visible in the base stylesheet, and
+   only ever starts from a hidden state inside a query that has already proven
+   support — @supports for the CSS timeline, the .js class for the observer
+   path. Get this backwards and an unsupported browser, or one where the JS
+   simply failed to load, shows a blank page.
+   -------------------------------------------------------------------------- */
+
+/* .js is set by an inline script in the document head, before first paint, so
+   there is no flash of visible-then-hidden content. If that script never runs,
+   every .reveal simply stays visible and nothing is lost but the animation. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(var(--reveal-rise));
+}
+
+.js .reveal[data-shown] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--reveal) ease,
+    transform var(--reveal) ease;
+}
+
+/* The rail is the one genuinely continuous mapping on the page. It is fully
+   drawn by default and only becomes scroll-driven where that can actually be
+   driven. */
+.rail {
+  transform-origin: top;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rail {
+      animation: rail-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 55%;
+    }
+
+    @keyframes rail-grow {
+      from {
+        transform: scaleY(0);
+      }
+      to {
+        transform: scaleY(1);
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal,
+  .js .reveal[data-shown] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
    DEPRECATED — Terminal OS leftovers
    ==========================================================================
    These belong to the build being replaced and are kept only so `trunk` still
