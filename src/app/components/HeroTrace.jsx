@@ -103,7 +103,7 @@ function CompactTrace({ series, yMax, label }) {
   );
 }
 
-export default function HeroTrace({ series }) {
+export default function HeroTrace({ series, records }) {
   /* No data, no chart. The design sheet is explicit that a module which cannot
      get its data does not render: no placeholder value, no zero it did not
      measure, no empty frame, no error text. The hero is the one structural
@@ -122,11 +122,16 @@ export default function HeroTrace({ series }) {
   const { d, pts } = buildTrace(visibleSeries, { ...HERO_BOX, yMax });
 
   const last = pts[pts.length - 1];
-  const labels = layoutHeroLabels({ pts, peak });
+  const labels = layoutHeroLabels({ pts, peak, records });
+  const raceSummary = labels
+    .filter(({ kind }) => kind === "race")
+    .map(({ lines }) => lines[0].text)
+    .join("; ");
 
-  const label = `Monthly running distance, ${monthLabel(visibleSeries[0].month)} to ${monthLabel(
+  const chartSummary = `Monthly running distance, ${monthLabel(visibleSeries[0].month)} to ${monthLabel(
     last.month
   )}. Highest month ${monthLabel(peak.month)} at ${fmtKm(peak.km)}.`;
+  const label = raceSummary ? `${chartSummary} Personal bests: ${raceSummary}.` : chartSummary;
 
   return (
     <>
@@ -152,29 +157,48 @@ export default function HeroTrace({ series }) {
 
       <TraceLine d={d} clipId="hero-trace-clip-wide" width={W} height={VIEW_H} />
 
-      {labels.map(({ month, tier, x, textAnchor, lines, point, leader }) => (
+      {labels.map(({ month, tier, kind, color, x, textAnchor, lines, marker, leader }) => (
         <g
-          key={month}
-          className="hero-marker"
-          style={{ animationDelay: tier === "above" ? "1.9s" : "1.5s" }}
+          key={`${kind}-${month}`}
+          className={`hero-marker hero-marker-${kind}`}
+          style={{
+            animationDelay:
+              tier === "above"
+                ? "1.9s"
+                : tier === "below"
+                  ? "1.5s"
+                  : `${Math.round(900 + (marker.x / W) * 1900)}ms`,
+          }}
         >
           <line
             x1={leader.x}
             y1={leader.y1}
             x2={leader.x}
             y2={leader.y2}
-            stroke="var(--accent)"
+            stroke={color}
             strokeWidth="1"
           />
-          <circle cx={point.x} cy={point.y} r="3.8" fill="var(--accent)" />
+          {marker.shape === "diamond" ? (
+            <rect
+              x={marker.x - 3}
+              y={marker.y - 3}
+              width="6"
+              height="6"
+              fill={color}
+              transform={`rotate(45 ${marker.x} ${marker.y})`}
+            />
+          ) : (
+            <circle cx={marker.x} cy={marker.y} r="3.8" fill={color} />
+          )}
           {lines.map(({ text, y }) => (
             <text
               key={text}
               x={x}
               y={y}
               textAnchor={textAnchor}
-              className="fill-accent font-mono"
+              className="font-mono"
               fontSize={LABEL_FONT_SIZE}
+              fill={color}
             >
               {text}
             </text>

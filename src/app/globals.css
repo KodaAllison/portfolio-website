@@ -34,12 +34,14 @@
   --text-secondary: #9a978f;  /* body copy, descriptions    7.20:1 on bg */
   --text-muted: #87847d;      /* labels, captions, axis     4.79:1 on bg */
 
-  /* One accent. Amber means live, interactive, or current — never
-     decoration. There is no second hue: no cyan, no yellow, no red-for-error.
-     Status is carried by text, not by colour alone. */
+  /* One action accent. Amber means live, interactive, or current — never
+     decoration. Race blue is a data-category colour used only for dated PB
+     markers; shape and the "pb" label carry the same distinction without
+     relying on colour alone. */
   --accent: #e0a355;
   --accent-hover: #f0bd7d;    /* link + CTA hover only */
   --accent-dim: #6b4d24;      /* borders on accent-tinted chips */
+  --race: #7fa8b5;            /* race/PB markers, 7.47:1 on bg */
 
   /* Sequential, single hue, light to dark. Used identically by the commits
      grid and the runs grid so the two can be compared by eye: same scale,

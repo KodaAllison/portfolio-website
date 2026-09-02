@@ -29,20 +29,25 @@ const MILESTONES = [
   { month: "2025-09", tier: "above", text: "started at virgin money" },
 ];
 
+// A 5K split can be the fastest five kilometres inside a 10K event. Rendering
+// both records would make one race look like two, so the hero keeps the three
+// event distances the user recognises as separate PBs.
+const HERO_RACE_DISTANCES = new Set(["10K", "Half", "Marathon"]);
+
 /* A tier is the horizontal band a label hangs in, reached by a leader line off
-   the point. Nothing is ever placed on the trace itself: labels go above the
-   plot, just under the axis rule, or below that. Label collision happened twice
-   while this chart was being designed — and a label sitting on the curve it
-   annotates is the same failure with a different neighbour.
+   the point. No text is placed on the trace itself: labels go above the plot,
+   just under the axis rule, or below that. Label collision happened twice while
+   this chart was being designed — and a label sitting on the curve it annotates
+   is the same failure with a different neighbour.
 
    Offsets are signed distances from the annotated point: where the leader
    starts and ends, where the first text baseline sits past the leader, and
    which side of the point the text runs off towards.
 
-   The third tier — `axis`, for race markers — has no entry yet on purpose. Its
-   labels hang off the axis rule at a fixed y rather than off their point, so
-   its geometry is a different shape from these two and is better written
-   against a real marker than guessed at now. */
+   The `race` tier is intentionally different: its blue diamond sits on the
+   trace at the event month, while a leader carries the eye down to a dedicated
+   PB row. The marker belongs to the curve; the finish time remains visually
+   separate from the monthly-distance scale. */
 /* A tier is a FIXED horizontal band, and the leader stretches to reach it.
 
    These were originally offsets from the annotated point, which is subtly
@@ -62,6 +67,7 @@ const MILESTONES = [
 const TIERS = {
   above: { textY: 16.4, dx: 9, textAnchor: "start", leaderGap: -6, leaderPad: 7 },
   below: { textY: 296.4, dx: -9, textAnchor: "end", leaderGap: 6, leaderPad: -12 },
+  race: { textY: 280, dx: 8 },
 };
 
 
@@ -97,13 +103,13 @@ function qualifies(point, sorted) {
  * `x`/`textAnchor` together fix the label's horizontal extent. The caller adds
  * nothing to these numbers — everything a collision could come from is here.
  */
-export function layoutHeroLabels({ pts, peak }) {
+export function layoutHeroLabels({ pts, peak, records = [] }) {
   if (!Array.isArray(pts) || pts.length === 0) return [];
 
   const sorted = [...pts].sort((a, b) => a.km - b.km);
   const top = peak ?? sorted[sorted.length - 1];
 
-  return MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
+  const milestones = MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
     .filter(({ point, tier }) => point && TIERS[tier] && qualifies(point, sorted))
     .map(({ month, tier, text, point }) => {
       const t = TIERS[tier];
@@ -115,7 +121,7 @@ export function layoutHeroLabels({ pts, peak }) {
       const texts =
         point.month === top.month
           ? [`${monthLabel(month)} · ${text}`, `${fmtKm(point.km)} — the biggest month in the log`]
-          : [`${monthLabel(month)} · ${text} · ${fmtKm(point.km)}`];
+          : [`${monthLabel(month)} · ${text}`];
 
       const lines = texts.map((line, i) => ({ text: line, y: t.textY + i * LINE_HEIGHT }));
 
@@ -127,7 +133,10 @@ export function layoutHeroLabels({ pts, peak }) {
       return {
         month,
         tier,
+        kind: "milestone",
+        color: "var(--accent)",
         point,
+        marker: { x: point.x, y: point.y, shape: "circle" },
         textAnchor: t.textAnchor,
         x: point.x + t.dx,
         // The leader runs from just off the curve out to the tier, so the label
@@ -136,6 +145,51 @@ export function layoutHeroLabels({ pts, peak }) {
         lines,
       };
     });
+
+  const races = (Array.isArray(records) ? records : [])
+    .filter(
+      ({ distance, time, date, note }) =>
+        HERO_RACE_DISTANCES.has(distance)
+        && typeof time === "string"
+        && typeof date === "string"
+        && /^\d{4}-\d{2}-\d{2}$/.test(date)
+        && typeof note === "string"
+        && note.trim().length > 0,
+    )
+    .map((record) => ({
+      record,
+      month: record.date.slice(0, 7),
+      point: pts.find((point) => point.month === record.date.slice(0, 7)),
+    }))
+    .filter(({ point }) => point)
+    .sort((a, b) => a.month.localeCompare(b.month))
+    .map(({ month, point, record }) => {
+      const t = TIERS.race;
+      const text = `${record.note.trim().toLowerCase()} · ${record.time} pb`;
+      const width = text.length * LABEL_FONT_SIZE * 0.6;
+      const runsOffRight = point.x + t.dx + width > HERO_BOX.w;
+      const textAnchor = runsOffRight ? "end" : "start";
+      const x = point.x + (runsOffRight ? -t.dx : t.dx);
+
+      return {
+        month,
+        tier: "race",
+        kind: "race",
+        color: "var(--race)",
+        point,
+        marker: { x: point.x, y: point.y, shape: "diamond" },
+        textAnchor,
+        x,
+        leader: {
+          x: point.x,
+          y1: point.y + 5,
+          y2: t.textY - LABEL_FONT_SIZE - 1,
+        },
+        lines: [{ text, y: t.textY }],
+      };
+    });
+
+  return [...milestones, ...races];
 }
 
 export { monthLabel };

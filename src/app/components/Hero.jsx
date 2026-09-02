@@ -7,7 +7,7 @@ import about from "../../data/about.json";
    When the trace has no data it renders nothing and the headline simply rises
    into the space — the degraded state the design sheet asks for. There is no
    empty frame and no error text, so this component needs no branch of its own. */
-export default function Hero({ series }) {
+export default function Hero({ series, records }) {
   const hasChart = Array.isArray(series) && series.length > 0;
 
   return (
@@ -20,7 +20,7 @@ export default function Hero({ series }) {
        when there is not. */
     <header className={`flex flex-col border-b border-line ${hasChart ? "md:min-h-[660px]" : ""}`}>
       <div className="px-5 pt-[44px] md:px-[72px]">
-        <HeroTrace series={series} />
+        <HeroTrace series={series} records={records} />
       </div>
 
       <div className="mt-auto px-5 pb-space-5 pt-space-6 md:px-[72px]">

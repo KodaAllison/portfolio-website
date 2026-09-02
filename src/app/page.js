@@ -76,7 +76,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen">
       <Navbar />
-      <Hero series={strava?.monthly_km} />
+      <Hero series={strava?.monthly_km} records={strava?.personal_records} />
       <LiveStrip sources={sources} />
 
       <section className="px-5 pt-[76px] md:px-[72px]">

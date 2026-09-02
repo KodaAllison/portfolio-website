@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 
 const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8");
 const component = readFileSync(new URL("../app/components/HeroTrace.jsx", import.meta.url), "utf8");
+const hero = readFileSync(new URL("../app/components/Hero.jsx", import.meta.url), "utf8");
+const home = readFileSync(new URL("../app/page.js", import.meta.url), "utf8");
 
 function milliseconds(value) {
   if (value.endsWith("ms")) return Number.parseFloat(value);
@@ -28,6 +30,13 @@ test("the hero intentionally limits the Strava history to two years", () => {
   assert.match(component, /const HERO_MONTHS = 24/);
   assert.match(component, /const visibleSeries = series\.slice\(-HERO_MONTHS\)/);
   assert.match(component, /MONTHLY KM · \{visibleSeries\.length\} MONTHS · STRAVA/);
+});
+
+test("live personal records reach the hero annotations", () => {
+  assert.match(home, /<Hero series=\{strava\?\.monthly_km\} records=\{strava\?\.personal_records\} \/>/);
+  assert.match(hero, /<HeroTrace series=\{series\} records=\{records\} \/>/);
+  assert.match(component, /layoutHeroLabels\(\{ pts, peak, records \}\)/);
+  assert.match(component, /Personal bests: \$\{raceSummary\}/);
 });
 
 test("the current-point reveal cannot start before the trace finishes drawing", () => {
