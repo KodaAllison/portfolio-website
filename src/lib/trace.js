@@ -19,7 +19,7 @@ const round = (v) => Math.round(v * 100) / 100;
  * Returns `{ d, pts, at }`: the path string, the plotted points (each carrying
  * its source datum), and a lookup by month.
  */
-export function buildTrace(series, { w, padTop, innerH, yMax }) {
+export function buildTrace(series, { w, padTop, innerH, yMax, padX = 0 }) {
   const n = series.length;
 
   // Nothing to plot. An empty `d` is a valid path that renders nothing, which
@@ -28,8 +28,9 @@ export function buildTrace(series, { w, padTop, innerH, yMax }) {
 
   // A single point has no span to divide by, and `(0 * w) / 0` is NaN — one
   // NaN anywhere in `d` makes the browser drop the entire path silently. Pin
-  // it to x=0 so `pts[0].x === 0` holds for every series length.
-  const x = (i) => (n === 1 ? 0 : round((i * w) / (n - 1)));
+  // it to the plot's left edge so a padded chart still has a valid point.
+  const plotW = Math.max(0, w - padX * 2);
+  const x = (i) => (n === 1 ? padX : round(padX + (i * plotW) / (n - 1)));
 
   // yMax comes from niceYTicks, which returns 0 only when every month is zero
   // (a fresh Strava account). Guarding here turns that into a flat line along

@@ -11,8 +11,9 @@ import { monthLabel } from "./date.js";
 // The plot box, in the artboard's own coordinate space. These are not taste:
 // solving the artboard's plotted points (130.6 km at y=69.4, 9.5 km at y=248.4)
 // against yMax=150 gives innerH=221.72 and padTop=40.72, which puts the zero
-// line at y=262.44 — the artboard's axis rule sits at 262.
-export const HERO_BOX = { w: 1296, padTop: 40.72, innerH: 221.72 };
+// line at y=262.44 — the artboard's axis rule sits at 262. The 24px horizontal
+// inset contains the 5px endpoint when its pulse expands to 3.8x.
+export const HERO_BOX = { w: 1296, padX: 24, padTop: 40.72, innerH: 221.72 };
 export const HERO_BASELINE = HERO_BOX.padTop + HERO_BOX.innerH;
 
 // Exported because the width of a label is a function of this: change the font
@@ -151,6 +152,6 @@ export { monthLabel };
    peak sits at y=40.1 and its axis rule at y=144, which against yMax=150 gives
    innerH=119.33 and padTop=24.67. The 196 tall viewBox is what fixes the
    chart's aspect ratio, and so its rendered height, at any width. */
-export const HERO_BOX_COMPACT = { w: 346, padTop: 24.67, innerH: 119.33 };
+export const HERO_BOX_COMPACT = { w: 346, padX: 24, padTop: 24.67, innerH: 119.33 };
 export const HERO_COMPACT_VIEW_H = 196;
 export const HERO_COMPACT_BASELINE = HERO_BOX_COMPACT.padTop + HERO_BOX_COMPACT.innerH;
