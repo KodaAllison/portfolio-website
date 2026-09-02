@@ -52,26 +52,6 @@ module.exports = {
           4: "var(--heat-4)",
         },
 
-        // DEPRECATED — Terminal OS palette. Retained only so the not-yet-
-        // rebuilt sections keep rendering on trunk; deleted with the
-        // terminal-era components (Koder ticket t_mtk6uycb_6831c). Do not
-        // reach for these in new work.
-        background: "#020617",
-        "surface-container-lowest": "#0a0f14",
-        "surface-container-low": "#171c21",
-        "surface-container": "#1b2025",
-        "surface-container-high": "#252a30",
-        "surface-container-highest": "#30353b",
-        "surface-bright": "#353a3f",
-        "terminal-header": "#1e293b",
-        terminal: "#00ffc2",
-        "terminal-dim": "#00e1ab",
-        signal: "#ffe600",
-        cyan: "#22d3ee",
-        "on-surface": "#dee3ea",
-        "on-surface-variant": "#b9cbc1",
-        outline: "#83958c",
-        "outline-variant": "#3a4a43",
       },
 
       // Three families, three jobs — see the note in globals.css.
@@ -114,16 +94,6 @@ module.exports = {
         "space-6": "32px",  // card padding
         "space-7": "44px",  // between sub-blocks
 
-        // DEPRECATED — the old layout scale, still load-bearing for the 35
-        // call sites in the sections that have not been rebuilt yet (removing
-        // them silently drops every page's padding and max width, which
-        // renders but looks broken). Out with the terminal-era components.
-        // Note max-w-container-max works because Tailwind 3.4's maxWidth
-        // scale spreads theme('spacing').
-        gutter: "24px",
-        "margin-desktop": "48px",
-        "margin-mobile": "20px",
-        "container-max": "1440px",
       },
 
       transitionDuration: {

@@ -1,4 +1,3 @@
-import Reveal from "./Reveal";
 import { monthLabel } from "../../lib/date";
 
 /* The experience timeline, as a date rail.
@@ -28,9 +27,9 @@ function when(entry) {
   return monthLabel(entry.date);
 }
 
-function Row({ entry, current, delay }) {
+function Row({ entry, current }) {
   return (
-    <Reveal as="li" delay={delay} className="relative grid gap-space-2 pb-space-7 md:grid-cols-[190px_minmax(0,1fr)] md:gap-space-6">
+    <li className="relative grid gap-space-2 pb-space-7 md:grid-cols-[190px_minmax(0,1fr)] md:gap-space-6">
       <div className="font-mono text-mono-s md:pl-space-5">
         {/* "Now" is a claim about the present, so it is only made for an entry
             the data says has not ended. */}
@@ -70,11 +69,11 @@ function Row({ entry, current, delay }) {
           </dl>
         )}
       </div>
-    </Reveal>
+    </li>
   );
 }
 
-export default function Timeline({ entries = [] }) {
+export default function Timeline({ entries = [], showCurrent = true }) {
   if (entries.length === 0) return null;
 
   return (
@@ -87,10 +86,7 @@ export default function Timeline({ entries = [] }) {
             entry={entry}
             // Only the newest entry can be current, and only if nothing closed
             // it off.
-            current={i === 0 && !entry.until}
-            // Staggered, but capped: past the fourth row a per-row delay stops
-            // reading as sequence and starts reading as lag.
-            delay={Math.min(i, 3) * 60}
+            current={showCurrent && i === 0 && !entry.until}
           />
         ))}
       </ol>

@@ -28,7 +28,7 @@ export default function Hero({ series }) {
             Not animated — this is the LCP text, and fading it in would delay
             LCP by exactly the length of the fade in exchange for nothing. */}
         <h1 className="font-display text-display-xl uppercase text-ink">
-          <span className="block">I build things</span>
+          <span className="block">I build things </span>
           <span className="block text-accent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:1.5px_var(--accent)]">
             and keep them running
           </span>
