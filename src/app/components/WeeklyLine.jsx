@@ -1,15 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-
-function niceYTicks(peak) {
-  for (const step of [5, 10, 15, 20, 25, 30, 50, 75, 100]) {
-    const max = Math.ceil(peak / step) * step;
-    if (max / step <= 4) {
-      return Array.from({ length: max / step + 1 }, (_, i) => i * step);
-    }
-  }
-  return [0, 50, 100];
-}
+import { niceYTicks } from "../../lib/trace";
 
 export default function WeeklyLine({ data = [], className = "" }) {
   const [hovered, setHovered] = useState(null);
