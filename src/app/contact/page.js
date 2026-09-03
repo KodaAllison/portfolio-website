@@ -16,7 +16,7 @@ export default function ContactPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      <header className="border-b border-line px-5 pb-space-7 pt-space-7 md:px-[72px] md:pb-14 md:pt-28">
+      <header className="border-b border-line px-5 pb-space-7 pt-space-5 md:px-[72px] md:pb-14 md:pt-28">
         <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Contact</p>
         <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
           Say hello<span className="text-accent">.</span>

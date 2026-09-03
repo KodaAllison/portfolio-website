@@ -19,7 +19,7 @@ export default function Hero({ series, records }) {
        pushed down by mt-auto, which pins it when there is room and lets it rise
        when there is not. */
     <header className={`flex flex-col border-b border-line ${hasChart ? "md:min-h-[660px]" : ""}`}>
-      <div className="px-5 pt-[44px] md:px-[72px]">
+      <div className="px-5 pt-space-5 md:px-[72px] md:pt-[44px]">
         <HeroTrace series={series} records={records} />
       </div>
 

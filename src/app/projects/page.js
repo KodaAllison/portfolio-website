@@ -20,7 +20,7 @@ export default async function ProjectsPage() {
     <main className="min-h-screen">
       <Navbar />
 
-      <header className="border-b border-line px-5 pb-space-7 pt-space-7 md:px-[72px] md:pb-14 md:pt-28">
+      <header className="border-b border-line px-5 pb-space-7 pt-space-5 md:px-[72px] md:pb-14 md:pt-28">
         <div className={`grid gap-space-7 ${github ? "lg:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] lg:items-end lg:gap-16" : ""}`}>
           <div>
             <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Projects</p>
