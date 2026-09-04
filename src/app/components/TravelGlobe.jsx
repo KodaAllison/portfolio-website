@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import world from "world-atlas/countries-110m.json";
 import { topologyFeatureCollection } from "../../lib/topology";
 
 function secondsFromToken(value, fallback) {
@@ -28,8 +27,14 @@ export default function TravelGlobe({ countries }) {
 
     async function initialise() {
       try {
-        const d3 = await import("d3-geo");
-        const geography = topologyFeatureCollection(world, "countries");
+        // Keep both the geometry and D3 out of the initial page bundle. The
+        // static SVG remains a useful fallback while this optional enhancement
+        // loads.
+        const [d3, worldModule] = await Promise.all([
+          import("d3-geo"),
+          import("world-atlas/countries-110m.json"),
+        ]);
+        const geography = topologyFeatureCollection(worldModule.default, "countries");
         if (disposed || !Array.isArray(geography.features)) return;
 
         const context = canvas.getContext("2d");

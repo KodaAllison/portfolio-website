@@ -51,9 +51,8 @@ export default async function ProjectsPage() {
 
       <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <h2 className="mb-space-5 font-display text-heading-l text-ink">Selected work</h2>
-        <ProjectCard project={projects[0]} featured />
         <div className="grid gap-x-12 md:grid-cols-2">
-          {active.slice(1).map((project) => <ProjectCard key={project.id} project={project} />)}
+          {active.map((project) => <ProjectCard key={project.id} project={project} />)}
         </div>
       </section>
 

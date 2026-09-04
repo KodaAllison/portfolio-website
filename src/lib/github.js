@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache";
+import { fetchWithTimeout } from "./fetch.js";
 
 const USERNAME = "KodaAllison";
 const API = "https://api.github.com";
@@ -34,7 +35,7 @@ function toIntensity(count) {
 }
 
 async function gh(path) {
-  let res = await fetch(`${API}${path}`, {
+  let res = await fetchWithTimeout(`${API}${path}`, {
     headers: headers(),
     cache: "no-store",
   });
@@ -44,7 +45,7 @@ async function gh(path) {
   // and server failures still fail the complete module rather than returning a
   // partial heatmap.
   if (res.status === 401 && process.env.GITHUB_TOKEN) {
-    res = await fetch(`${API}${path}`, {
+    res = await fetchWithTimeout(`${API}${path}`, {
       headers: headers({ authenticated: false }),
       cache: "no-store",
     });

@@ -6,6 +6,8 @@
 //
 // The returned shape is identical to what this file used to compute itself, so
 // callers (page.js, run/page.js) need no changes.
+import { fetchWithTimeout } from "./fetch.js";
+
 const STRAVA_DATA_URL =
   process.env.STRAVA_DATA_URL ??
   "https://strava-data.strava-data.workers.dev/data";
@@ -16,7 +18,7 @@ export async function fetchStravaData() {
   // prerendered at the last *deploy*, which drifts months stale between pushes.
   // The Worker endpoint is a KV read behind a 5-minute edge cache, so hitting
   // it on every request is fast and always fresh.
-  const res = await fetch(STRAVA_DATA_URL, { cache: "no-store" });
+  const res = await fetchWithTimeout(STRAVA_DATA_URL, { cache: "no-store" });
   if (!res.ok) throw new Error(`strava-worker /data failed: ${res.status}`);
   return res.json();
 }

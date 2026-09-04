@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "./fetch.js";
+
 const LITERAL_API = "https://literal.club/graphql/";
 const CACHE_SECONDS = 3600;
 
@@ -51,7 +53,7 @@ function portfolioBook(book) {
 }
 
 async function literalRequest(query, variables) {
-  const response = await fetch(LITERAL_API, {
+  const response = await fetchWithTimeout(LITERAL_API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query, variables }),

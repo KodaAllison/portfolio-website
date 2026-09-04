@@ -1,5 +1,58 @@
 [
   {
+    "id": "koder",
+    "slug": "koder",
+    "title": "Koder",
+    "file": "koder.js",
+    "path": "~/projects/koder.js",
+    "permissions": "-rw-r--r--",
+    "size": "214k",
+    "category": "web",
+    "status": "featured",
+    "tagline": "Personal kanban PWA. Offline-first. CLI and agent-friendly workflow.",
+    "description": "A personal kanban board built from scratch as a dependency-free PWA. It paints instantly from localStorage and syncs to a small Deno Deploy API backed by Deno KV, with conflict handling when the board changes in more than one place. A terminal CLI lets me file, list, edit, move, or delete tickets without opening the board, and a reusable agent skill wraps that workflow. Supporting scripts generate the project list and stamp the service-worker cache from the app shell. Signed GitHub webhooks then move linked work through review and done as pull requests change state.",
+    "tags": [
+      {
+        "label": "progressive-web-app",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "deno",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "deno-kv",
+        "color": "terminal",
+        "variant": "flag"
+      },
+      {
+        "label": "service-worker",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "github-webhooks",
+        "color": "signal",
+        "variant": "flag"
+      },
+      {
+        "label": "cli-tooling",
+        "color": "cyan",
+        "variant": "flag"
+      },
+      {
+        "label": "zero-dependencies",
+        "color": "muted",
+        "variant": "flag"
+      }
+    ],
+    "image": null,
+    "gitUrl": "https://github.com/KodaAllison/koder",
+    "previewUrl": null
+  },
+  {
     "id": "swiftplan",
     "slug": "swiftplan",
     "title": "SwiftPlan",

@@ -1,3 +1,5 @@
+import { fetchWithTimeout } from "./fetch.js";
+
 const HOLITRACKR_STATS_URL =
   process.env.HOLITRACKR_STATS_URL ??
   "https://myatlasio.vercel.app/api/public/stats";
@@ -58,7 +60,9 @@ export function normalizePublicStats(payload) {
 }
 
 export async function fetchHoliTrackrStats() {
-  const response = await fetch(HOLITRACKR_STATS_URL, { cache: "no-store" });
+  const response = await fetchWithTimeout(HOLITRACKR_STATS_URL, {
+    next: { revalidate: 3600 },
+  });
   if (!response.ok) {
     throw new Error(`HoliTrackr public stats failed: ${response.status}`);
   }

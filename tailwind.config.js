@@ -14,7 +14,7 @@
 //
 // `line` is also the grid-seam colour: seams are a 1px gap over a bg-line
 // background, never per-cell borders.
-module.exports = {
+const config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -131,3 +131,5 @@ module.exports = {
   },
   plugins: [],
 };
+
+export default config;

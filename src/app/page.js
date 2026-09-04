@@ -114,9 +114,8 @@ export default async function Home() {
 
       <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Personal projects" link="/projects" label={`all ${projects.length}`} />
-        <ProjectCard project={projects[0]} featured />
         <div className="grid gap-x-12 md:grid-cols-2">
-          {projects.slice(1, 3).map((project) => (
+          {projects.slice(0, 4).map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>

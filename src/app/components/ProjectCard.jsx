@@ -28,10 +28,12 @@ function ProjectLinks({ project }) {
 }
 
 export default function ProjectCard({ project, featured = false }) {
+  const hasFeatureImage = featured && project.image;
+
   return (
     <article
       className={`group border-t border-line py-space-6 ${
-        featured ? "md:grid md:grid-cols-[1.35fr_1fr] md:gap-12" : ""
+        hasFeatureImage ? "md:grid md:grid-cols-[1.35fr_1fr] md:gap-12" : ""
       }`}
     >
       <div className="flex flex-col gap-space-3">
@@ -51,24 +53,16 @@ export default function ProjectCard({ project, featured = false }) {
         <ProjectLinks project={project} />
       </div>
 
-      {featured ? (
+      {hasFeatureImage ? (
         <div className="mt-space-6 flex min-h-56 items-center justify-center border-l border-line bg-surface-sunken p-space-6 md:mt-0">
-          {project.image ? (
-            <Image
-              src={project.image}
-              alt=""
-              width={520}
-              height={320}
-              className="max-h-64 w-full object-contain opacity-80 grayscale transition duration-spine group-hover:grayscale-0"
-            />
-          ) : (
-            <div className="w-full font-mono text-mono-s leading-loose text-ink-muted">
-              <p>research <span className="text-accent">→</span> working teachers</p>
-              <p>build <span className="text-accent">→</span> structured AI output</p>
-              <p>evaluate <span className="text-accent">→</span> usefulness</p>
-              <p>result <span className="text-accent">→</span> first-class dissertation</p>
-            </div>
-          )}
+          <Image
+            src={project.image}
+            alt=""
+            width={520}
+            height={320}
+            sizes="(min-width: 768px) 38vw, 100vw"
+            className="max-h-64 w-full object-contain opacity-80 grayscale transition duration-spine group-hover:grayscale-0"
+          />
         </div>
       ) : null}
     </article>
