@@ -13,7 +13,7 @@ export default function Bookshelf({ current }) {
     <figure aria-label={`Currently reading ${book.title}${book.author ? ` by ${book.author}` : ""}`}>
       <div className="grid min-h-[260px] grid-cols-[1fr_52px] border border-line bg-surface-sunken">
         <div className="flex flex-col justify-between p-space-6">
-          <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-accent">
+          <p className="font-mono text-mono-xs text-accent">
             Reading now
           </p>
           <div>

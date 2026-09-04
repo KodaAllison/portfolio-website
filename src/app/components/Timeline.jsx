@@ -5,7 +5,8 @@ import { monthLabel } from "../../lib/date";
    This replaces a `git log --graph` rendering of the same data. The commit
    vocabulary — hashes, refs, conventional-commit prefixes — was decoration
    standing in for structure; the rail gets its structure from alignment
-   instead, so the dates read as a column and the entries as a column.
+   instead. On wide screens it divides dates from entries; on small screens it
+   becomes a dedicated gutter so the copy never crowds or crosses the line.
 
    Milestones that could not earn an annotation on the hero chart live here.
    A career date has no height on a distance curve, but on a rail it does not
@@ -16,7 +17,10 @@ import { monthLabel } from "../../lib/date";
 // the browser can actually drive it — see the .rail rules in globals.css.
 function Rail() {
   return (
-    <div aria-hidden className="absolute bottom-0 left-0 top-0 w-px bg-line">
+    <div
+      aria-hidden
+      className="absolute bottom-0 left-space-3 top-0 w-px bg-line md:left-[226px]"
+    >
       <div className="rail h-full w-full bg-line-strong" />
     </div>
   );
@@ -29,8 +33,19 @@ function when(entry) {
 
 function Row({ entry, current }) {
   return (
-    <li className="relative grid gap-space-2 pb-space-7 md:grid-cols-[190px_minmax(0,1fr)] md:gap-space-6">
-      <div className="font-mono text-mono-s md:pl-space-5">
+    <li className="relative grid grid-cols-[24px_minmax(0,1fr)] gap-x-space-3 border-b border-line-subtle py-space-4 last:border-b-0 md:grid-cols-[190px_24px_minmax(0,1fr)] md:gap-x-space-5 md:py-space-5">
+      <div
+        aria-hidden
+        className="relative z-10 col-start-1 row-span-2 row-start-1 flex justify-center md:col-start-2 md:row-span-1"
+      >
+        <span
+          className={`mt-space-1 block h-[9px] w-[9px] rounded-full border-2 bg-bg ${
+            current ? "border-accent" : "border-ink-muted"
+          }`}
+        />
+      </div>
+
+      <div className="col-start-2 row-start-1 font-mono text-mono-s md:col-start-1">
         {/* "Now" is a claim about the present, so it is only made for an entry
             the data says has not ended. */}
         {current ? (
@@ -41,7 +56,7 @@ function Row({ entry, current }) {
         {entry.location && <div className="mt-1 text-ink-muted">{entry.location}</div>}
       </div>
 
-      <div className="min-w-0 md:pl-space-5">
+      <div className="col-start-2 row-start-2 mt-space-1 min-w-0 md:col-start-3 md:row-start-1 md:mt-0">
         {/* Rendered exactly as the data has it. CSS `capitalize` was tried and
             is wrong here: it title-cases every word, which turns "bsc computer
             science" into "Bsc Computer Science" and "joined virgin money as
@@ -77,7 +92,7 @@ export default function Timeline({ entries = [], showCurrent = true }) {
   if (entries.length === 0) return null;
 
   return (
-    <div className="relative">
+    <div className="relative mt-space-5 border-t border-line md:mt-space-6">
       <Rail />
       <ol className="m-0 list-none p-0">
         {entries.map((entry, i) => (

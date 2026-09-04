@@ -5,7 +5,7 @@ const MenuOverlay = ({ links, pathname, onClose }) => {
   const isActive = (path) => (path === "/" ? pathname === "/" : pathname?.startsWith(path));
 
   return (
-    <div className="border-t border-line md:hidden">
+    <div id="mobile-navigation" className="border-t border-line md:hidden">
       <ul className="flex flex-col py-space-3">
         {links.map(({ title, path, external }) => {
           const active = !external && isActive(path);
@@ -26,7 +26,6 @@ const MenuOverlay = ({ links, pathname, onClose }) => {
             </li>
           );
         })}
-        <li className="px-5 py-space-3 font-mono text-mono-m text-accent">open to work</li>
       </ul>
     </div>
   );

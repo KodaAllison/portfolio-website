@@ -23,7 +23,7 @@ export default async function ProjectsPage() {
       <header className="border-b border-line px-5 pb-space-7 pt-space-5 md:px-[72px] md:pb-14 md:pt-28">
         <div className={`grid gap-space-7 ${github ? "lg:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] lg:items-end lg:gap-16" : ""}`}>
           <div>
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Projects</p>
+            <p className="font-mono text-mono-xs text-ink-muted">Projects</p>
             <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
               Things I built<span className="text-accent">.</span>
             </h1>
@@ -47,12 +47,6 @@ export default async function ProjectsPage() {
             </aside>
           ) : null}
         </div>
-        <div className="mt-space-7 flex flex-wrap gap-space-6 border-t border-line pt-space-4 font-mono text-mono-s text-ink-muted">
-          <span>all · {projects.length}</span>
-          <span>live · {projects.filter((project) => project.status === "live").length}</span>
-          <span>featured · {projects.filter((project) => project.status === "featured").length}</span>
-          <span>archived · {archive.length}</span>
-        </div>
       </header>
 
       <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
@@ -65,7 +59,7 @@ export default async function ProjectsPage() {
 
       {archive.length ? (
         <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
-          <div className="mb-space-5 flex items-baseline justify-between border-b border-line pb-space-4">
+          <div className="mb-space-5 flex flex-col gap-space-2 border-b border-line pb-space-4 sm:flex-row sm:items-baseline sm:justify-between">
             <h2 className="font-display text-heading-l text-ink">Archive</h2>
             <span className="font-mono text-mono-xs text-ink-muted">still up, no longer maintained</span>
           </div>
@@ -74,7 +68,7 @@ export default async function ProjectsPage() {
               <h3 className="font-display text-heading-s text-ink">{project.title}</h3>
               <p className="text-body-m text-ink-secondary">{project.tagline}</p>
               {project.gitUrl ? (
-                <a href={project.gitUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-mono-s text-accent hover:text-accent-hover">source →</a>
+                <a href={project.gitUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-mono-s text-accent hover:text-accent-hover">View source</a>
               ) : null}
             </article>
           ))}

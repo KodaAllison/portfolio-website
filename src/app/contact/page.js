@@ -17,7 +17,7 @@ export default function ContactPage() {
       <Navbar />
 
       <header className="border-b border-line px-5 pb-space-7 pt-space-5 md:px-[72px] md:pb-14 md:pt-28">
-        <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Contact</p>
+        <p className="font-mono text-mono-xs text-ink-muted">Contact</p>
         <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">
           Say hello<span className="text-accent">.</span>
         </h1>
@@ -31,7 +31,7 @@ export default function ContactPage() {
       </header>
 
       <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
-        <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Email</h2>
+        <h2 className="font-mono text-mono-xs text-ink-muted">Email</h2>
         <div className="mt-space-4">
           <CopyEmail email={social.email.address} />
         </div>
@@ -47,21 +47,20 @@ export default function ContactPage() {
 
       <section className="grid gap-12 px-5 pt-space-7 md:grid-cols-2 md:px-[72px] md:pt-[76px]">
         <div>
-          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Elsewhere</h2>
+          <h2 className="font-mono text-mono-xs text-ink-muted">Elsewhere</h2>
           <ul className="mt-space-4 border-t border-line">
             {elsewhere.map((item) => (
               <li key={item.name}>
-                <Link href={item.href} target="_blank" rel="noopener noreferrer" className="group grid grid-cols-[90px_1fr_auto] items-baseline gap-space-3 border-b border-line-subtle py-space-4 font-mono text-mono-s">
+                <Link href={item.href} target="_blank" rel="noopener noreferrer" className="grid min-h-11 grid-cols-[72px_minmax(0,1fr)] items-baseline gap-space-3 border-b border-line-subtle py-space-4 font-mono text-mono-s hover:text-accent">
                   <span className="text-ink-muted">{item.name}</span>
-                  <span className="text-ink">/{item.handle}</span>
-                  <span className="text-accent transition-transform duration-hover group-hover:translate-x-1">{item.note} →</span>
+                  <span className="min-w-0 break-all text-ink">/{item.handle}</span>
                 </Link>
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <h2 className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Working together</h2>
+          <h2 className="font-mono text-mono-xs text-ink-muted">Working together</h2>
           <dl className="mt-space-4 border-t border-line">
             <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Rhythm</dt><dd className="font-display text-heading-s text-ink">Asynchronous</dd></div>
             <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Timezone</dt><dd className="font-display text-heading-s text-ink">Glasgow · GMT/BST</dd></div>

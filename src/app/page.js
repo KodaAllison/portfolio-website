@@ -3,7 +3,6 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import LiveStrip from "./components/LiveStrip";
 import Timeline from "./components/Timeline";
-import CommitHeatmap from "./components/CommitHeatmap";
 import ProjectCard from "./components/ProjectCard";
 import SectionHeading from "./components/SectionHeading";
 import SiteFooter from "./components/SiteFooter";
@@ -20,7 +19,7 @@ function Metric({ value, label }) {
   return (
     <div>
       <p className="font-display text-display-m tabular-nums text-ink">{value}</p>
-      <p className="mt-space-2 font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">
+      <p className="mt-space-2 font-mono text-mono-xs text-ink-muted">
         {label}
       </p>
     </div>
@@ -30,7 +29,7 @@ function Metric({ value, label }) {
 function DataRoute({ label, route, note }) {
   return (
     <div className="border-b border-line-subtle py-space-4 last:border-0">
-      <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">{label}</p>
+      <p className="font-mono text-mono-xs text-ink-muted">{label}</p>
       <p className="mt-space-2 font-mono text-mono-m text-ink">
         {route.map((part, index) => (
           <span key={part}>
@@ -84,7 +83,7 @@ export default async function Home() {
 
         <article className="-mx-5 bg-surface px-5 py-space-6 md:-mx-[72px] md:px-[72px] md:py-space-7">
           <div className="flex flex-wrap items-baseline justify-between gap-space-3 font-mono text-mono-xs">
-            <span className="uppercase tracking-[0.14em] text-accent">Now · since Sep 2025</span>
+            <span className="text-accent">Now · since Sep 2025</span>
             <span className="text-ink-muted">Glasgow</span>
           </div>
           <h3 className="mt-space-3 font-display text-heading-m text-ink">
@@ -122,7 +121,7 @@ export default async function Home() {
         <div className={`grid border-y border-line ${travel ? "md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line" : ""}`}>
           {travel ? (
             <article className="py-space-6 md:pr-space-6">
-              <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">
+              <p className="font-mono text-mono-xs text-ink-muted">
                 {travel.source === "live"
                   ? "Travel · live from HoliTrackr"
                   : `Travel · snapshot ${relativeTime(travel.generatedAt)}`}
@@ -140,13 +139,15 @@ export default async function Home() {
               </div>
             </article>
           ) : null}
-          <article className={travel ? "border-t border-line py-space-6 md:border-0 md:pl-space-6" : "py-space-6"}>
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">Reading</p>
-            <div className="mt-space-4"><Bookshelf current={about.currently.reading} /></div>
+          <article className={travel ? "border-t border-line py-space-6 md:flex md:flex-col md:border-0 md:pl-space-6" : "py-space-6"}>
+            <p className="font-mono text-mono-xs text-ink-muted">Reading</p>
+            <div className="mt-space-4 md:grid md:flex-1 md:items-center">
+              <Bookshelf current={about.currently.reading} />
+            </div>
           </article>
         </div>
         <article className="flex flex-col gap-space-5 border-b border-line py-space-5 md:flex-row md:items-center">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted md:w-32">Running</p>
+            <p className="font-mono text-mono-xs text-ink-muted md:w-32">Running</p>
             <p className="font-display text-heading-s text-ink">{about.currently.training}</p>
             {strava ? (
               <div className="grid grid-cols-2 gap-space-6 md:ml-auto">
@@ -160,19 +161,6 @@ export default async function Home() {
         </article>
       </section>
 
-      {github ? (
-        <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
-          <SectionHeading title="Recent commits" />
-          <div className="grid gap-space-6 border-y border-line py-space-6 md:grid-cols-[280px_1fr] md:items-end">
-            <div className="grid grid-cols-2 gap-space-6">
-              <Metric value={github.commits_30d} label="commits · 30d" />
-              <Metric value={`${github.longest_streak}d`} label="longest streak" />
-            </div>
-            <CommitHeatmap columns={12} rows={4} data={github.heatmap} />
-          </div>
-        </section>
-      ) : null}
-
       <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
         <SectionHeading title="Colophon" />
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr]">
@@ -182,7 +170,7 @@ export default async function Home() {
             <DataRoute label="Travel" route={["holitrackr", "public stats", "country geometry", "canvas"]} note="read-only owner snapshot · one-hour edge cache" />
           </div>
           <div className="border-t border-line pt-space-4">
-            <p className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">This site</p>
+            <p className="font-mono text-mono-xs text-ink-muted">This site</p>
             <p className="mt-space-4 font-mono text-mono-m leading-loose text-ink-secondary">
               <span className="text-ink">next 16</span> · react · tailwind<br />
               <span className="text-ink">vercel</span> · server components<br />

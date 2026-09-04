@@ -75,13 +75,13 @@ function CompactTrace({ series, yMax, label }) {
       <figcaption className="flex items-end justify-between font-mono">
         <span>
           <span className="block text-[11px] text-ink">Monthly distance</span>
-          <span className="mt-1 block text-[9px] uppercase tracking-[0.14em] text-ink-muted">
+          <span className="mt-1 block text-[10px] text-ink-muted">
             {series.length} months · Strava
           </span>
         </span>
         <span className="text-right">
           <span className="block text-[12px] font-medium text-ink">{fmtKm(last.km)}</span>
-          <span className="mt-1 block text-[9px] uppercase tracking-[0.1em] text-ink-muted">
+          <span className="mt-1 block text-[10px] text-ink-muted">
             {monthLabel(last.month)}
           </span>
         </span>

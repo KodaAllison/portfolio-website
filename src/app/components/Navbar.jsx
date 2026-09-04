@@ -78,8 +78,6 @@ export default function Navbar() {
               </li>
             );
           })}
-          {/* A status, not a destination, so it is not a link. */}
-          <li className="text-accent">open to work</li>
         </ul>
 
         <div className="md:hidden">
@@ -87,7 +85,8 @@ export default function Navbar() {
             onClick={() => setNavbarOpen((v) => !v)}
             aria-label={navbarOpen ? "close menu" : "open menu"}
             aria-expanded={navbarOpen}
-            className="flex h-9 w-9 items-center justify-center border border-line text-ink-secondary transition-colors duration-hover hover:border-line-strong hover:text-accent"
+            aria-controls="mobile-navigation"
+            className="flex h-11 w-11 items-center justify-center border border-line text-ink-secondary transition-colors duration-hover hover:border-line-strong hover:text-accent"
           >
             {navbarOpen ? <XMarkIcon className="h-5 w-5" /> : <Bars3Icon className="h-5 w-5" />}
           </button>

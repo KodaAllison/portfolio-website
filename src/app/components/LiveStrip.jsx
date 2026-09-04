@@ -13,7 +13,7 @@ export default function LiveStrip({ sources = [] }) {
 
   return (
     <div className="flex flex-wrap items-center gap-x-space-6 gap-y-space-2 border-b border-line px-5 py-space-3 font-mono text-mono-xs text-ink-muted md:px-[72px]">
-      <span className="text-[10px] uppercase tracking-[0.14em] text-accent">Live</span>
+      <span className="text-mono-xs text-accent">Live data</span>
       <span>live metrics on this page are fetched, not typed</span>
       {live.map(({ name, age }, i) => (
         <span key={name} className={i === 0 ? "md:ml-auto" : undefined}>

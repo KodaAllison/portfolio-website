@@ -41,16 +41,16 @@ export default function Hero({ series, records }) {
             <span className="capitalize">{about.location.city}</span>.
           </p>
 
-          <div className="flex shrink-0 gap-space-3">
+          <div className="flex flex-wrap gap-space-3 sm:shrink-0">
             <Link
               href="/projects"
-              className="bg-accent px-space-5 py-space-3 font-mono text-mono-m font-medium text-bg transition-colors duration-hover hover:bg-accent-hover"
+              className="min-h-11 flex-1 bg-accent px-space-5 py-space-3 text-center font-mono text-mono-m font-medium text-bg transition-colors duration-hover hover:bg-accent-hover sm:flex-none"
             >
               See the work
             </Link>
             <a
               href="/CV.pdf"
-              className="border border-line px-space-5 py-space-3 font-mono text-mono-m text-ink transition-colors duration-hover hover:border-line-strong"
+              className="min-h-11 flex-1 border border-line px-space-5 py-space-3 text-center font-mono text-mono-m text-ink transition-colors duration-hover hover:border-line-strong sm:flex-none"
             >
               Download CV
             </a>

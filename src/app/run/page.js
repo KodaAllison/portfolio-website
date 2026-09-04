@@ -36,7 +36,7 @@ function goalDelta(current, target) {
 function Stat({ label, value }) {
   return (
     <div className="border-t border-line pt-space-4">
-      <dt className="font-mono text-mono-xs uppercase tracking-[0.14em] text-ink-muted">{label}</dt>
+      <dt className="font-mono text-mono-xs text-ink-muted">{label}</dt>
       <dd className="mt-space-2 font-display text-display-m tabular-nums text-ink">{value}</dd>
     </div>
   );
@@ -62,7 +62,7 @@ export default async function RunPage() {
       <Navbar />
 
       <header className="border-b border-line px-5 pb-space-7 pt-space-5 md:px-[72px] md:pb-14 md:pt-28">
-        <p className={`font-mono text-mono-xs uppercase tracking-[0.14em] ${strava ? "text-accent" : "text-ink-muted"}`}>
+        <p className={`font-mono text-mono-xs ${strava ? "text-accent" : "text-ink-muted"}`}>
           {strava ? "Running · live via Strava" : "Running"}
         </p>
         <h1 className="mt-space-4 font-display text-display-l uppercase text-ink">

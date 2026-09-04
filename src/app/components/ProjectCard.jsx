@@ -19,7 +19,7 @@ function ProjectLinks({ project }) {
           rel="noopener noreferrer"
           className="text-accent transition-colors duration-hover hover:text-accent-hover"
         >
-          {label} →
+          {label}
         </Link>
       ))}
     </div>
@@ -34,11 +34,9 @@ export default function ProjectCard({ project, featured = false }) {
       }`}
     >
       <div className="flex flex-col gap-space-3">
-        <div className="flex items-center justify-between gap-space-4 font-mono text-mono-xs uppercase tracking-[0.14em]">
-          <span className={project.status === "archived" ? "text-ink-muted" : "text-accent"}>
-            {project.status}
-          </span>
-          <span className="text-ink-muted">{project.category}</span>
+        <div className="flex items-center justify-between gap-space-4 font-mono text-mono-xs text-ink-muted">
+          <span>{project.category}</span>
+          <span>{project.status === "archived" ? "Archived" : project.previewUrl ? "Live site" : "Source available"}</span>
         </div>
         <h3 className={`${featured ? "text-heading-l" : "text-heading-s"} font-display text-ink`}>
           {project.title}
