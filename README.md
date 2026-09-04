@@ -25,10 +25,12 @@ flowchart TB
 
     strava["Strava API"]
     github["GitHub API"]
+    literal["Literal GraphQL API"]
 
     visitor --> vercel
     dynamic -- "fetch, no-store" --> data
     dynamic -- "commit heatmap · cached 1h" --> github
+    dynamic -- "current book · cached 1h" --> literal
     data --> kv
     cron -- "OAuth refresh + sync" --> strava
     cron --> kv
@@ -67,12 +69,13 @@ npm install
 npm run dev
 ```
 
-No env vars required. Two optional ones:
+No env vars required. Three optional ones:
 
 | Variable | Purpose |
 |---|---|
 | `STRAVA_DATA_URL` | Override the strava-worker `/data` URL (defaults to the live Worker) |
 | `GITHUB_TOKEN` | Raises GitHub API rate limits and improves heatmap commit counts |
+| `LITERAL_PROFILE_HANDLE` | Public Literal handle used for the currently-reading bookshelf; the module stays hidden when unset |
 
 ## Acknowledgements
 
