@@ -1,85 +1,127 @@
-# portfolio_os v3
+# Koda Allison — portfolio
 
-My personal site — projects, running stats, and a bit of me. Live at **[koda-allison-portfolio.vercel.app](https://koda-allison-portfolio.vercel.app/)**.
+My personal site: projects I have built, what I am doing now, live running data, and a bit of life away from the keyboard.
 
-Built as a terminal-flavoured Next.js app: every page is styled like a dev tool — terminal windows, syntax-comment headings, status chips — because if I'm going to stare at editors all day, my site may as well look like one.
+Live at **[koda-allison-portfolio.vercel.app](https://koda-allison-portfolio.vercel.app/)**.
+
+The design is dark and borrows some visual language from developer tools, but it is not trying to look like a fake terminal.
 
 ## Architecture
 
-The interesting part is the running data pipeline. The site never talks to Strava directly — a separate Cloudflare Worker ([strava-worker](https://github.com/KodaAllison/strava-worker)) syncs from the Strava API on a cron, computes the stats blob (weekly km, PBs, streaks, activity log), and caches it in Workers KV. The portfolio just reads the Worker's `/data` endpoint on every request.
+The app is built with the Next.js App Router and deployed on Vercel. Most of the site is ordinary server-rendered content; the live sections read from four optional external sources. Each request has a three-second timeout, and the page has a useful fallback when a provider is unavailable.
 
 ```mermaid
-flowchart TB
+flowchart LR
     visitor([Visitor])
 
-    subgraph vercel [Vercel · Next.js]
-        dynamic["<b>/</b> and <b>/run</b><br/>rendered per request"]
-        static["<b>/projects</b> and <b>/contact</b><br/>fully static"]
+    subgraph vercel [Vercel · Next.js 16]
+        home["<b>/</b><br/>dynamic"]
+        run["<b>/run</b><br/>dynamic"]
+        projects["<b>/projects</b><br/>revalidated hourly"]
+        contact["<b>/contact</b><br/>static"]
     end
 
-    subgraph cf [Cloudflare · strava-worker]
-        data["/data endpoint<br/>edge cached 5 min"]
-        kv[("Workers KV")]
-        cron["cron · every 3h"]
+    subgraph cloudflare [Cloudflare · strava-worker]
+        data["/data<br/>edge cached 5 min"]
+        kv[(Workers KV)]
+        cron["cron<br/>every 3h"]
     end
 
-    strava["Strava API"]
-    github["GitHub API"]
-    literal["Literal GraphQL API"]
+    strava[Strava API]
+    github[GitHub commits API]
+    holitrackr["HoliTrackr<br/>public stats"]
+    literal[Literal GraphQL]
 
-    visitor --> vercel
-    dynamic -- "fetch, no-store" --> data
-    dynamic -- "commit heatmap · cached 1h" --> github
-    dynamic -- "current book · cached 1h" --> literal
+    visitor --> home
+    visitor --> run
+    visitor --> projects
+    visitor --> contact
+
+    home -- "3s timeout · no-store" --> data
+    run -- "3s timeout · no-store" --> data
+    home -- "3s timeout · cached 1h" --> github
+    projects -- "3s timeout · cached 1h" --> github
+    home -- "3s timeout · cached 1h" --> holitrackr
+    home -- "3s timeout · cached 1h" --> literal
+
     data --> kv
     cron -- "OAuth refresh + sync" --> strava
     cron --> kv
 ```
 
-Why it's split this way:
+### Why the Strava worker exists
 
-- **No Strava secrets in the portfolio.** Strava's API is auth-only, and its OAuth tokens grant access to the whole account — so they live exclusively in the Worker. This repo builds and runs with zero required credentials; the only token it can use (`GITHUB_TOKEN`) is optional and used solely to read public data.
-- **Fast renders.** Pages never wait on Strava's slow, rate-limited API — a render is a KV read behind a 5-minute edge cache.
-- **Always fresh.** `/` and `/run` are server-rendered per request (`cache: "no-store"`), so visitors see the latest synced data rather than whatever was baked in at the last deploy. (Learned that one the hard way — ISR quietly served months-old stats to cold visitors on a low-traffic site.)
+The portfolio never talks to Strava directly. A separate Cloudflare Worker, [strava-worker](https://github.com/KodaAllison/strava-worker), refreshes the OAuth token, fetches activities on a cron, calculates the stats used by the site, and stores the result in Workers KV. The portfolio only reads its `/data` endpoint.
 
-The GitHub commit heatmap on the home page takes the simple path: fetched from the GitHub events API and cached for an hour with `unstable_cache`.
+- **Secrets stay out of the portfolio.** Strava credentials and OAuth tokens live only in the Worker.
+- **Renders stay quick.** The site reads one prepared KV-backed response instead of waiting on the slower, rate-limited Strava API.
+- **Running data stays current.** `/` and `/run` use `cache: "no-store"`, while the Worker applies its own five-minute edge cache.
+
+The other integrations are deliberately optional:
+
+- GitHub activity comes from the commits API—not the delayed events feed—and is cached for an hour.
+- HoliTrackr provides the countries and totals used by the travel globe. A checked-in snapshot is used if its endpoint is unavailable.
+- Literal supplies the current and recently finished books when `LITERAL_PROFILE_HANDLE` is configured. The bookshelf disappears cleanly when it is not.
+- `fetchWithTimeout` bounds every external request so one unavailable provider cannot hold the whole server render open.
 
 ## Pages
 
-| Route | Rendering | What's there |
+| Route | Rendering | What is there |
 |---|---|---|
-| `/` | dynamic | Intro, live weekly km, GitHub commit heatmap |
-| `/projects` | static | Featured and archived projects |
-| `/run` | dynamic | Live Strava stats — weekly chart, PBs vs goals, streaks |
-| `/contact` | static | Click-to-copy email + socials. No form, no backend |
+| `/` | Dynamic | Running trace, current role and timeline, recent projects, travel globe, bookshelf, and live-data colophon |
+| `/projects` | Revalidated hourly | GitHub activity, current work including Koder, and archived projects |
+| `/run` | Dynamic | Live weekly mileage, training history, and personal records against goals |
+| `/contact` | Static | Copyable email address, social links, and CV |
+
+## Featured projects
+
+- **Koder** — a dependency-free kanban PWA with offline support, Deno KV sync, a terminal CLI, agent tooling, and signed GitHub webhooks.
+- **SwiftPlan** — my dissertation project: a lesson-plan generator built after researching teachers' planning workflows and prompt-engineering techniques.
+- **Strava Worker** — the Cloudflare Worker and KV pipeline that powers the live running data on this site.
+- **HoliTrackr** — a full-stack travel tracker with an interactive map, trip timeline, journals, and authentication.
+
+The complete list lives in [`src/data/projects.json`](src/data/projects.json).
 
 ## Tech stack
 
-- [Next.js 16](https://nextjs.org/) (App Router) + React 18
-- [Tailwind CSS](https://tailwindcss.com/) with a custom terminal-inspired design system
-- [Cloudflare Workers + KV](https://github.com/KodaAllison/strava-worker) for the Strava pipeline
-- Deployed on [Vercel](https://vercel.com/) with Vercel Analytics
+- [Next.js 16](https://nextjs.org/) App Router and React 18
+- Node.js 24, pinned in [`.nvmrc`](.nvmrc)
+- [Tailwind CSS](https://tailwindcss.com/) with a small custom token system
+- D3 Geo and World Atlas data for the travel globe
+- Node's built-in test runner
+- [Vercel Analytics](https://vercel.com/docs/analytics)
+- [Cloudflare Workers and KV](https://github.com/KodaAllison/strava-worker) for the Strava pipeline
 
 ## Running locally
 
 ```bash
 git clone https://github.com/KodaAllison/portfolio-website
 cd portfolio-website
+nvm use
 npm install
 npm run dev
 ```
 
-No env vars required. Three optional ones:
+The main site works without environment variables. These integrations are optional:
 
 | Variable | Purpose |
 |---|---|
-| `STRAVA_DATA_URL` | Override the strava-worker `/data` URL (defaults to the live Worker) |
-| `GITHUB_TOKEN` | Raises GitHub API rate limits and improves heatmap commit counts |
-| `LITERAL_PROFILE_HANDLE` | Public Literal handle used for the currently-reading bookshelf; the module stays hidden when unset |
+| `STRAVA_DATA_URL` | Overrides the strava-worker `/data` endpoint |
+| `GITHUB_TOKEN` | Raises GitHub API rate limits for the commit heatmap |
+| `HOLITRACKR_STATS_URL` | Overrides the HoliTrackr public-stats endpoint |
+| `LITERAL_PROFILE_HANDLE` | Enables the bookshelf for a public Literal profile |
+
+## Checks
+
+```bash
+npm run lint
+npm test
+npm run build
+```
 
 ## Acknowledgements
 
-The very first version started from a [webdecoded tutorial](https://www.youtube.com/watch?v=Kb1f5bvF6f4s) — it has since been redesigned and rebuilt from the ground up.
+The first version started from a [webdecoded tutorial](https://www.youtube.com/watch?v=Kb1f5bvF6f4s). The site has since been redesigned and rebuilt from the ground up.
 
 ## License
 
