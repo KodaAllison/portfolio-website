@@ -301,9 +301,9 @@ body {
 /* --------------------------------------------------------------------------
    Scroll motion
    ==========================================================================
-   Timeline entries arrive once as they enter the viewport; the rail maps
-   scroll position continuously to its drawn length. Everything is visible in
-   the base stylesheet, so unsupported browsers lose only the motion.
+   Timeline entries react whenever they enter or leave the viewport; the rail
+   maps scroll position continuously to its drawn length. Everything is visible
+   in the base stylesheet, so unsupported browsers lose only the motion.
    -------------------------------------------------------------------------- */
 
 /* `scripting: enabled` proves JavaScript can reveal the entry again. Browsers
@@ -312,14 +312,14 @@ body {
   .reveal {
     opacity: 0;
     transform: translateY(var(--reveal-rise));
+    transition:
+      opacity var(--reveal) ease,
+      transform var(--reveal) ease;
   }
 
   .reveal[data-shown] {
     opacity: 1;
     transform: none;
-    transition:
-      opacity var(--reveal) ease,
-      transform var(--reveal) ease;
   }
 }
 

@@ -2,11 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
-/* A timeline entry arrives once, then stays put.
-
-   That is binary state, so it uses an IntersectionObserver rather than tying
-   opacity to every scroll position. The rail is the continuous part of the
-   timeline and remains a CSS scroll-driven animation in globals.css. */
+/* Keep each timeline entry in sync with the viewport. Rows reveal whenever
+   they enter and reset once they leave, so reversing the scroll direction
+   reverses the experience instead of leaving every visited row fixed. */
 export default function Reveal({ children, delay = 0, as: Tag = "div", className = "" }) {
   const ref = useRef(null);
 
@@ -24,12 +22,20 @@ export default function Reveal({ children, delay = 0, as: Tag = "div", className
     let timer;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
+        if (timer) {
+          window.clearTimeout(timer);
+          timer = undefined;
+        }
+
+        if (!entry.isIntersecting) {
+          el.removeAttribute("data-shown");
+          return;
+        }
 
         timer = window.setTimeout(() => {
           el.setAttribute("data-shown", "");
+          timer = undefined;
         }, delay);
-        observer.disconnect();
       },
       // Let the entry settle into place shortly before it is fully visible.
       { rootMargin: "0px 0px -12% 0px" }

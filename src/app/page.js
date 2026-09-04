@@ -92,7 +92,7 @@ export default async function Home() {
           </div>
           <h3 className="mt-space-3 font-display text-heading-m text-ink">
             <span className="block">Technical Graduate</span>
-            <span className="mt-space-1 block text-heading-s text-ink-secondary">Nationwide</span>
+            <span className="mt-space-1 block text-heading-s text-ink-secondary">Nationwide [Virgin Money]</span>
           </h3>
           <div className="mt-space-4 grid gap-space-6 md:grid-cols-[1.4fr_1fr] md:gap-12">
             <p className="max-w-3xl text-body-m text-ink-secondary">

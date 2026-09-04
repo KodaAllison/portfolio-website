@@ -12,7 +12,7 @@
     "date": "2025-07",
     "type": "release",
     "message": "Graduated with First Class Honours in Computer Science",
-    "body": "Completed the Software Engineering pathway at Newcastle University. For my dissertation, I surveyed teachers and built an AI-assisted lesson planner around what they told me.",
+    "body": "Completed my BSc Computer Science (Software Engineering) degree at Newcastle University. For my dissertation, I surveyed teachers and built an AI-assisted lesson planner around what they told me.",
     "refs": ["tag: v1.0.0"]
   },
   {
@@ -37,7 +37,7 @@
     "date": "2022-09",
     "type": "feat",
     "message": "Started BSc Computer Science at Newcastle",
-    "body": "Started with Java, Python and SQL on the Software Engineering pathway before moving into JavaScript.",
+    "body": "",
     "refs": []
   },
   {
