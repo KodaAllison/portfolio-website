@@ -36,8 +36,7 @@ export const metadata = {
   description,
   keywords: [
     about.name,
-    "web developer",
-    "software developer",
+    about.role,
     "computer science graduate",
     ...about.stack,
     "portfolio",
@@ -92,11 +91,7 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${spaceGrotesk.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
     >
-      {/* Colours come from globals.css so the token sheet stays the only place
-          they are written down. font-mono is a leftover default from the
-          terminal build — sections keep setting their own family until the
-          rebuild reaches them, at which point prose defaults to Plex Sans. */}
-      <body className="font-mono antialiased">
+      <body className="font-sans antialiased">
         {children}
         <Analytics />
       </body>

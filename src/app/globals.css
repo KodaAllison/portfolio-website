@@ -34,12 +34,15 @@
   --text-secondary: #9a978f;  /* body copy, descriptions    7.20:1 on bg */
   --text-muted: #87847d;      /* labels, captions, axis     4.79:1 on bg */
 
-  /* One accent. Amber means live, interactive, or current — never
-     decoration. There is no second hue: no cyan, no yellow, no red-for-error.
-     Status is carried by text, not by colour alone. */
+  /* One action accent. Amber means live, interactive, or current — never
+     decoration. Race blue is a data-category colour used only for dated PB
+     markers; shape and the "pb" label carry the same distinction without
+     relying on colour alone. */
   --accent: #e0a355;
   --accent-hover: #f0bd7d;    /* link + CTA hover only */
   --accent-dim: #6b4d24;      /* borders on accent-tinted chips */
+  --accent-wash: #2a1f10;     /* accent-tinted fills (current book) */
+  --race: #7fa8b5;            /* race/PB markers, 7.47:1 on bg */
 
   /* Sequential, single hue, light to dark. Used identically by the commits
      grid and the runs grid so the two can be compared by eye: same scale,
@@ -73,6 +76,9 @@
 
   /* -- motion ------------------------------------------------------------ */
   --draw-hero: 2400ms;
+  --draw-hero-delay: 300ms;
+  --reveal-hero-endpoint: 3200ms;
+  --start-hero-pulse: 3650ms;
   --ease-hero: cubic-bezier(0.65, 0, 0.35, 1);
   --fade-label: 450ms;
   --spin-globe: 12s;
@@ -81,6 +87,35 @@
   --hover: 150ms;
   --reveal: 400ms;
   --reveal-rise: 12px;
+}
+
+/* A book spine is the system's one positional hover: it pulls away from the
+   shelf instead of only changing colour. The current book rests partly pulled
+   already, and reduced-motion users get the same content without movement. */
+.bookshelf-spine {
+  transform-origin: bottom center;
+  transition:
+    transform var(--tilt-spine) var(--ease-spine),
+    border-color var(--hover) ease,
+    color var(--hover) ease;
+}
+
+.bookshelf-spine:hover {
+  transform: rotate(-9deg) translateY(-10px);
+  border-color: var(--accent);
+}
+
+.bookshelf-spine-current {
+  transform: rotate(-4deg) translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookshelf-spine,
+  .bookshelf-spine:hover,
+  .bookshelf-spine-current {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* The sheet gives a second size for every display and heading step. 767px is
@@ -105,6 +140,30 @@ body {
   color: var(--text-primary);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* The previous build painted a 40px linear-gradient grid across the whole
    body. A faint grid behind everything is one of the loudest generated-site
    tells there is, and it actively fights a page whose structure is supposed to
@@ -119,25 +178,24 @@ body {
 /* --------------------------------------------------------------------------
    Hero motion
    ==========================================================================
-   All of it CSS, so the hero ships no client JavaScript at all. The path
-   carries pathLength="1", which normalises the dash units and lets one
-   keyframe draw a path of any real length.
+   All of it CSS, so the hero ships no client JavaScript at all. A rectangular
+   clip grows monotonically from left to right. Unlike a path dash, it cannot
+   wrap around and expose the end of the trace before the middle is drawn.
 
-   These start from a hidden state, which is only safe because they are pure
-   CSS with no feature gate: there is no support check that can fail and leave
-   the content stuck at opacity 0. Anything JS-driven must invert this and
-   start visible — see the Reveal component.
+   These start from a hidden state, which is safe because they are pure CSS:
+   there is no JavaScript feature gate that can fail and strand the content.
    -------------------------------------------------------------------------- */
 
-.hero-trace-line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: hero-draw var(--draw-hero) var(--ease-hero) 300ms forwards;
+.hero-trace-reveal {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transform: scaleX(0);
+  animation: hero-draw var(--draw-hero) var(--ease-hero) var(--draw-hero-delay) forwards;
 }
 
 @keyframes hero-draw {
   to {
-    stroke-dashoffset: 0;
+    transform: scaleX(1);
   }
 }
 
@@ -146,6 +204,16 @@ body {
 .hero-marker {
   opacity: 0;
   animation: hero-fade var(--fade-label) ease forwards;
+}
+
+/* Race labels sit directly beside their diamonds. The background-colour
+   stroke is a typographic knockout, not a box: it keeps the text legible when
+   a neighbouring part of the trace passes behind it. */
+.hero-marker-race text {
+  paint-order: stroke fill;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
 }
 
 @keyframes hero-fade {
@@ -161,6 +229,11 @@ body {
   transform-box: fill-box;
   transform-origin: center;
   animation: hero-endpoint var(--fade-label) var(--ease-spine) forwards;
+  animation-delay: var(--reveal-hero-endpoint);
+}
+
+.hero-current-label {
+  animation-delay: var(--reveal-hero-endpoint);
 }
 
 @keyframes hero-endpoint {
@@ -186,7 +259,7 @@ body {
   .hero-pulse {
     transform-box: fill-box;
     transform-origin: center;
-    animation: hero-pulse 2400ms ease-out 3200ms infinite;
+    animation: hero-pulse 2400ms ease-out var(--start-hero-pulse) infinite;
   }
 }
 
@@ -203,7 +276,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-trace-line,
+  .hero-trace-reveal,
   .hero-marker,
   .hero-endpoint {
     animation: none;
@@ -216,8 +289,8 @@ body {
 
   /* Final state, not the initial one: reduced motion means arrive instantly,
      never disappear. */
-  .hero-trace-line {
-    stroke-dashoffset: 0;
+  .hero-trace-reveal {
+    transform: none;
   }
 
   .hero-marker {
@@ -228,32 +301,14 @@ body {
 /* --------------------------------------------------------------------------
    Scroll motion
    ==========================================================================
-   Two mechanisms, because two different things are being animated, and the
-   distinction is most of the work.
-
-   A section arriving is BINARY — it is either revealed or it is not — so it is
-   an IntersectionObserver. The timeline rail drawing downward in proportion to
-   scroll position is CONTINUOUS, a genuine mapping from scroll offset to a
-   property, which is exactly what CSS scroll-driven animations are for.
-
-   THE RULE THAT PREVENTS THE CLASSIC BUG: never hide content behind a feature
-   that might not exist. Everything here is visible in the base stylesheet, and
-   only ever starts from a hidden state inside a query that has already proven
-   support — @supports for the CSS timeline, the .js class for the observer
-   path. Get this backwards and an unsupported browser, or one where the JS
-   simply failed to load, shows a blank page.
+   Timeline entries arrive once as they enter the viewport; the rail maps
+   scroll position continuously to its drawn length. Everything is visible in
+   the base stylesheet, so unsupported browsers lose only the motion.
    -------------------------------------------------------------------------- */
 
-/* `scripting: enabled` is the proof of support here, and it is CSS asking the
-   question rather than JavaScript answering it. The alternative — an inline
-   script stamping a class onto <html> before paint — works, but it makes the
-   server's markup and the client's disagree by construction, which is a
-   hydration mismatch React reports and suppressHydrationWarning did not
-   silence on the root element. This needs no script at all.
-
-   A browser that does not understand the query does not match it, so the
-   content stays visible and loses only the animation. */
-@media (scripting: enabled) {
+/* `scripting: enabled` proves JavaScript can reveal the entry again. Browsers
+   that do not understand the query keep the content visible. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
   .reveal {
     opacity: 0;
     transform: translateY(var(--reveal-rise));
@@ -290,47 +345,6 @@ body {
       to {
         transform: scaleY(1);
       }
-    }
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .reveal[data-shown] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   DEPRECATED — Terminal OS leftovers
-   ==========================================================================
-   These belong to the build being replaced and are kept only so `trunk` still
-   renders while the rebuild lands section by section. Nothing new may use
-   them. They come out with the terminal-era components (Koder ticket
-   t_mtk6uycb_6831c), by which point the greps below should return nothing:
-
-     grep -rn "terminal-shadow\|blink-cursor" src/
-
-   Remaining call sites at time of writing: TerminalWindow.jsx, page.js,
-   projects/page.js, run/page.js.
-   -------------------------------------------------------------------------- */
-
-@layer utilities {
-  .terminal-shadow {
-    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
-  }
-
-  .blink-cursor::after {
-    content: "_";
-    animation: blink 1s step-end infinite;
-    color: #00ffc2;
-  }
-
-  @keyframes blink {
-    50% {
-      opacity: 0;
     }
   }
 }

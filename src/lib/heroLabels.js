@@ -11,8 +11,9 @@ import { monthLabel } from "./date.js";
 // The plot box, in the artboard's own coordinate space. These are not taste:
 // solving the artboard's plotted points (130.6 km at y=69.4, 9.5 km at y=248.4)
 // against yMax=150 gives innerH=221.72 and padTop=40.72, which puts the zero
-// line at y=262.44 — the artboard's axis rule sits at 262.
-export const HERO_BOX = { w: 1296, padTop: 40.72, innerH: 221.72 };
+// line at y=262.44 — the artboard's axis rule sits at 262. The 24px horizontal
+// inset contains the 5px endpoint when its pulse expands to 3.8x.
+export const HERO_BOX = { w: 1296, padX: 24, padTop: 40.72, innerH: 221.72 };
 export const HERO_BASELINE = HERO_BOX.padTop + HERO_BOX.innerH;
 
 // Exported because the width of a label is a function of this: change the font
@@ -22,26 +23,30 @@ const LINE_HEIGHT = 15;
 
 // Milestones are a fixed, hand-written list because a career event genuinely is
 // editorial — but only the *text* is written here. Every position, every
-// number, and the superlative itself come from the series at render time.
+// number comes from the series at render time.
 const MILESTONES = [
   { month: "2025-07", tier: "below", text: "graduated, first class" },
   { month: "2025-09", tier: "above", text: "started at virgin money" },
 ];
 
+// A 5K split can be the fastest five kilometres inside a 10K event. Rendering
+// both records would make one race look like two, so the hero keeps the three
+// event distances the user recognises as separate PBs.
+const HERO_RACE_DISTANCES = new Set(["10K", "Half", "Marathon"]);
+
 /* A tier is the horizontal band a label hangs in, reached by a leader line off
-   the point. Nothing is ever placed on the trace itself: labels go above the
-   plot, just under the axis rule, or below that. Label collision happened twice
-   while this chart was being designed — and a label sitting on the curve it
-   annotates is the same failure with a different neighbour.
+   the point. No text is placed on the trace itself: labels go above the plot,
+   just under the axis rule, or below that. Label collision happened twice while
+   this chart was being designed — and a label sitting on the curve it annotates
+   is the same failure with a different neighbour.
 
    Offsets are signed distances from the annotated point: where the leader
    starts and ends, where the first text baseline sits past the leader, and
    which side of the point the text runs off towards.
 
-   The third tier — `axis`, for race markers — has no entry yet on purpose. Its
-   labels hang off the axis rule at a fixed y rather than off their point, so
-   its geometry is a different shape from these two and is better written
-   against a real marker than guessed at now. */
+   The `race` tier is intentionally local: its blue diamond sits on the trace
+   at the event month and the matching text tucks just above it. Keeping marker
+   and label together removes the need for either a legend or a connector. */
 /* A tier is a FIXED horizontal band, and the leader stretches to reach it.
 
    These were originally offsets from the annotated point, which is subtly
@@ -61,6 +66,7 @@ const MILESTONES = [
 const TIERS = {
   above: { textY: 16.4, dx: 9, textAnchor: "start", leaderGap: -6, leaderPad: 7 },
   below: { textY: 296.4, dx: -9, textAnchor: "end", leaderGap: 6, leaderPad: -12 },
+  race: { dy: -12, dx: 9 },
 };
 
 
@@ -88,33 +94,23 @@ function qualifies(point, sorted) {
  * Resolve the milestone list against plotted points into ready-to-draw labels.
  *
  * `pts` is what buildTrace returned — each point carries its month, km and
- * plotted x/y. `peak` is the series maximum, passed in because the caller has
- * already had to find it to pick the y axis.
+ * plotted x/y.
  *
  * Returns one entry per qualifying milestone: `{ month, tier, x, textAnchor,
  * lines, point, leader }`, where `lines` is `{ text, y }` per rendered line and
  * `x`/`textAnchor` together fix the label's horizontal extent. The caller adds
  * nothing to these numbers — everything a collision could come from is here.
  */
-export function layoutHeroLabels({ pts, peak }) {
+export function layoutHeroLabels({ pts, records = [] }) {
   if (!Array.isArray(pts) || pts.length === 0) return [];
 
   const sorted = [...pts].sort((a, b) => a.km - b.km);
-  const top = peak ?? sorted[sorted.length - 1];
 
-  return MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
+  const milestones = MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
     .filter(({ point, tier }) => point && TIERS[tier] && qualifies(point, sorted))
     .map(({ month, tier, text, point }) => {
       const t = TIERS[tier];
-
-      /* The superlative is attached only while it actually holds. Hardcoding
-         "the biggest month in the log" would mean that on the day it stops
-         being true, the site starts lying — which on a page whose whole claim
-         is that every number is fetched, not typed, is the worst bug available. */
-      const texts =
-        point.month === top.month
-          ? [`${monthLabel(month)} · ${text}`, `${fmtKm(point.km)} — the biggest month in the log`]
-          : [`${monthLabel(month)} · ${text} · ${fmtKm(point.km)}`];
+      const texts = [`${monthLabel(month)} · ${text}`];
 
       const lines = texts.map((line, i) => ({ text: line, y: t.textY + i * LINE_HEIGHT }));
 
@@ -126,7 +122,10 @@ export function layoutHeroLabels({ pts, peak }) {
       return {
         month,
         tier,
+        kind: "milestone",
+        color: "var(--accent)",
         point,
+        marker: { x: point.x, y: point.y, shape: "circle" },
         textAnchor: t.textAnchor,
         x: point.x + t.dx,
         // The leader runs from just off the curve out to the tier, so the label
@@ -135,6 +134,47 @@ export function layoutHeroLabels({ pts, peak }) {
         lines,
       };
     });
+
+  const races = (Array.isArray(records) ? records : [])
+    .filter(
+      ({ distance, time, date, note }) =>
+        HERO_RACE_DISTANCES.has(distance)
+        && typeof time === "string"
+        && typeof date === "string"
+        && /^\d{4}-\d{2}-\d{2}$/.test(date)
+        && typeof note === "string"
+        && note.trim().length > 0,
+    )
+    .map((record) => ({
+      record,
+      month: record.date.slice(0, 7),
+      point: pts.find((point) => point.month === record.date.slice(0, 7)),
+    }))
+    .filter(({ point }) => point)
+    .sort((a, b) => a.month.localeCompare(b.month))
+    .map(({ month, point, record }) => {
+      const t = TIERS.race;
+      const text = `${record.note.trim().toLowerCase()} · ${record.time} pb`;
+      const width = text.length * LABEL_FONT_SIZE * 0.6;
+      const runsOffRight = point.x + t.dx + width > HERO_BOX.w;
+      const textAnchor = runsOffRight ? "end" : "start";
+      const x = point.x + (runsOffRight ? -t.dx : t.dx);
+
+      return {
+        month,
+        tier: "race",
+        kind: "race",
+        color: "var(--race)",
+        point,
+        marker: { x: point.x, y: point.y, shape: "diamond" },
+        textAnchor,
+        x,
+        leader: null,
+        lines: [{ text, y: point.y + t.dy }],
+      };
+    });
+
+  return [...milestones, ...races];
 }
 
 export { monthLabel };
@@ -143,14 +183,13 @@ export { monthLabel };
 
    An SVG scales with its viewBox, so reusing the desktop box at 390px would
    reduce it 3.7x and render its 11px annotations at about 3px. The mobile
-   artboard does not attempt that: it has its own box at 1:1 with no labels in
-   it at all, because on a phone the trace is decorative and the numbers belong
-   in the copy beneath it.
+   artboard does not attempt that: it has its own box at 1:1 and only the two
+   time-axis anchors. Its metric, source and current value live in the figure
+   caption above, where they remain readable without competing with the line.
 
-   Solved from that artboard the same way the desktop box was — its plotted
-   peak sits at y=40.1 and its axis rule at y=144, which against yMax=150 gives
-   innerH=119.33 and padTop=24.67. The 196 tall viewBox is what fixes the
-   chart's aspect ratio, and so its rendered height, at any width. */
-export const HERO_BOX_COMPACT = { w: 346, padTop: 24.67, innerH: 119.33 };
-export const HERO_COMPACT_VIEW_H = 196;
+   The shorter plot gives the caption and the trace equal visual weight and
+   removes the unexplained empty space that previously separated the graph
+   from the headline. */
+export const HERO_BOX_COMPACT = { w: 346, padX: 24, padTop: 10, innerH: 104 };
+export const HERO_COMPACT_VIEW_H = 136;
 export const HERO_COMPACT_BASELINE = HERO_BOX_COMPACT.padTop + HERO_BOX_COMPACT.innerH;

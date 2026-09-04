@@ -8,18 +8,20 @@
 
    If nothing answered, the strip does not render at all. */
 export default function LiveStrip({ sources = [] }) {
-  const live = sources.filter((s) => s && s.age);
+  const live = sources.filter((source) => source && source.status);
   if (live.length === 0) return null;
 
   return (
     <div className="flex flex-wrap items-center gap-x-space-6 gap-y-space-2 border-b border-line px-5 py-space-3 font-mono text-mono-xs text-ink-muted md:px-[72px]">
-      <span className="text-[10px] uppercase tracking-[0.14em] text-accent">Live</span>
-      <span>every number on this page is fetched, not typed</span>
-      {live.map(({ name, age }, i) => (
-        <span key={name} className={i === 0 ? "md:ml-auto" : undefined}>
-          {name} <span className="text-ink-secondary">{age}</span>
-        </span>
-      ))}
+      <span className="text-mono-xs text-accent">Live data</span>
+      <span>live metrics on this page are fetched, not typed</span>
+      <span className="ml-auto flex flex-wrap justify-end gap-x-space-6 gap-y-space-2">
+        {live.map(({ name, status }) => (
+          <span key={name}>
+            {name} <span className="text-ink-secondary">{status}</span>
+          </span>
+        ))}
+      </span>
     </div>
   );
 }

@@ -2,379 +2,205 @@ import Link from "next/link";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import LiveStrip from "./components/LiveStrip";
-import TerminalWindow from "./components/TerminalWindow";
-import StatusChip from "./components/StatusChip";
-import CommitHeatmap from "./components/CommitHeatmap";
 import Timeline from "./components/Timeline";
+import ProjectCard from "./components/ProjectCard";
+import SectionHeading from "./components/SectionHeading";
+import SiteFooter from "./components/SiteFooter";
+import TravelGlobe from "./components/TravelGlobe";
+import Bookshelf from "./components/Bookshelf";
 import about from "../data/about.json";
+import projects from "../data/projects.json";
 import timeline from "../data/timeline.json";
 import { fetchStravaData } from "../lib/strava";
 import { fetchGitHubData, relativeTime } from "../lib/github";
+import { fetchHoliTrackrStats } from "../lib/holitrackr";
+import { fetchLiteralBookshelf } from "../lib/literal";
 
-/* --- inline atoms (kept local; not shared components) -------------------- */
-
-
-// A stat cell for the strip beneath the hero.
-const StatCell = ({ label, value, accent = "text-terminal", align = "left" }) => (
-  <div
-    className={`flex items-baseline gap-2 ${
-      align === "right" ? "md:justify-end" : ""
-    }`}
-  >
-    <span className="font-mono text-[10px] uppercase tracking-widest text-outline">
-      {label}
-    </span>
-    <span className="text-outline">=</span>
-    <span className={`font-mono text-[13px] font-bold ${accent}`}>{value}</span>
-  </div>
-);
-
-// A link row in the contact card.
-const LinkRow = ({ name, label, href, external = true }) => (
-  <li className="group">
-    <Link
-      href={href}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="flex items-baseline gap-2 font-mono text-[13px] transition-colors"
-    >
-      <span className="w-20 text-outline">{name}</span>
-      <span className="text-outline transition-colors group-hover:text-terminal">
-        →
-      </span>
-      <span className="text-cyan transition-colors group-hover:text-terminal">
+function Metric({ value, label }) {
+  return (
+    <div>
+      <p className="font-display text-display-m tabular-nums text-ink">{value}</p>
+      <p className="mt-space-2 font-mono text-mono-xs text-ink-muted">
         {label}
-      </span>
-    </Link>
-  </li>
-);
+      </p>
+    </div>
+  );
+}
 
-/* --- page ---------------------------------------------------------------- */
+function DataRoute({ label, route, note }) {
+  return (
+    <div className="border-b border-line-subtle py-space-4 last:border-0">
+      <p className="font-mono text-mono-xs text-ink-muted">{label}</p>
+      <p className="mt-space-2 font-mono text-mono-m text-ink">
+        {route.map((part, index) => (
+          <span key={part}>
+            {index > 0 ? <span className="text-accent"> → </span> : null}
+            {part}
+          </span>
+        ))}
+      </p>
+      <p className="mt-space-1 font-mono text-mono-xs text-ink-secondary">{note}</p>
+    </div>
+  );
+}
 
 export default async function Home() {
-  const { stats, currently, stack, stack_tags, links } = about;
+  const [stravaResult, githubResult, travelResult, bookshelfResult] = await Promise.allSettled([
+    fetchStravaData(),
+    fetchGitHubData(),
+    fetchHoliTrackrStats(),
+    fetchLiteralBookshelf(),
+  ]);
+  const strava = stravaResult.status === "fulfilled" ? stravaResult.value : undefined;
+  const github = githubResult.status === "fulfilled" ? githubResult.value : undefined;
+  const liveTravel = travelResult.status === "fulfilled" ? travelResult.value : undefined;
+  const bookshelf = bookshelfResult.status === "fulfilled" ? bookshelfResult.value : undefined;
+  const fallbackCountries = about.travel?.countries ?? [];
+  const travel = liveTravel
+    ? { ...liveTravel, source: "live" }
+    : fallbackCountries.length
+      ? {
+          countries: fallbackCountries,
+          countryCount: fallbackCountries.length,
+          continentCount: new Set(fallbackCountries.map((country) => country.continent)).size,
+          generatedAt: about.travel.generatedAt,
+          source: "snapshot",
+        }
+      : undefined;
 
-  let weeklyKm;
-  let ytdKm;
-  // The hero series. Left undefined on failure on purpose: HeroTrace renders
-  // nothing without it and the headline rises into the space, which is the
-  // degraded state the design sheet asks for. Never a placeholder shape.
-  let monthlyKm;
-  let stravaAge;
-  try {
-    const strava = await fetchStravaData();
-    weeklyKm = strava.weekly_km;
-    ytdKm = strava.ytd_km;
-    monthlyKm = strava.monthly_km;
-    stravaAge = strava.generated_at ? relativeTime(strava.generated_at) : undefined;
-  } catch {
-    weeklyKm = "rip gps";
-    ytdKm = "—";
-  }
-
-  let commits_30d = stats.commits_30d;
-  let last_commit = "n/a";
-  let githubAge;
-  let longest_streak = "n/a";
-  let heatmap;
-  try {
-    const gh = await fetchGitHubData();
-    commits_30d = gh.commits_30d;
-    last_commit = gh.last_commit_at ? relativeTime(gh.last_commit_at) : "n/a";
-    githubAge = gh.last_commit_at ? relativeTime(gh.last_commit_at) : undefined;
-    longest_streak = `${gh.longest_streak}d`;
-    heatmap = gh.heatmap;
-  } catch {
-    // falls back to about.json value for commit count, heatmap uses seed
-  }
+  const sources = [
+    strava?.generated_at && { name: "strava", status: relativeTime(strava.generated_at) },
+    github?.last_commit_at && { name: "github", status: relativeTime(github.last_commit_at) },
+    liveTravel?.generatedAt && { name: "holitrackr", status: relativeTime(liveTravel.generatedAt) },
+    bookshelf && { name: "literal", status: "cached" },
+  ].filter(Boolean);
+  const travelProject = projects.find((project) => project.id === "holitrackr");
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="min-h-screen">
       <Navbar />
+      <Hero series={strava?.monthly_km} records={strava?.personal_records} />
+      <LiveStrip sources={sources} />
 
-      <Hero series={monthlyKm} />
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
+        <SectionHeading title="Experience" link="/CV.pdf" label="full history" />
 
-      {/* Only sources that actually answered this render appear here. */}
-      <LiveStrip
-        sources={[
-          { name: "strava", age: stravaAge },
-          { name: "github", age: githubAge },
-        ]}
-      />
+        <article className="-mx-5 bg-surface px-5 py-space-6 md:-mx-[72px] md:px-[72px] md:py-space-7">
+          <div className="flex flex-wrap items-baseline justify-between gap-space-3 font-mono text-mono-xs">
+            <span className="text-accent">Now · since Sep 2025</span>
+            <span className="text-ink-muted">Glasgow</span>
+          </div>
+          <h3 className="mt-space-3 font-display text-heading-m text-ink">
+            <span className="block">Technical Graduate</span>
+            <span className="mt-space-1 block text-heading-s text-ink-secondary">Nationwide</span>
+          </h3>
+          <div className="mt-space-4 grid gap-space-6 md:grid-cols-[1.4fr_1fr] md:gap-12">
+            <p className="max-w-3xl text-body-m text-ink-secondary">
+              I build internal developer tooling in TypeScript and Deno, including a dashboard that
+              helps engineering teams understand repository health and prioritise technical work.
+              My work also spans terminal and CLI tools, an internal React component library, and
+              inductions that help colleagues adopt the tooling.
+            </p>
+            <dl className="space-y-space-2 border-l border-line pl-space-6 font-mono text-mono-m text-ink-secondary">
+              <div><dt className="inline text-ink-muted">stack </dt><dd className="inline"><span className="text-accent">→</span> typescript · deno · react</dd></div>
+              <div><dt className="inline text-ink-muted">scope </dt><dd className="inline"><span className="text-accent">→</span> web app · tui · cli</dd></div>
+              <div><dt className="inline text-ink-muted">users </dt><dd className="inline"><span className="text-accent">→</span> engineering teams</dd></div>
+            </dl>
+          </div>
+        </article>
 
-      {/* ============================================================
-          STATS STRIP
-          ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile md:px-margin-desktop">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-outline-variant py-6 md:flex md:justify-between md:gap-6 md:py-5">
-          <StatCell
-            label="this_week_km"
-            value={weeklyKm}
-            accent="text-terminal"
-          />
-          <StatCell
-            label="commits.30d"
-            value={commits_30d}
-            accent="text-cyan"
-          />
-          <StatCell
-            label="countries.visited"
-            value={stats.countries_visited}
-            accent="text-terminal"
-          />
-          <StatCell
-            label="ytd_km"
-            value={ytdKm}
-            accent="text-cyan"
-          />
+        <Timeline entries={timeline.slice(1)} showCurrent={false} />
+      </section>
+
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
+        <SectionHeading title="Personal projects" link="/projects" label={`all ${projects.length}`} />
+        <ProjectCard project={projects[0]} featured />
+        <div className="grid gap-x-12 md:grid-cols-2">
+          {projects.slice(1, 3).map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
         </div>
       </section>
 
-      {/* ============================================================
-          CURRENTLY + ACTIVITY
-          ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 pt-10 md:px-margin-desktop md:pb-20 md:pt-16">
-        {/* section header */}
-        <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="font-display text-2xl font-bold tracking-tight text-on-surface md:text-3xl">
-            <span className="text-outline">{"// "}</span>
-            currently
-          </h2>
-          <span className="font-mono text-[11px] uppercase tracking-widest text-outline">
-            last updated · today
-          </span>
-        </div>
-
-        <div className="grid gap-gutter md:grid-cols-2">
-          {/* currently.jsx ---------------------------------------- */}
-          <TerminalWindow title="~/currently.jsx" subtitle="jsx · live">
-            <div className="text-[13px] leading-relaxed">
-              <div>
-                <span className="text-fuchsia-400">function</span>{" "}
-                <span className="text-signal">currently</span>
-                <span className="text-outline">() {"{"}</span>
-              </div>
-              <div className="pl-4">
-                <span className="text-fuchsia-400">return</span>
-                <span className="text-outline"> {"{"}</span>
-              </div>
-
-              <div className="pl-8">
-                <span className="text-on-surface">shipping</span>
-                <span className="text-outline">: </span>
-                <span className="text-cyan">&quot;{currently.shipping}&quot;</span>
-                <span className="text-outline">,</span>
-              </div>
-              <div className="pl-8">
-                <span className="text-on-surface">training</span>
-                <span className="text-outline">: </span>
-                <span className="text-cyan">&quot;{currently.training}&quot;</span>
-                <span className="text-outline">,</span>
-              </div>
-              <div className="pl-8">
-                <span className="text-on-surface">reading</span>
-                <span className="text-outline">: </span>
-                <span className="text-cyan">&quot;{currently.reading}&quot;</span>
-                <span className="text-outline">,</span>
-              </div>
-              <div className="pl-8">
-                <span className="text-on-surface">learning</span>
-                <span className="text-outline">: </span>
-                <span className="text-cyan">&quot;{currently.learning}&quot;</span>
-                <span className="text-outline">,</span>
-              </div>
-              <div className="pl-8">
-                <span className="text-on-surface">listening</span>
-                <span className="text-outline">: </span>
-                <span className="text-cyan">&quot;{currently.listening}&quot;</span>
-                <span className="text-outline">,</span>
-              </div>
-              <div className="pl-8">
-                <span className="text-on-surface">updated</span>
-                <span className="text-outline">: </span>
-                <span className="text-fuchsia-400">new</span>{" "}
-                <span className="text-signal">Date</span>
-                <span className="text-outline">(</span>
-                <span className="text-terminal">
-                  &quot;
-                  {new Date().toISOString().slice(0, 10)}
-                  &quot;
-                </span>
-                <span className="text-outline">)</span>
-              </div>
-
-              <div className="pl-4">
-                <span className="text-outline">{"};"}</span>
-              </div>
-              <div>
-                <span className="text-outline">{"}"}</span>
-              </div>
-
-              <div className="mt-4 flex items-center gap-2 border-t border-outline-variant pt-3">
-                <span className="text-terminal">$</span>
-                <span className="text-on-surface-variant">node currently.jsx</span>
-                <span className="blink-cursor" />
-              </div>
-            </div>
-          </TerminalWindow>
-
-          {/* activity ---------------------------------------------- */}
-          <TerminalWindow title="~/activity.log" subtitle="48 cells · 30d">
-            <div className="mb-5 flex items-end justify-between">
-              <div>
-                <div className="font-display text-3xl font-bold leading-none text-on-surface">
-                  {commits_30d}<span className="text-terminal">.</span>
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
+        <SectionHeading title="Away from the keyboard" />
+        {travel || bookshelf ? (
+          <div className={`grid border-y border-line ${travel && bookshelf ? "md:grid-cols-[1.4fr_1fr] md:divide-x md:divide-line" : ""}`}>
+            {travel ? (
+              <article className={`py-space-6 ${bookshelf ? "md:pr-space-6" : ""}`}>
+                <p className="font-mono text-mono-xs text-ink-muted">
+                  {travel.source === "live"
+                    ? "Travel · live from HoliTrackr"
+                    : `Travel · snapshot ${relativeTime(travel.generatedAt)}`}
+                </p>
+                <div className="mt-space-4 grid items-center gap-space-6 sm:grid-cols-[minmax(0,1fr)_150px]">
+                  <TravelGlobe countries={travel.countries} />
+                  <div>
+                    <Metric value={travel.countryCount} label="countries" />
+                    <div className="mt-space-6"><Metric value={travel.continentCount} label="continents" /></div>
+                    <p className="mt-space-6 font-mono text-mono-s text-ink-secondary"><span className="text-ink-muted">home →</span> Glasgow</p>
+                    {travelProject?.previewUrl ? (
+                      <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">track your travels →</Link>
+                    ) : null}
+                  </div>
                 </div>
-                <div className="mt-1 font-mono text-[11px] uppercase tracking-widest text-outline">
-                  commits / 30d
+              </article>
+            ) : null}
+            {bookshelf ? (
+              <article className={travel ? "border-t border-line py-space-6 md:flex md:flex-col md:border-0 md:pl-space-6" : "py-space-6"}>
+                <p className="font-mono text-mono-xs text-ink-muted">Reading</p>
+                <div className="mt-space-4 md:grid md:flex-1 md:items-center">
+                  <Bookshelf shelf={bookshelf} />
                 </div>
-              </div>
-              <StatusChip color="cyan" pulse>
-                live
-              </StatusChip>
+              </article>
+            ) : null}
+          </div>
+        ) : null}
+        <article className="grid gap-space-4 border-b border-line py-space-5 md:grid-cols-[128px_minmax(0,1fr)] md:items-baseline md:gap-space-6">
+          <p className="font-mono text-mono-xs text-ink-muted">Running</p>
+          <div className="flex flex-col gap-space-4 md:flex-row md:flex-wrap md:items-baseline md:justify-between md:gap-x-space-6 md:gap-y-space-4">
+            <p className="font-display text-heading-s text-ink">{about.currently.training}</p>
+            <div className="flex flex-wrap items-baseline gap-x-space-6 gap-y-space-3">
+              {strava ? (
+                <div className="flex flex-wrap items-baseline gap-x-space-5 gap-y-space-2 font-mono text-mono-s text-ink-secondary">
+                  <p><span className="tabular-nums text-ink">{strava.weekly_km} km</span> this week</p>
+                  <p><span className="tabular-nums text-ink">{strava.ytd_km} km</span> this year</p>
+                </div>
+              ) : null}
+              <Link href="/run" className="font-mono text-mono-s text-accent hover:text-accent-hover">
+                training log →
+              </Link>
             </div>
-
-            <CommitHeatmap columns={12} rows={4} seed={108} data={heatmap} />
-
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant pt-3 font-mono text-[10px] uppercase tracking-widest text-outline">
-              <div className="flex flex-wrap items-center gap-4">
-                <span className="flex items-center gap-1.5">
-                  <span className="text-terminal">●</span> last commit · {last_commit}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="text-signal">★</span> longest streak · {longest_streak}
-                </span>
-              </div>
-            </div>
-          </TerminalWindow>
-        </div>
+          </div>
+        </article>
       </section>
 
-      {/* ============================================================
-          EXPERIENCE
-          ============================================================ */}
-      <section className="px-5 pb-space-7 pt-[76px] md:px-[72px]">
-        <div className="mb-space-5 flex flex-wrap items-baseline justify-between gap-space-3">
-          <h2 className="font-display text-heading-l text-ink">Experience</h2>
-          <a
-            href="/CV.pdf"
-            className="font-mono text-mono-s text-ink-muted transition-colors duration-hover hover:text-accent"
-          >
-            full history → cv
-          </a>
-        </div>
-
-        <Timeline entries={timeline} />
-      </section>
-
-      {/* ============================================================
-          CONTACT CTA
-          ============================================================ */}
-      <section className="mx-auto w-full max-w-container-max px-margin-mobile pb-14 md:px-margin-desktop md:pb-20">
-        <div className="terminal-shadow relative overflow-hidden rounded-lg border border-outline-variant bg-surface-container-low">
-          {/* decorative grid background — pure CSS, no extra component */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 opacity-40"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(0,255,194,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,194,0.04) 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
-          />
-          {/* glow corner */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-32 -bottom-32 h-80 w-80 rounded-full bg-terminal/10 blur-3xl"
-          />
-
-          <div className="relative grid gap-10 p-8 md:grid-cols-[1.5fr_1fr] md:p-12 lg:p-16">
-            {/* left — big echo */}
-            <div className="min-w-0 space-y-6">
-              <div className="font-mono text-[11px] uppercase tracking-widest text-outline">
-                {"// get_in_touch.sh"}
-              </div>
-              <h2 className="font-display text-2xl font-extrabold leading-[1.05] tracking-tighter sm:text-4xl md:text-4xl lg:text-6xl">
-                <span className="block text-cyan">$ echo &quot;hello&quot;</span>
-                <span className="block break-all text-terminal">
-                  &gt; {about.links.email.label}
-                  <span className="blink-cursor" />
-                </span>
-              </h2>
-              <p className="max-w-md font-mono text-body-md leading-relaxed text-on-surface-variant">
-                <span className="text-cyan">{"// "}</span>
-                best for: graduate engineering roles, side-project pair-ups, and
-                anyone with a long route to share.
-              </p>
-            </div>
-
-            {/* right — link list */}
-            <div className="space-y-5 md:border-l md:border-outline-variant md:pl-10">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-outline">
-                {"// links"}
-              </div>
-              <ul className="space-y-3">
-                <LinkRow
-                  name="github"
-                  label={links.github.label}
-                  href={links.github.href}
-                />
-                <LinkRow
-                  name="linkedin"
-                  label={links.linkedin.label}
-                  href={links.linkedin.href}
-                />
-                <LinkRow
-                  name="strava"
-                  label={links.strava.label}
-                  href={links.strava.href}
-                />
-                <LinkRow
-                  name="email"
-                  label={links.email.label}
-                  href={links.email.href}
-                  external={false}
-                />
-              </ul>
-
-              <div className="pt-4">
-                <Link
-                  href="/contact"
-                  className="group inline-flex items-center gap-2 border border-terminal/40 px-4 py-2 font-mono text-[12px] font-bold uppercase tracking-widest text-terminal transition-all hover:bg-terminal hover:text-background"
-                >
-                  <span className="opacity-70 group-hover:opacity-100">$</span>
-                  open /contact
-                  <span className="opacity-70 transition-transform group-hover:translate-x-0.5">
-                    →
-                  </span>
-                </Link>
-              </div>
-            </div>
+      <section className="px-5 pt-space-7 md:px-[72px] md:pt-[76px]">
+        <SectionHeading title="Colophon" />
+        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr]">
+          <div className="border-t border-line">
+            <DataRoute label="Running" route={["strava", "cloudflare worker", "KV", "this page"]} note="my worker · 3-hourly cron" />
+            <DataRoute label="Commits" route={["github api", "48-day window", "contribution data"]} note="commits API, not the events feed" />
+            <DataRoute label="Travel" route={["holitrackr", "public stats", "country geometry", "canvas"]} note="read-only owner snapshot · one-hour edge cache" />
+            {bookshelf ? (
+              <DataRoute label="Reading" route={["literal.club", "public graphql", "bookshelf"]} note="public profile · one-hour cache" />
+            ) : null}
+          </div>
+          <div className="border-t border-line pt-space-4">
+            <p className="font-mono text-mono-xs text-ink-muted">This site</p>
+            <p className="mt-space-4 font-mono text-mono-m leading-loose text-ink-secondary">
+              <span className="text-ink">next 16</span> · react · tailwind<br />
+              <span className="text-ink">vercel</span> · server components<br />
+              <span className="text-ink">cloudflare</span> workers + KV
+            </p>
+            <Link href={about.links.repo.href} target="_blank" rel="noopener noreferrer" className="mt-space-5 inline-block font-mono text-mono-m text-accent hover:text-accent-hover">
+              read the source →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ============================================================
-          FOOTER STATUS BAR
-          ============================================================ */}
-      <footer className="border-t border-outline-variant bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-container-max flex-col items-start justify-between gap-2 px-margin-mobile py-3 font-mono text-[10px] uppercase tracking-widest text-outline md:flex-row md:items-center md:px-margin-desktop">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-terminal">●</span>
-            <span>portfolio_os · v3</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href={links.repo.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-terminal transition-colors"
-            >
-              {links.repo.label}
-            </a>
-            <span>next-16 · vercel</span>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

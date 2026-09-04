@@ -70,11 +70,18 @@ const SERIES = KM.map((km, i) => {
   return { month: `${2024 + Math.floor(month / 12)}-${String((month % 12) + 1).padStart(2, "0")}`, km };
 });
 
-function layout(series = SERIES) {
+const RACE_RECORDS = [
+  { distance: "5K", time: "23:06", date: "2026-08-22", note: "Bellahouston 10k" },
+  { distance: "10K", time: "48:55", date: "2026-08-22", note: "Bellahouston 10k" },
+  { distance: "Half", time: "1:55:06", date: "2025-11-16", note: "Alton Towers Half" },
+  { distance: "Marathon", time: "4:11:11", date: "2025-03-16", note: "Barcelona Marathon" },
+];
+
+function layout(series = SERIES, records = []) {
   const peak = series.reduce((a, b) => (b.km > a.km ? b : a));
   const ticks = niceYTicks(peak.km);
   const { pts } = buildTrace(series, { ...HERO_BOX, yMax: ticks[ticks.length - 1] });
-  return layoutHeroLabels({ pts, peak });
+  return layoutHeroLabels({ pts, records });
 }
 
 const synthetic = (tier, x, textAnchor, ...texts) => ({
@@ -102,21 +109,55 @@ test("both milestones qualify, one per tier", () => {
       ["2025-09", "above"],
     ]
   );
-  // The peak carries its superlative on a second line; the trough does not.
-  assert.equal(labels.find((l) => l.month === "2025-09").lines.length, 2);
-  assert.equal(labels.find((l) => l.month === "2025-07").lines.length, 1);
+  const careerStart = labels.find((l) => l.month === "2025-09");
+  assert.equal(careerStart.lines.length, 1);
+  assert.equal(careerStart.lines[0].text, "sep 2025 · started at virgin money");
+  const graduation = labels.find((l) => l.month === "2025-07");
+  assert.equal(graduation.lines.length, 1);
+  assert.equal(graduation.lines[0].text, "jul 2025 · graduated, first class");
+});
+
+test("race PBs use blue trace markers without duplicating an event split", () => {
+  // The component passes the latest 24 months into the label layout. Using the
+  // same window here keeps the collision geometry identical to the hero.
+  const races = layout(SERIES.slice(-24), RACE_RECORDS).filter((label) => label.kind === "race");
+
+  assert.deepEqual(
+    races.map((label) => [label.month, label.lines[0].text]),
+    [
+      ["2025-03", "barcelona marathon · 4:11:11 pb"],
+      ["2025-11", "alton towers half · 1:55:06 pb"],
+      ["2026-08", "bellahouston 10k · 48:55 pb"],
+    ],
+  );
+  assert.ok(races.every((label) => label.color === "var(--race)"));
+  assert.ok(races.every((label) => label.tier === "race"));
+  assert.ok(races.every((label) => label.marker.shape === "diamond"));
+  assert.ok(races.every((label) => label.marker.y === label.point.y));
+  assert.ok(races.every((label) => label.leader === null));
+  assert.ok(races.every((label) => label.lines[0].y === label.marker.y - 12));
+  assert.ok(
+    races.every((label) =>
+      label.textAnchor === "end"
+        ? label.x === label.marker.x - 9
+        : label.x === label.marker.x + 9,
+    ),
+  );
+  assert.equal(firstOverlap(races), null);
 });
 
 test("no two labels overlap within a tier", () => {
-  const hit = firstOverlap(layout());
+  const hit = firstOverlap(layout(SERIES.slice(-24), RACE_RECORDS));
   assert.equal(hit, null, hit && `${hit.tier}: "${hit.a.text}" collides with "${hit.b.text}"`);
 });
 
-test("no label is drawn inside the plot band", () => {
+test("career labels are not drawn inside the plot band", () => {
   // The invariant that actually protects the trace. Measured on the ink, not
   // the baseline: a label clears the band only if its ascenders and descenders
   // clear it too.
-  for (const { month, lines } of layout()) {
+  const milestones = layout(SERIES.slice(-24), RACE_RECORDS)
+    .filter(({ kind }) => kind === "milestone");
+  for (const { month, lines } of milestones) {
     for (const { text, y } of lines) {
       const top = y - LABEL_FONT_SIZE;
       const bottom = y + LABEL_FONT_SIZE * 0.3;
@@ -129,16 +170,15 @@ test("no label is drawn inside the plot band", () => {
 });
 
 test("no label runs off the artboard", () => {
-  for (const label of layout()) {
+  for (const label of layout(SERIES.slice(-24), RACE_RECORDS)) {
     const { left, right } = box(label);
     assert.ok(left >= 0, `"${label.lines[0].text}" starts at ${left}`);
     assert.ok(right <= HERO_BOX.w, `"${label.lines[0].text}" ends at ${right}`);
   }
 });
 
-/* Everything above passes today with only two labels in two different tiers,
-   so it would also pass if the checker were broken. These build the collision
-   by hand to prove it is not. */
+/* The real labels clear today, so they would also pass if the checker were
+   broken. These build collisions by hand to prove it is not. */
 
 test("the checker rejects two labels that collide in one tier", () => {
   const hit = firstOverlap([
@@ -215,7 +255,7 @@ function labelsFor(peakKm, troughKm) {
   const peakDatum = series.reduce((a, b) => (b.km > a.km ? b : a));
   const ticks = niceYTicks(peakDatum.km);
   const { pts } = buildTrace(series, { ...HERO_BOX, yMax: ticks[ticks.length - 1] });
-  return layoutHeroLabels({ pts, peak: pts.find((p) => p.month === peakDatum.month) });
+  return layoutHeroLabels({ pts });
 }
 
 test("no label escapes the viewBox, whatever the data does", () => {

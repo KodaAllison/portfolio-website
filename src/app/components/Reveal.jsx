@@ -1,15 +1,12 @@
 "use client";
+
 import { useEffect, useRef } from "react";
 
-/* A section arrives, its content fades and rises once, and then it is done.
+/* A timeline entry arrives once, then stays put.
 
-   That is binary state, which is why this is an IntersectionObserver and not a
-   scroll-linked animation: there is nothing continuous to map. The timeline
-   rail is the opposite case and uses a CSS scroll timeline instead — see the
-   note in globals.css.
-
-   The observer disconnects on the first intersection. Content that re-hides
-   when you scroll back up reads as a glitch, not as an effect. */
+   That is binary state, so it uses an IntersectionObserver rather than tying
+   opacity to every scroll position. The rail is the continuous part of the
+   timeline and remains a CSS scroll-driven animation in globals.css. */
 export default function Reveal({ children, delay = 0, as: Tag = "div", className = "" }) {
   const ref = useRef(null);
 
@@ -17,29 +14,33 @@ export default function Reveal({ children, delay = 0, as: Tag = "div", className
     const el = ref.current;
     if (!el) return;
 
-    /* The .js class has already hidden this by the time we get here, so any
-       path that cannot observe must reveal it rather than leave it hidden.
-       The stylesheet fails safe on its own; this is the same guarantee for the
-       case where the stylesheet's assumption held but the API is missing. */
+    /* CSS only hides this when scripting is enabled. If the observer API is
+       unavailable, reveal it immediately so content is never stranded. */
     if (typeof IntersectionObserver === "undefined") {
       el.setAttribute("data-shown", "");
       return;
     }
 
-    const io = new IntersectionObserver(
+    let timer;
+    const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        const t = setTimeout(() => el.setAttribute("data-shown", ""), delay);
-        io.disconnect();
-        return () => clearTimeout(t);
+
+        timer = window.setTimeout(() => {
+          el.setAttribute("data-shown", "");
+        }, delay);
+        observer.disconnect();
       },
-      // Fire a little before the element is fully in view, so the motion reads
-      // as the section settling rather than as a delayed reaction to it.
+      // Let the entry settle into place shortly before it is fully visible.
       { rootMargin: "0px 0px -12% 0px" }
     );
 
-    io.observe(el);
-    return () => io.disconnect();
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      if (timer) window.clearTimeout(timer);
+    };
   }, [delay]);
 
   return (

@@ -46,6 +46,15 @@ test("x spans the full width", () => {
   assert.equal(pts.at(-1).x, BOX.w);
 });
 
+test("a horizontal plot inset keeps an animated endpoint halo inside the viewBox", () => {
+  const box = { ...BOX, padX: 24 };
+  const { pts } = buildTrace(SERIES, box);
+  const endpointHalo = 20;
+
+  assert.equal(pts[0].x, box.padX);
+  assert.ok(pts.at(-1).x + endpointHalo <= box.w);
+});
+
 test("at() looks up a month and carries its source datum", () => {
   const { at } = buildTrace(SERIES, BOX);
   assert.equal(at("2024-04").runs, 3);
