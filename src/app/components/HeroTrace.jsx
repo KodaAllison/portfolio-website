@@ -165,7 +165,7 @@ export default function HeroTrace({ series, records }) {
   const { d, pts } = buildTrace(visibleSeries, { ...HERO_BOX, yMax });
 
   const last = pts[pts.length - 1];
-  const labels = layoutHeroLabels({ pts, peak, records });
+  const labels = layoutHeroLabels({ pts, records });
   const raceSummary = labels
     .filter(({ kind }) => kind === "race")
     .map(({ lines }) => lines[0].text)

@@ -28,17 +28,17 @@ export default function Hero({ series, records }) {
             Not animated — this is the LCP text, and fading it in would delay
             LCP by exactly the length of the fade in exchange for nothing. */}
         <h1 className="font-display text-display-xl uppercase text-ink">
-          <span className="block">I build things </span>
+          <span className="block">{about.name}</span>
           <span className="block text-accent [-webkit-text-fill-color:transparent] [-webkit-text-stroke:1.5px_var(--accent)]">
-            and keep them running
+            Always curious.
           </span>
         </h1>
 
         <div className="flex flex-col gap-space-5 pt-space-5 md:flex-row md:items-end md:justify-between">
           <p className="max-w-[620px] font-sans text-body-l text-ink-lead">
-            <span className="font-medium capitalize text-ink">{about.name}</span> — {about.title} at
-            Virgin Money. {about.education.result} {about.education.degree}, based in{" "}
-            <span className="capitalize">{about.location.city}</span>.
+            <span className="font-medium capitalize text-ink">{about.role}</span> based in{" "}
+            <span className="capitalize">{about.location.city}</span>. Usually building something,
+            running somewhere, or deep into a book.
           </p>
 
           <div className="flex flex-wrap gap-space-3 sm:shrink-0">

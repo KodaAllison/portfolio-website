@@ -22,11 +22,8 @@ export default function ContactPage() {
           Say hello<span className="text-accent">.</span>
         </h1>
         <p className="mt-space-5 max-w-2xl text-body-l text-ink-lead">
-          Best for graduate engineering roles, side-project pair-ups, and anyone with a long
-          route to share.
-        </p>
-        <p className="mt-space-2 font-mono text-mono-s text-ink-muted">
-          No form, no tracking—the address below is the whole thing.
+          Get in touch about engineering roles, building something together, or a good running
+          route.
         </p>
       </header>
 
@@ -62,7 +59,6 @@ export default function ContactPage() {
         <div>
           <h2 className="font-mono text-mono-xs text-ink-muted">Working together</h2>
           <dl className="mt-space-4 border-t border-line">
-            <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Rhythm</dt><dd className="font-display text-heading-s text-ink">Asynchronous</dd></div>
             <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Timezone</dt><dd className="font-display text-heading-s text-ink">Glasgow · GMT/BST</dd></div>
             <div className="flex items-baseline justify-between gap-space-4 border-b border-line-subtle py-space-4"><dt className="font-mono text-mono-s text-ink-muted">Start with</dt><dd className="font-display text-heading-s text-ink">A short email</dd></div>
           </dl>

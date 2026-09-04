@@ -11,16 +11,16 @@
     "hash": "3f8b2d5",
     "date": "2025-07",
     "type": "release",
-    "message": "BSc Computer Science — first class honours",
-    "body": "Dissertation: surveyed teachers → OpenAI lesson planner · prompt engineering did the heavy lifting",
+    "message": "Graduated with First Class Honours in Computer Science",
+    "body": "Completed the Software Engineering pathway at Newcastle University. For my dissertation, I surveyed teachers and built an AI-assisted lesson planner around what they told me.",
     "refs": ["tag: v1.0.0"]
   },
   {
     "hash": "c7a0e93",
     "date": "2024-09",
     "type": "feat",
-    "message": "Shipped first client site — Crook Community Centre",
-    "body": "Requirements and Figma prototypes straight from the client · Next.js on Vercel · still maintaining it",
+    "message": "Built my first client website for Crook Community Centre",
+    "body": "Worked directly with the client from requirements and Figma prototypes through to delivery. Built the site with Next.js, added a staff-managed CMS, and still maintain it today.",
     "refs": []
   },
   {
@@ -29,7 +29,7 @@
     "until": "2025-09",
     "type": "chore",
     "message": "Back of house at Nando's",
-    "body": "Kitchen shifts around a full-time degree · trained new starters",
+    "body": "Worked kitchen shifts alongside full-time study, helped front of house when needed, and trained new starters.",
     "refs": []
   },
   {
@@ -37,7 +37,7 @@
     "date": "2022-09",
     "type": "feat",
     "message": "Started BSc Computer Science at Newcastle",
-    "body": "Software engineering pathway · Java, Python and SQL before JavaScript took over",
+    "body": "Started with Java, Python and SQL on the Software Engineering pathway before moving into JavaScript.",
     "refs": []
   },
   {
@@ -45,8 +45,8 @@
     "date": "2021-03",
     "until": "2023-01",
     "type": "chore",
-    "message": "Customer service → shift leader at One Stop",
-    "body": "Started on tills · promoted to shift leader after 8 months · keyholder",
+    "message": "Promoted to Shift Leader at One Stop",
+    "body": "Joined on the tills and was promoted after eight months, taking responsibility for opening, closing and supporting the team.",
     "refs": []
   },
   {
@@ -54,7 +54,7 @@
     "date": "2020-09",
     "type": "init",
     "message": "A-levels at St John's Sixth Form",
-    "body": "Computer Science (A) · History (B) · BTEC Sport (D*) · co-founded the IT & coding club",
+    "body": "Studied Computer Science, History and Sport, and co-founded the IT and Coding Club.",
     "refs": []
   }
 ]

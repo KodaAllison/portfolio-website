@@ -36,8 +36,7 @@ export const metadata = {
   description,
   keywords: [
     about.name,
-    "web developer",
-    "software developer",
+    about.role,
     "computer science graduate",
     ...about.stack,
     "portfolio",

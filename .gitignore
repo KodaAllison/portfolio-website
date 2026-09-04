@@ -47,3 +47,10 @@ C：Temp*
 
 # koder skill credentials must never be committed
 .claude/skills/koder-ticket/.koder.env
+.agents/skills/koder-ticket/.koder.env
+
+# local Codex configuration can contain machine credentials
+/.codex
+
+# scratch backups
+/.bak

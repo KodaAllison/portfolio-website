@@ -1,0 +1,189 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Home",
+      "page": "page-1",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 3560
+    },
+    {
+      "file": "RunPage.dc.html",
+      "title": "Running",
+      "page": "page-1",
+      "x": 6330,
+      "y": 0,
+      "w": 1440,
+      "h": 2070
+    },
+    {
+      "file": "TrainingLog.dc.html",
+      "title": "Direction B — Training Log",
+      "page": "page-3",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1800
+    },
+    {
+      "file": "TerminalGrownUp.dc.html",
+      "title": "Direction C — Terminal, grown up",
+      "page": "page-3",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 1980
+    },
+    {
+      "file": "Mobile.dc.html",
+      "title": "Home — mobile (390)",
+      "page": "page-1",
+      "x": 1580,
+      "y": 0,
+      "w": 390,
+      "h": 4150
+    },
+    {
+      "file": "Tokens.dc.html",
+      "title": "Design tokens",
+      "page": "page-2",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2900
+    },
+    {
+      "file": "States.dc.html",
+      "title": "Data states",
+      "page": "page-2",
+      "x": 1560,
+      "y": 0,
+      "w": 1600,
+      "h": 1810
+    },
+    {
+      "file": "Projects.dc.html",
+      "title": "Projects",
+      "page": "page-1",
+      "x": 2110,
+      "y": 0,
+      "w": 1440,
+      "h": 2840
+    },
+    {
+      "file": "ProjectsMobile.dc.html",
+      "title": "Projects — mobile",
+      "page": "page-1",
+      "x": 3690,
+      "y": 0,
+      "w": 390,
+      "h": 3420
+    },
+    {
+      "file": "Contact.dc.html",
+      "title": "Contact",
+      "page": "page-1",
+      "x": 4220,
+      "y": 0,
+      "w": 1440,
+      "h": 1140
+    },
+    {
+      "file": "ContactMobile.dc.html",
+      "title": "Contact — mobile",
+      "page": "page-1",
+      "x": 5800,
+      "y": 0,
+      "w": 390,
+      "h": 1160
+    },
+    {
+      "file": "RunMobile.dc.html",
+      "title": "Running — mobile",
+      "page": "page-1",
+      "x": 7910,
+      "y": 0,
+      "w": 390,
+      "h": 1910
+    },
+    {
+      "file": "Components.dc.html",
+      "title": "Component states",
+      "page": "page-2",
+      "x": 3260,
+      "y": 0,
+      "w": 1600,
+      "h": 2030
+    }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "page": "page-1",
+      "x": 0,
+      "y": -300,
+      "w": 460,
+      "text": "HOMEPAGE — hero rebuilt on real data\nhero → live strip → Experience → Personal projects → Away from the keyboard → Colophon → Say hello\n\nTHE HERO IS NOW THE ACTUAL STRAVA SERIES. 31 months of monthly running distance, pulled from all 244 activities in the account (19 Feb 2024 → 30 Aug 2026). The old hero was a hand-drawn bezier labelled ‘weekly km · 18 months · strava’ — a shape that claimed to be data and wasn’t.\n\nWHY THESE TWO ANNOTATIONS AND NOT MORE. A career milestone has no y-value, so any height you give it is invented. Checked against the series, two land on its extremes on their own: graduated (Jul 2025) sits at 9.5 km, 30th of 31 months; started at Virgin Money (Sep 2025) sits at 130.6 km, the single biggest month in the log. The dissertation crunch bottomed the running out at 2.6 km in Jun 2025. Crook CC’s 18-month mark ranks 10th — arbitrary — so it stays in the timeline where dates don’t need heights.\n\nRaces get markers because a marathon has a natural place on a distance chart.\n\nPB CORRECTED to 4:13:08 (Barcelona, Strava moving time) everywhere. The boards previously said 4:11:11, which the site’s own live feed would have contradicted. If Koda’s chip time really is 4:11:11 it is a one-token change."
+    },
+    {
+      "id": "motion",
+      "page": "page-1",
+      "x": 520,
+      "y": -230,
+      "w": 420,
+      "text": "THE BORDER + PALETTE PASS\n\n1 · BORDERS. The homepage carried 34, and 27 were the identical 1px rule — so borders encoded no hierarchy, just texture. The ‘gap: 1px on a border-coloured background’ cell-grid trick (projects, away-from-keyboard, colophon, contact, projects list) is gone entirely: 0 instances left. What remains is structural hairlines at real section breaks, plus representational edges — kanban cards, book spines, tag chips, buttons. Grouping is now done by fill and alignment: the current role is a full-bleed band, not a fenced card.\n\n2 · GRID. Four sections used four nearly-identical two-column ratios (1.4 / 1.3 / 1.15 / 1.1fr). Nobody chose those — each was eyeballed on its own. One ratio now, 1.4fr 1fr with a 48px gutter, everywhere.\n\n3 · PALETTE. #3ecf8e was Supabase’s brand green, exactly — dark ground + mint + JetBrains Mono + bordered cards is a specific dev-tool house style, which is why it read as a template. Now a cold graphite ground (#0d0f11, no green cast) with warm bone text (#e8e5e0) and a single amber accent (#e0a355, 8.7:1 on ground). Two hues, not three. text-muted raised to #87847d so 10px labels clear WCAG AA.\n\nNAV unified to work / running / contact / cv + status on all four pages; linkedin lives in the footer and on /contact.\n\nSTILL OPEN (needs Koda): real screenshots for Koder/Crook/SwiftPlan, the real 14 countries, a stack summary, and anything evidencing testing / code review / teamwork."
+    },
+    {
+      "id": "note-b",
+      "page": "page-3",
+      "x": 0,
+      "y": -220,
+      "w": 400,
+      "text": "B · TRAINING LOG (sketch — grid DNA folded into the final)\nSwiss spec-sheet grid fusing runner + engineer: big honest numerals, ruled cells."
+    },
+    {
+      "id": "note-c",
+      "page": "page-3",
+      "x": 1560,
+      "y": -220,
+      "w": 400,
+      "text": "C · TERMINAL, GROWN UP (sketch — base of the final)\nDark, one green, quiet code card, readable body type."
+    },
+    {
+      "id": "mobile-note",
+      "page": "page-1",
+      "x": 1580,
+      "y": -300,
+      "w": 420,
+      "text": "MOBILE (390×844 — iPhone 14/15 class)\n\nAbove the fold: name, role, employer, degree, location, both CTAs, and the live strip. The mobile fold is arguably better than desktop's.\n\nAdaptations from desktop:\n· Hero graph 510→205px, carrying two waypoints — one running (Barcelona PB), one career (Virgin Money). Keeping both is the point: an earlier version kept only the running pair and the braid disappeared on phones.\n· Live strip wraps to two lines\n· Experience: current role keeps its own card; the rest lose the date rail, date moves above the title\n· Projects stack to one column\n· Globe is a single static frame, not 16 — no frame cycling on phones (saves ~390KB)\n· CTAs are full-width 50px; nav collapses to logo + status + hamburger\n· No horizontal overflow at 390px (verified)"
+    },
+    {
+      "id": "system-note",
+      "page": "page-2",
+      "x": 0,
+      "y": -260,
+      "w": 460,
+      "text": "THE SYSTEM — read before building anything.\n\nDesign tokens are the complete set of legal values. A value not on that sheet is a design decision, not an implementation one.\n\nData states: a module that cannot get its data does not render. The banned-patterns list is drawn from bugs live on the site today.\n\nComponent states: every interactive element, in default / hover / focus-visible / active / disabled, plus the accessibility and motion rules.\n\nThe token sheet reflects the amber palette. Two fixes applied to every screen: --text-muted raised from #5b635d (3.01:1 — failed WCAG AA on 10px labels) to #7b837d (4.79:1), and 30 ad-hoc font sizes normalised onto the 12-step scale."
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-1"
+  },
+  "pages": [
+    {
+      "id": "page-1",
+      "name": "Screens"
+    },
+    {
+      "id": "page-2",
+      "name": "System"
+    },
+    {
+      "id": "page-3",
+      "name": "Direction sketches"
+    }
+  ]
+}

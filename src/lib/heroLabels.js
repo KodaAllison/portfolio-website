@@ -23,7 +23,7 @@ const LINE_HEIGHT = 15;
 
 // Milestones are a fixed, hand-written list because a career event genuinely is
 // editorial — but only the *text* is written here. Every position, every
-// number, and the superlative itself come from the series at render time.
+// number comes from the series at render time.
 const MILESTONES = [
   { month: "2025-07", tier: "below", text: "graduated, first class" },
   { month: "2025-09", tier: "above", text: "started at virgin money" },
@@ -94,33 +94,23 @@ function qualifies(point, sorted) {
  * Resolve the milestone list against plotted points into ready-to-draw labels.
  *
  * `pts` is what buildTrace returned — each point carries its month, km and
- * plotted x/y. `peak` is the series maximum, passed in because the caller has
- * already had to find it to pick the y axis.
+ * plotted x/y.
  *
  * Returns one entry per qualifying milestone: `{ month, tier, x, textAnchor,
  * lines, point, leader }`, where `lines` is `{ text, y }` per rendered line and
  * `x`/`textAnchor` together fix the label's horizontal extent. The caller adds
  * nothing to these numbers — everything a collision could come from is here.
  */
-export function layoutHeroLabels({ pts, peak, records = [] }) {
+export function layoutHeroLabels({ pts, records = [] }) {
   if (!Array.isArray(pts) || pts.length === 0) return [];
 
   const sorted = [...pts].sort((a, b) => a.km - b.km);
-  const top = peak ?? sorted[sorted.length - 1];
 
   const milestones = MILESTONES.map((m) => ({ ...m, point: pts.find((p) => p.month === m.month) }))
     .filter(({ point, tier }) => point && TIERS[tier] && qualifies(point, sorted))
     .map(({ month, tier, text, point }) => {
       const t = TIERS[tier];
-
-      /* The superlative is attached only while it actually holds. Hardcoding
-         "the biggest month in the log" would mean that on the day it stops
-         being true, the site starts lying — which on a page whose whole claim
-         is that every number is fetched, not typed, is the worst bug available. */
-      const texts =
-        point.month === top.month
-          ? [`${monthLabel(month)} · ${text}`, `${fmtKm(point.km)} — the biggest month in the log`]
-          : [`${monthLabel(month)} · ${text}`];
+      const texts = [`${monthLabel(month)} · ${text}`];
 
       const lines = texts.map((line, i) => ({ text: line, y: t.textY + i * LINE_HEIGHT }));
 

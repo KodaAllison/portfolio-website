@@ -43,6 +43,7 @@ module.exports = {
           DEFAULT: "var(--accent)",
           hover: "var(--accent-hover)",
           dim: "var(--accent-dim)",
+          wash: "var(--accent-wash)",
         },
         heat: {
           0: "var(--heat-0)",

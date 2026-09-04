@@ -69,9 +69,10 @@ export default async function Home() {
       : undefined;
 
   const sources = [
-    strava?.generated_at && { name: "strava", age: relativeTime(strava.generated_at) },
-    github?.last_commit_at && { name: "github", age: relativeTime(github.last_commit_at) },
-    liveTravel?.generatedAt && { name: "holitrackr", age: relativeTime(liveTravel.generatedAt) },
+    strava?.generated_at && { name: "strava", status: relativeTime(strava.generated_at) },
+    github?.last_commit_at && { name: "github", status: relativeTime(github.last_commit_at) },
+    liveTravel?.generatedAt && { name: "holitrackr", status: relativeTime(liveTravel.generatedAt) },
+    bookshelf && { name: "literal", status: "cached" },
   ].filter(Boolean);
   const travelProject = projects.find((project) => project.id === "holitrackr");
 
@@ -90,18 +91,20 @@ export default async function Home() {
             <span className="text-ink-muted">Glasgow</span>
           </div>
           <h3 className="mt-space-3 font-display text-heading-m text-ink">
-            Technical graduate — Virgin Money
+            <span className="block">Technical Graduate</span>
+            <span className="mt-space-1 block text-heading-s text-ink-secondary">Nationwide</span>
           </h3>
           <div className="mt-space-4 grid gap-space-6 md:grid-cols-[1.4fr_1fr] md:gap-12">
             <p className="max-w-3xl text-body-m text-ink-secondary">
-              Building an internal repo-health dashboard in TypeScript and Deno—the tool teams use
-              to see where their tech debt actually is and decide what to triage first. It is the
-              first time my code has had colleagues as users rather than markers.
+              I build internal developer tooling in TypeScript and Deno, including a dashboard that
+              helps engineering teams understand repository health and prioritise technical work.
+              My work also spans terminal and CLI tools, an internal React component library, and
+              inductions that help colleagues adopt the tooling.
             </p>
             <dl className="space-y-space-2 border-l border-line pl-space-6 font-mono text-mono-m text-ink-secondary">
-              <div><dt className="inline text-ink-muted">stack </dt><dd className="inline"><span className="text-accent">→</span> typescript · deno</dd></div>
+              <div><dt className="inline text-ink-muted">stack </dt><dd className="inline"><span className="text-accent">→</span> typescript · deno · react</dd></div>
+              <div><dt className="inline text-ink-muted">scope </dt><dd className="inline"><span className="text-accent">→</span> web app · tui · cli</dd></div>
               <div><dt className="inline text-ink-muted">users </dt><dd className="inline"><span className="text-accent">→</span> engineering teams</dd></div>
-              <div><dt className="inline text-ink-muted">scheme </dt><dd className="inline"><span className="text-accent">→</span> two-year programme</dd></div>
             </dl>
           </div>
         </article>
@@ -137,7 +140,7 @@ export default async function Home() {
                     <div className="mt-space-6"><Metric value={travel.continentCount} label="continents" /></div>
                     <p className="mt-space-6 font-mono text-mono-s text-ink-secondary"><span className="text-ink-muted">home →</span> Glasgow</p>
                     {travelProject?.previewUrl ? (
-                      <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">open the map →</Link>
+                      <Link href={travelProject.previewUrl} target="_blank" rel="noopener noreferrer" className="mt-space-2 inline-block font-mono text-mono-s text-accent hover:text-accent-hover">track your travels →</Link>
                     ) : null}
                   </div>
                 </div>
@@ -147,24 +150,28 @@ export default async function Home() {
               <article className={travel ? "border-t border-line py-space-6 md:flex md:flex-col md:border-0 md:pl-space-6" : "py-space-6"}>
                 <p className="font-mono text-mono-xs text-ink-muted">Reading</p>
                 <div className="mt-space-4 md:grid md:flex-1 md:items-center">
-                  <Bookshelf book={bookshelf} />
+                  <Bookshelf shelf={bookshelf} />
                 </div>
               </article>
             ) : null}
           </div>
         ) : null}
-        <article className="flex flex-col gap-space-5 border-b border-line py-space-5 md:flex-row md:items-center">
-            <p className="font-mono text-mono-xs text-ink-muted md:w-32">Running</p>
+        <article className="grid gap-space-4 border-b border-line py-space-5 md:grid-cols-[128px_minmax(0,1fr)] md:items-baseline md:gap-space-6">
+          <p className="font-mono text-mono-xs text-ink-muted">Running</p>
+          <div className="flex flex-col gap-space-4 md:flex-row md:flex-wrap md:items-baseline md:justify-between md:gap-x-space-6 md:gap-y-space-4">
             <p className="font-display text-heading-s text-ink">{about.currently.training}</p>
-            {strava ? (
-              <div className="grid grid-cols-2 gap-space-6 md:ml-auto">
-                <Metric value={`${strava.weekly_km} km`} label="this week" />
-                <Metric value={`${strava.ytd_km} km`} label="this year" />
-              </div>
-            ) : null}
-            <Link href="/run" className="font-mono text-mono-s text-accent hover:text-accent-hover">
-              the full log →
-            </Link>
+            <div className="flex flex-wrap items-baseline gap-x-space-6 gap-y-space-3">
+              {strava ? (
+                <div className="flex flex-wrap items-baseline gap-x-space-5 gap-y-space-2 font-mono text-mono-s text-ink-secondary">
+                  <p><span className="tabular-nums text-ink">{strava.weekly_km} km</span> this week</p>
+                  <p><span className="tabular-nums text-ink">{strava.ytd_km} km</span> this year</p>
+                </div>
+              ) : null}
+              <Link href="/run" className="font-mono text-mono-s text-accent hover:text-accent-hover">
+                training log →
+              </Link>
+            </div>
+          </div>
         </article>
       </section>
 

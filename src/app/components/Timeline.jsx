@@ -1,3 +1,4 @@
+import Reveal from "./Reveal";
 import { monthLabel } from "../../lib/date";
 
 /* The experience timeline, as a date rail.
@@ -31,9 +32,13 @@ function when(entry) {
   return monthLabel(entry.date);
 }
 
-function Row({ entry, current }) {
+function Row({ entry, current, delay }) {
   return (
-    <li className="relative grid grid-cols-[24px_minmax(0,1fr)] gap-x-space-3 border-b border-line-subtle py-space-4 last:border-b-0 md:grid-cols-[190px_24px_minmax(0,1fr)] md:gap-x-space-5 md:py-space-5">
+    <Reveal
+      as="li"
+      delay={delay}
+      className="relative grid grid-cols-[24px_minmax(0,1fr)] gap-x-space-3 border-b border-line-subtle py-space-4 last:border-b-0 md:grid-cols-[190px_24px_minmax(0,1fr)] md:gap-x-space-5 md:py-space-5"
+    >
       <div
         aria-hidden
         className="relative z-10 col-start-1 row-span-2 row-start-1 flex justify-center md:col-start-2 md:row-span-1"
@@ -84,7 +89,7 @@ function Row({ entry, current }) {
           </dl>
         )}
       </div>
-    </li>
+    </Reveal>
   );
 }
 
@@ -102,6 +107,10 @@ export default function Timeline({ entries = [], showCurrent = true }) {
             // Only the newest entry can be current, and only if nothing closed
             // it off.
             current={showCurrent && i === 0 && !entry.until}
+            // Several rows can enter together on a tall viewport. A short,
+            // capped stagger preserves their order without making later rows
+            // feel delayed once the user is scrolling through the rail.
+            delay={Math.min(i, 3) * 60}
           />
         ))}
       </ol>

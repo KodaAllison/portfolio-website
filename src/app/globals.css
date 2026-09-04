@@ -41,6 +41,7 @@
   --accent: #e0a355;
   --accent-hover: #f0bd7d;    /* link + CTA hover only */
   --accent-dim: #6b4d24;      /* borders on accent-tinted chips */
+  --accent-wash: #2a1f10;     /* accent-tinted fills (current book) */
   --race: #7fa8b5;            /* race/PB markers, 7.47:1 on bg */
 
   /* Sequential, single hue, light to dark. Used identically by the commits
@@ -86,6 +87,35 @@
   --hover: 150ms;
   --reveal: 400ms;
   --reveal-rise: 12px;
+}
+
+/* A book spine is the system's one positional hover: it pulls away from the
+   shelf instead of only changing colour. The current book rests partly pulled
+   already, and reduced-motion users get the same content without movement. */
+.bookshelf-spine {
+  transform-origin: bottom center;
+  transition:
+    transform var(--tilt-spine) var(--ease-spine),
+    border-color var(--hover) ease,
+    color var(--hover) ease;
+}
+
+.bookshelf-spine:hover {
+  transform: rotate(-9deg) translateY(-10px);
+  border-color: var(--accent);
+}
+
+.bookshelf-spine-current {
+  transform: rotate(-4deg) translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookshelf-spine,
+  .bookshelf-spine:hover,
+  .bookshelf-spine-current {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* The sheet gives a second size for every display and heading step. 767px is
@@ -271,10 +301,27 @@ body {
 /* --------------------------------------------------------------------------
    Scroll motion
    ==========================================================================
-   The timeline rail maps scroll position continuously to its drawn length,
-   which is exactly what a CSS scroll-driven animation is for. The base state
-   is fully drawn, so unsupported browsers lose only the motion.
+   Timeline entries arrive once as they enter the viewport; the rail maps
+   scroll position continuously to its drawn length. Everything is visible in
+   the base stylesheet, so unsupported browsers lose only the motion.
    -------------------------------------------------------------------------- */
+
+/* `scripting: enabled` proves JavaScript can reveal the entry again. Browsers
+   that do not understand the query keep the content visible. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-rise));
+  }
+
+  .reveal[data-shown] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--reveal) ease,
+      transform var(--reveal) ease;
+  }
+}
 
 /* The rail is the one genuinely continuous mapping on the page. It is fully
    drawn by default and only becomes scroll-driven where that can actually be

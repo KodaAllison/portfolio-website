@@ -43,7 +43,7 @@ test("the compact trace explains its metric, timeframe, source, and endpoint", (
 test("live personal records reach the hero annotations", () => {
   assert.match(home, /<Hero series=\{strava\?\.monthly_km\} records=\{strava\?\.personal_records\} \/>/);
   assert.match(hero, /<HeroTrace series=\{series\} records=\{records\} \/>/);
-  assert.match(component, /layoutHeroLabels\(\{ pts, peak, records \}\)/);
+  assert.match(component, /layoutHeroLabels\(\{ pts, records \}\)/);
   assert.match(component, /Personal bests: \$\{raceSummary\}/);
 });
 

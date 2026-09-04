@@ -81,7 +81,7 @@ function layout(series = SERIES, records = []) {
   const peak = series.reduce((a, b) => (b.km > a.km ? b : a));
   const ticks = niceYTicks(peak.km);
   const { pts } = buildTrace(series, { ...HERO_BOX, yMax: ticks[ticks.length - 1] });
-  return layoutHeroLabels({ pts, peak, records });
+  return layoutHeroLabels({ pts, records });
 }
 
 const synthetic = (tier, x, textAnchor, ...texts) => ({
@@ -109,8 +109,9 @@ test("both milestones qualify, one per tier", () => {
       ["2025-09", "above"],
     ]
   );
-  // The peak carries its superlative on a second line; the trough does not.
-  assert.equal(labels.find((l) => l.month === "2025-09").lines.length, 2);
+  const careerStart = labels.find((l) => l.month === "2025-09");
+  assert.equal(careerStart.lines.length, 1);
+  assert.equal(careerStart.lines[0].text, "sep 2025 · started at virgin money");
   const graduation = labels.find((l) => l.month === "2025-07");
   assert.equal(graduation.lines.length, 1);
   assert.equal(graduation.lines[0].text, "jul 2025 · graduated, first class");
@@ -254,7 +255,7 @@ function labelsFor(peakKm, troughKm) {
   const peakDatum = series.reduce((a, b) => (b.km > a.km ? b : a));
   const ticks = niceYTicks(peakDatum.km);
   const { pts } = buildTrace(series, { ...HERO_BOX, yMax: ticks[ticks.length - 1] });
-  return layoutHeroLabels({ pts, peak: pts.find((p) => p.month === peakDatum.month) });
+  return layoutHeroLabels({ pts });
 }
 
 test("no label escapes the viewBox, whatever the data does", () => {

@@ -5,6 +5,7 @@ function ProjectLinks({ project }) {
   const links = [
     project.previewUrl && { href: project.previewUrl, label: "live site" },
     project.gitUrl && { href: project.gitUrl, label: "source" },
+    project.writeupUrl && { href: project.writeupUrl, label: "read dissertation" },
   ].filter(Boolean);
 
   if (!links.length) return null;
