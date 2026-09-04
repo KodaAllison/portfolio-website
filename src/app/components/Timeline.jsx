@@ -1,74 +1,119 @@
-import React from "react";
+import Reveal from "./Reveal";
+import { monthLabel } from "../../lib/date";
 
-// Conventional-commit prefixes double as the colour key: `release` is the
-// milestone (graduation), `init` the first entry, `feat` everything since.
-// `chore` is the work that ran alongside it all — dim, so the build log leads.
-const TYPE_COLOR = {
-  init: "text-outline",
-  chore: "text-outline",
-  feat: "text-terminal",
-  release: "text-signal",
-};
+/* The experience timeline, as a date rail.
 
-// `HEAD -> main` reads as current, everything else (tags, remotes) is decoration.
-const refColor = (ref) =>
-  ref.startsWith("HEAD") ? "text-cyan" : ref.startsWith("tag:") ? "text-signal" : "text-outline";
+   This replaces a `git log --graph` rendering of the same data. The commit
+   vocabulary — hashes, refs, conventional-commit prefixes — was decoration
+   standing in for structure; the rail gets its structure from alignment
+   instead. On wide screens it divides dates from entries; on small screens it
+   becomes a dedicated gutter so the copy never crowds or crosses the line.
 
-const CommitRow = ({ entry, isLast }) => (
-  <li className="flex gap-3">
-    {/* --graph gutter: node + the line running down to the next commit */}
-    <div className="flex flex-col items-center" aria-hidden>
-      <span className={`text-[13px] leading-relaxed ${TYPE_COLOR[entry.type] ?? "text-terminal"}`}>
-        *
-      </span>
-      {!isLast && <span className="w-px flex-1 bg-outline-variant" />}
+   Milestones that could not earn an annotation on the hero chart live here.
+   A career date has no height on a distance curve, but on a rail it does not
+   need one — that is the whole reason this section exists. */
+
+// The rail is the one genuinely continuous scroll mapping on the page, so it
+// is a CSS scroll timeline rather than an observer. It is fully drawn unless
+// the browser can actually drive it — see the .rail rules in globals.css.
+function Rail() {
+  return (
+    <div
+      aria-hidden
+      className="absolute bottom-0 left-space-3 top-0 w-px bg-line md:left-[226px]"
+    >
+      <div className="rail h-full w-full bg-line-strong" />
     </div>
+  );
+}
 
-    <div className={`min-w-0 flex-1 ${isLast ? "" : "pb-5"}`}>
-      <div className="flex flex-wrap items-baseline gap-x-2 text-[13px] leading-relaxed">
-        <span className="text-outline">{entry.hash}</span>
+function when(entry) {
+  if (entry.until) return `${monthLabel(entry.date)} → ${monthLabel(entry.until)}`;
+  return monthLabel(entry.date);
+}
 
-        {entry.refs?.length > 0 && (
-          <span className="text-outline">
-            (
-            {entry.refs.map((ref, i) => (
-              <React.Fragment key={ref}>
-                <span className={refColor(ref)}>{ref}</span>
-                {i < entry.refs.length - 1 && <span className="text-outline">, </span>}
-              </React.Fragment>
-            ))}
-            )
-          </span>
+function Row({ entry, current, delay }) {
+  return (
+    <Reveal
+      as="li"
+      delay={delay}
+      className="relative grid grid-cols-[24px_minmax(0,1fr)] gap-x-space-3 border-b border-line-subtle py-space-4 last:border-b-0 md:grid-cols-[190px_24px_minmax(0,1fr)] md:gap-x-space-5 md:py-space-5"
+    >
+      <div
+        aria-hidden
+        className="relative z-10 col-start-1 row-span-2 row-start-1 flex justify-center md:col-start-2 md:row-span-1"
+      >
+        <span
+          className={`mt-space-1 block h-[9px] w-[9px] rounded-full border-2 bg-bg ${
+            current ? "border-accent" : "border-ink-muted"
+          }`}
+        />
+      </div>
+
+      <div className="col-start-2 row-start-1 font-mono text-mono-s md:col-start-1">
+        {/* "Now" is a claim about the present, so it is only made for an entry
+            the data says has not ended. */}
+        {current ? (
+          <span className="text-accent">Now · since {monthLabel(entry.date)}</span>
+        ) : (
+          <span className="text-ink-muted">{when(entry)}</span>
+        )}
+        {entry.location && <div className="mt-1 text-ink-muted">{entry.location}</div>}
+      </div>
+
+      <div className="col-start-2 row-start-2 mt-space-1 min-w-0 md:col-start-3 md:row-start-1 md:mt-0">
+        {/* Rendered exactly as the data has it. CSS `capitalize` was tried and
+            is wrong here: it title-cases every word, which turns "bsc computer
+            science" into "Bsc Computer Science" and "joined virgin money as
+            technical graduate" into "...As Technical Graduate". The entries are
+            lowercase because they were written for a terminal-styled build; the
+            new design sets them in sentence case, which is a copy change rather
+            than something CSS can do correctly. */}
+        <h3 className="font-display text-heading-s text-ink">{entry.message}</h3>
+        {entry.body && (
+          <p className="mt-space-2 max-w-[620px] font-sans text-body-m text-ink-secondary">
+            {entry.body}
+          </p>
         )}
 
-        <span className={TYPE_COLOR[entry.type] ?? "text-terminal"}>{entry.type}:</span>
-        <span className="text-on-surface">{entry.message}</span>
+        {/* Optional label → value pairs, rendered only when the data carries
+            them. Absent today; the Experience copy pass fills them in. */}
+        {entry.meta && (
+          <dl className="mt-space-4 grid gap-space-2 font-mono text-mono-s md:grid-cols-[110px_minmax(0,1fr)]">
+            {Object.entries(entry.meta).map(([k, v]) => (
+              <div key={k} className="contents">
+                <dt className="text-ink-muted">{k}</dt>
+                <dd className="m-0 text-ink-secondary">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
       </div>
+    </Reveal>
+  );
+}
 
-      <div className="mt-1 flex flex-wrap items-baseline gap-x-3 text-[11px] text-outline">
-        {/* `until` only on the roles nothing else closes off — the rest are
-            either still running or ended by the commit above them. */}
-        <span>{entry.until ? `${entry.date} → ${entry.until}` : entry.date}</span>
-        <span className="min-w-0 text-on-surface-variant">{entry.body}</span>
-      </div>
+export default function Timeline({ entries = [], showCurrent = true }) {
+  if (entries.length === 0) return null;
+
+  return (
+    <div className="relative mt-space-5 border-t border-line md:mt-space-6">
+      <Rail />
+      <ol className="m-0 list-none p-0">
+        {entries.map((entry, i) => (
+          <Row
+            key={entry.hash ?? `${entry.date}-${entry.message}`}
+            entry={entry}
+            // Only the newest entry can be current, and only if nothing closed
+            // it off.
+            current={showCurrent && i === 0 && !entry.until}
+            // Several rows can enter together on a tall viewport. A short,
+            // capped stagger preserves their order without making later rows
+            // feel delayed once the user is scrolling through the rail.
+            delay={Math.min(i, 3) * 60}
+          />
+        ))}
+      </ol>
     </div>
-  </li>
-);
-
-/**
- * <Timeline>
- * Renders timeline.json as `git log --graph` output: one commit per milestone,
- * newest first, with the graph gutter drawn as a node + connecting line.
- *
- * Props:
- *   entries — array from src/data/timeline.json
- */
-const Timeline = ({ entries }) => (
-  <ol reversed className="text-[13px]">
-    {entries.map((entry, i) => (
-      <CommitRow key={entry.hash} entry={entry} isLast={i === entries.length - 1} />
-    ))}
-  </ol>
-);
-
-export default Timeline;
+  );
+}

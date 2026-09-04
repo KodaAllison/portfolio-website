@@ -1,4 +1,4 @@
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import about from "../data/about.json";
@@ -8,6 +8,15 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
   variable: "--font-space-grotesk",
+  display: "swap",
+});
+
+// Prose only — the third of the three families on the token sheet. Space
+// Grotesk stays display and numerals, JetBrains Mono stays data and labels.
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-ibm-plex-sans",
   display: "swap",
 });
 
@@ -27,8 +36,7 @@ export const metadata = {
   description,
   keywords: [
     about.name,
-    "web developer",
-    "software developer",
+    about.role,
     "computer science graduate",
     ...about.stack,
     "portfolio",
@@ -79,8 +87,11 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-mono bg-background text-on-surface antialiased">
+    <html
+      lang="en"
+      className={`${spaceGrotesk.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="font-sans antialiased">
         {children}
         <Analytics />
       </body>

@@ -2,43 +2,349 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --------------------------------------------------------------------------
+   Design tokens — kodaallison.dev
+   ==========================================================================
+   Source of truth: the "Design tokens" artboard (page-2) of the Portfolio
+   Redesign Directions canvas. Its own header states the contract: these are
+   the only values. If something needs a value that is not on this sheet, that
+   is a design decision, not an implementation one — go and change the sheet.
+
+   Tokens live here as CSS custom properties rather than only in the Tailwind
+   config for two reasons: the globe renders to a <canvas> and has to read its
+   colours back out with getComputedStyle (a Tailwind class cannot help it),
+   and it keeps one grep-able list of every value the site is allowed to use.
+   tailwind.config.js maps utilities onto these vars; it never restates a hex.
+   -------------------------------------------------------------------------- */
+
 :root {
-  --background: #020617;
-  --surface: #0f1419;
-  --on-surface: #dee3ea;
-  --terminal: #00ffc2;
-  --signal: #ffe600;
-  --cyan: #22d3ee;
+  color-scheme: dark;
+
+  /* -- colour ------------------------------------------------------------ */
+  --bg: #0d0f11;              /* page background */
+  --surface: #14171a;         /* raised cards, code cards */
+  --surface-sunken: #0a0c0d;  /* image wells, globe interior */
+
+  --border: #242a2e;          /* section rules, card borders */
+  --border-subtle: #1b2023;   /* dividers inside a card */
+  --border-strong: #39424a;   /* globe edge, emphasis rules */
+
+  --text-primary: #e8e5e0;    /* headings, key values      15.26:1 on bg */
+  --text-lead: #b6b3ac;       /* lead paragraph under h1    9.61:1 on bg */
+  --text-secondary: #9a978f;  /* body copy, descriptions    7.20:1 on bg */
+  --text-muted: #87847d;      /* labels, captions, axis     4.79:1 on bg */
+
+  /* One action accent. Amber means live, interactive, or current — never
+     decoration. Race blue is a data-category colour used only for dated PB
+     markers; shape and the "pb" label carry the same distinction without
+     relying on colour alone. */
+  --accent: #e0a355;
+  --accent-hover: #f0bd7d;    /* link + CTA hover only */
+  --accent-dim: #6b4d24;      /* borders on accent-tinted chips */
+  --accent-wash: #2a1f10;     /* accent-tinted fills (current book) */
+  --race: #7fa8b5;            /* race/PB markers, 7.47:1 on bg */
+
+  /* Sequential, single hue, light to dark. Used identically by the commits
+     grid and the runs grid so the two can be compared by eye: same scale,
+     same cell size, same order on both. Never recolour one of them. */
+  --heat-0: #14171a;          /* no activity */
+  --heat-1: #3a2b14;          /* 1 */
+  --heat-2: #6b4d24;          /* 2-3 */
+  --heat-3: #a87838;          /* 4-7 */
+  --heat-4: #e0a355;          /* 8+ */
+
+  /* -- type scale -------------------------------------------------------- */
+  /* Three families, three jobs. Space Grotesk is display and numerals only,
+     IBM Plex Sans is prose only, JetBrains Mono is data, labels, links and
+     anything machine-derived. Never set a paragraph in mono.
+
+     Each step carries its desktop size here and its mobile size in the media
+     query below, so a call site writes one class (`text-display-xl`) and gets
+     the right size at every width. Line height and weight do not change
+     between the two. */
+  --display-xl: 96px;
+  --display-l: 84px;
+  --display-m: 46px;
+  --heading-l: 34px;
+  --heading-m: 26px;
+  --heading-s: 22px;
+  --body-l: 18px;
+  --body-m: 15px;
+  --mono-m: 13px;
+  --mono-s: 12px;
+  --mono-xs: 11px;
+
+  /* -- motion ------------------------------------------------------------ */
+  --draw-hero: 2400ms;
+  --draw-hero-delay: 300ms;
+  --reveal-hero-endpoint: 3200ms;
+  --start-hero-pulse: 3650ms;
+  --ease-hero: cubic-bezier(0.65, 0, 0.35, 1);
+  --fade-label: 450ms;
+  --spin-globe: 12s;
+  --tilt-spine: 280ms;
+  --ease-spine: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --hover: 150ms;
+  --reveal: 400ms;
+  --reveal-rise: 12px;
+}
+
+/* A book spine is the system's one positional hover: it pulls away from the
+   shelf instead of only changing colour. The current book rests partly pulled
+   already, and reduced-motion users get the same content without movement. */
+.bookshelf-spine {
+  transform-origin: bottom center;
+  transition:
+    transform var(--tilt-spine) var(--ease-spine),
+    border-color var(--hover) ease,
+    color var(--hover) ease;
+}
+
+.bookshelf-spine:hover {
+  transform: rotate(-9deg) translateY(-10px);
+  border-color: var(--accent);
+}
+
+.bookshelf-spine-current {
+  transform: rotate(-4deg) translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookshelf-spine,
+  .bookshelf-spine:hover,
+  .bookshelf-spine-current {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* The sheet gives a second size for every display and heading step. 767px is
+   the switch: it is the same breakpoint the globe uses to decide whether to
+   run its rotation loop at all, and keeping one mobile boundary across the
+   site means "mobile" always means the same thing. */
+@media (max-width: 767px) {
+  :root {
+    --display-xl: 44px;
+    --display-l: 40px;
+    --display-m: 34px;
+    --heading-l: 25px;
+    --heading-m: 21px;
+    --heading-s: 19px;
+    --body-l: 16px;
+  }
 }
 
 html,
 body {
-  background-color: var(--background);
-  color: var(--on-surface);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-color: var(--bg);
+  color: var(--text-primary);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* The previous build painted a 40px linear-gradient grid across the whole
+   body. A faint grid behind everything is one of the loudest generated-site
+   tells there is, and it actively fights a page whose structure is supposed to
+   come from alignment. It is deliberately not replaced by anything. */
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
 
-  .terminal-shadow {
-    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+/* --------------------------------------------------------------------------
+   Hero motion
+   ==========================================================================
+   All of it CSS, so the hero ships no client JavaScript at all. A rectangular
+   clip grows monotonically from left to right. Unlike a path dash, it cannot
+   wrap around and expose the end of the trace before the middle is drawn.
+
+   These start from a hidden state, which is safe because they are pure CSS:
+   there is no JavaScript feature gate that can fail and strand the content.
+   -------------------------------------------------------------------------- */
+
+.hero-trace-reveal {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transform: scaleX(0);
+  animation: hero-draw var(--draw-hero) var(--ease-hero) var(--draw-hero-delay) forwards;
+}
+
+@keyframes hero-draw {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Annotations fade in on delays set per element, all of them after the line
+   has drawn past the point they label. */
+.hero-marker {
+  opacity: 0;
+  animation: hero-fade var(--fade-label) ease forwards;
+}
+
+/* Race labels sit directly beside their diamonds. The background-colour
+   stroke is a typographic knockout, not a box: it keeps the text legible when
+   a neighbouring part of the trace passes behind it. */
+.hero-marker-race text {
+  paint-order: stroke fill;
+  stroke: var(--bg);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+@keyframes hero-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+/* The endpoint dot scales up as it arrives rather than fading, so it reads as
+   the line stopping somewhere rather than as another label appearing. */
+.hero-endpoint {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: hero-endpoint var(--fade-label) var(--ease-spine) forwards;
+  animation-delay: var(--reveal-hero-endpoint);
+}
+
+.hero-current-label {
+  animation-delay: var(--reveal-hero-endpoint);
+}
+
+@keyframes hero-endpoint {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* The trace's one loop. Guarded on no-preference rather than merely switched
+   off under reduce, because the token sheet's rule is absolute: under reduced
+   motion nothing loops and nothing moves. Guarding here means the animation is
+   never even declared for those users. */
+.hero-pulse {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: hero-pulse 2400ms ease-out var(--start-hero-pulse) infinite;
+  }
+}
+
+@keyframes hero-pulse {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(3.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-trace-reveal,
+  .hero-marker,
+  .hero-endpoint {
+    animation: none;
   }
 
-  .blink-cursor::after {
-    content: "_";
-    animation: blink 1s step-end infinite;
-    color: var(--terminal);
+  .hero-endpoint {
+    opacity: 1;
+    transform: none;
   }
 
-  @keyframes blink {
-    50% {
-      opacity: 0;
+  /* Final state, not the initial one: reduced motion means arrive instantly,
+     never disappear. */
+  .hero-trace-reveal {
+    transform: none;
+  }
+
+  .hero-marker {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Scroll motion
+   ==========================================================================
+   Timeline entries react whenever they enter or leave the viewport; the rail
+   maps scroll position continuously to its drawn length. Everything is visible
+   in the base stylesheet, so unsupported browsers lose only the motion.
+   -------------------------------------------------------------------------- */
+
+/* `scripting: enabled` proves JavaScript can reveal the entry again. Browsers
+   that do not understand the query keep the content visible. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(var(--reveal-rise));
+    transition:
+      opacity var(--reveal) ease,
+      transform var(--reveal) ease;
+  }
+
+  .reveal[data-shown] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The rail is the one genuinely continuous mapping on the page. It is fully
+   drawn by default and only becomes scroll-driven where that can actually be
+   driven. */
+.rail {
+  transform-origin: top;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rail {
+      animation: rail-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 55%;
+    }
+
+    @keyframes rail-grow {
+      from {
+        transform: scaleY(0);
+      }
+      to {
+        transform: scaleY(1);
+      }
     }
   }
 }

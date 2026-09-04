@@ -1,5 +1,20 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+
+// Every value here resolves to a custom property defined in src/app/globals.css,
+// which is the single source of truth (and the only thing the globe canvas can
+// read at runtime). Nothing in this file restates a hex — if you find yourself
+// wanting to, the value belongs on the token sheet first.
+//
+// Naming: the token sheet's names are kept wherever Tailwind's own grammar
+// allows it. Two are renamed to avoid colliding with utilities Tailwind already
+// owns, and the mapping is one-to-one:
+//
+//   --border*       ->  line        (border-line, border-line-subtle, bg-line)
+//   --text-*        ->  ink         (text-ink, text-ink-lead, text-ink-muted)
+//
+// `line` is also the grid-seam colour: seams are a 1px gap over a bg-line
+// background, never per-cell borders.
+const config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,72 +23,113 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Terminal OS palette
-        background: "#020617", // slate-950 — canvas (matches Stitch render)
-        surface: "#0f1419",
-        "surface-container-lowest": "#0a0f14",
-        "surface-container-low": "#171c21",
-        "surface-container": "#1b2025",
-        "surface-container-high": "#252a30",
-        "surface-container-highest": "#30353b",
-        "surface-bright": "#353a3f",
-        "terminal-header": "#1e293b",
+        bg: "var(--bg)",
+        surface: {
+          DEFAULT: "var(--surface)",
+          sunken: "var(--surface-sunken)",
+        },
+        line: {
+          DEFAULT: "var(--border)",
+          subtle: "var(--border-subtle)",
+          strong: "var(--border-strong)",
+        },
+        ink: {
+          DEFAULT: "var(--text-primary)",
+          lead: "var(--text-lead)",
+          secondary: "var(--text-secondary)",
+          muted: "var(--text-muted)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          hover: "var(--accent-hover)",
+          dim: "var(--accent-dim)",
+          wash: "var(--accent-wash)",
+        },
+        heat: {
+          0: "var(--heat-0)",
+          1: "var(--heat-1)",
+          2: "var(--heat-2)",
+          3: "var(--heat-3)",
+          4: "var(--heat-4)",
+        },
 
-        // Brand accents
-        terminal: "#00ffc2", // primary teal — actions, active state
-        "terminal-dim": "#00e1ab",
-        signal: "#ffe600", // secondary yellow — warnings, highlights
-        cyan: "#22d3ee", // tertiary cyan — links, variables (matches Stitch render)
-
-        // Foreground
-        "on-surface": "#dee3ea",
-        "on-surface-variant": "#b9cbc1",
-        outline: "#83958c",
-        "outline-variant": "#3a4a43",
       },
+
+      // Three families, three jobs — see the note in globals.css.
       fontFamily: {
         display: ["var(--font-space-grotesk)", "ui-sans-serif", "system-ui"],
+        sans: ["var(--font-ibm-plex-sans)", "ui-sans-serif", "system-ui"],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],
       },
+
+      // Size comes from the custom property so one class is correct at every
+      // width. Weight and line height are fixed per step. Letter-spacing is not
+      // on the token table; the values below are read off the artboard markup,
+      // which tracks tighter the larger the type gets — 96px at -0.045em down
+      // to -0.02em for every heading step. heading-s is the only one the
+      // artboards never set; it follows its neighbours.
       fontSize: {
-        "headline-lg": ["64px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
-        "headline-lg-mobile": ["40px", { lineHeight: "1.1", fontWeight: "700" }],
-        "headline-md": ["32px", { lineHeight: "1.2", fontWeight: "600" }],
-        "code-display": ["48px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "500" }],
-        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
-        "body-md": ["15px", { lineHeight: "1.6", fontWeight: "400" }],
-        "label-md": ["13px", { lineHeight: "1.4", letterSpacing: "0.05em", fontWeight: "500" }],
-        "label-sm": ["11px", { lineHeight: "1.4", fontWeight: "500" }],
+        "display-xl": ["var(--display-xl)", { lineHeight: "0.95", fontWeight: "700", letterSpacing: "-0.045em" }],
+        "display-l": ["var(--display-l)", { lineHeight: "1.02", fontWeight: "700", letterSpacing: "-0.04em" }],
+        "display-m": ["var(--display-m)", { lineHeight: "1.0", fontWeight: "700", letterSpacing: "-0.03em" }],
+        "heading-l": ["var(--heading-l)", { lineHeight: "1.1", fontWeight: "700", letterSpacing: "-0.02em" }],
+        "heading-m": ["var(--heading-m)", { lineHeight: "1.15", fontWeight: "700", letterSpacing: "-0.02em" }],
+        "heading-s": ["var(--heading-s)", { lineHeight: "1.2", fontWeight: "700", letterSpacing: "-0.02em" }],
+        "body-l": ["var(--body-l)", { lineHeight: "1.55", fontWeight: "400" }],
+        "body-m": ["var(--body-m)", { lineHeight: "1.6", fontWeight: "400" }],
+        "mono-m": ["var(--mono-m)", { lineHeight: "1.7", fontWeight: "400" }],
+        "mono-s": ["var(--mono-s)", { lineHeight: "1.8", fontWeight: "400" }],
+        "mono-xs": ["var(--mono-xs)", { lineHeight: "1.7", fontWeight: "400" }],
       },
+
+      // Deliberately NOT keyed 1-7: Tailwind's default scale already owns those
+      // keys, and quietly redefining them would move every p-4 and gap-6 in the
+      // sections that have not been rebuilt yet. These are additive, so the
+      // step reads at the call site (p-space-6, gap-space-2).
       spacing: {
-        gutter: "24px",
-        "margin-desktop": "48px",
-        "margin-mobile": "20px",
-        "container-max": "1440px",
+        "space-1": "4px",   // icon gaps
+        "space-2": "8px",   // tag gaps, tight stacks
+        "space-3": "12px",  // button gaps
+        "space-4": "18px",  // label to value
+        "space-5": "24px",  // inside a card
+        "space-6": "32px",  // card padding
+        "space-7": "44px",  // between sub-blocks
+
       },
-      borderRadius: {
-        DEFAULT: "0.25rem",
-        sm: "0.125rem",
-        md: "0.375rem",
-        lg: "0.5rem",
-        xl: "0.75rem",
+
+      transitionDuration: {
+        hover: "150ms",
+        reveal: "400ms",
+        spine: "280ms",
       },
-      boxShadow: {
-        glow: "0 0 20px rgba(0, 255, 194, 0.15)",
-        "glow-lg": "0 0 40px rgba(0, 255, 194, 0.25)",
-        terminal: "0 20px 50px -12px rgba(0, 0, 0, 0.5)",
+      transitionTimingFunction: {
+        hero: "cubic-bezier(0.65, 0, 0.35, 1)",
+        spine: "cubic-bezier(0.34, 1.4, 0.64, 1)",
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        grid: "linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
-      },
-      backgroundSize: {
-        grid: "24px 24px",
-        "grid-lg": "48px 48px",
-      },
+    },
+
+    // Radius is 0 everywhere: no rounded corners, no pills, no rounded cards.
+    // Overriding rather than extending means a stray `rounded-lg` left behind
+    // by the old build renders square instead of quietly surviving the rebuild.
+    //
+    // `full` is the one exception and is not a loophole: the chosen direction
+    // uses it only for 9-10px dots (the headline full stop, the live-strip
+    // status dots), which are circles rather than rounded boxes. Every boxy
+    // radius in the canvas — 3, 4, 6 and 8px — belongs to the Direction C
+    // "Terminal, grown up" artboard, which was not the direction taken.
+    borderRadius: {
+      none: "0",
+      DEFAULT: "0",
+      sm: "0",
+      md: "0",
+      lg: "0",
+      xl: "0",
+      "2xl": "0",
+      "3xl": "0",
+      full: "9999px",
     },
   },
   plugins: [],
 };
+
+export default config;
