@@ -78,7 +78,7 @@ The other integrations are deliberately optional:
 - **Koder** — a dependency-free kanban PWA with offline support, Deno KV sync, a terminal CLI, agent tooling, and signed GitHub webhooks.
 - **SwiftPlan** — my dissertation project: a lesson-plan generator built after researching teachers' planning workflows and prompt-engineering techniques.
 - **Strava Worker** — the Cloudflare Worker and KV pipeline that powers the live running data on this site.
-- **HoliTrackr** — a full-stack travel tracker with an interactive map, trip timeline, journals, and authentication.
+- **HoliTrackr** — a full-stack travel tracker with a custom d3-geo globe and flat map, a scrubbable trip timeline, per-country journals with multiple visits, and Google sign-in.
 
 The complete list lives in [`src/data/projects.json`](src/data/projects.json).
 
