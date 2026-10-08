@@ -255,8 +255,8 @@
     "size": "320k",
     "category": "web",
     "status": "live",
-    "tagline": "Travel tracker. Interactive world map. Fullstack with auth.",
-    "description": "A travel tracker I built to scratch my own itch — mark countries you've visited or want to visit on an interactive Leaflet map, with a journal entry per country for ratings, notes, and dates. Those entries roll up into a trip timeline view that tells the story of where you've been. Fullstack with React, TypeScript, Express, and PostgreSQL on Neon. First time using Better Auth for sign-up and login — solid library, much less faff than rolling it yourself.",
+    "tagline": "Travel tracker. Spinnable globe. Fullstack with auth.",
+    "description": "A travel tracker I built to scratch my own itch. Mark countries you've visited or want to visit, then keep a journal per country with dates, places, ratings, notes, and as many visits as you've made. The Atlas v2 redesign ripped out Leaflet for my own canvas map engine on d3-geo: a spinnable globe on desktop that unrolls into a flat map, with country outlines down from a 14.6 MB download to under 150 KB gzipped. The timeline became a journey you can scrub and play back trip by trip. I built v2 with agents: grilled out a spec, then handed it to an Opus 5.5 orchestrator that shipped 23 PRs to a trunk in a day and a half, with CI, strict types and tests keeping it honest. React, TypeScript, Express and PostgreSQL on Neon, with Better Auth for Google sign-in.",
     "tags": [
       {
         "label": "react",
@@ -274,7 +274,7 @@
         "variant": "flag"
       },
       {
-        "label": "leaflet",
+        "label": "d3-geo",
         "color": "cyan",
         "variant": "flag"
       },

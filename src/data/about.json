@@ -36,9 +36,10 @@
   },
   "travel": {
     "_comment": "Last-known public HoliTrackr snapshot. Used only when the live public stats endpoint is unavailable.",
-    "generatedAt": "2026-09-02T16:38:50.509Z",
+    "generatedAt": "2026-10-01T09:08:35.212Z",
     "countries": [
       { "alpha3": "BGR", "alpha2": "BG", "name": "Bulgaria", "continent": "Europe" },
+      { "alpha3": "HRV", "alpha2": "HR", "name": "Croatia", "continent": "Europe" },
       { "alpha3": "FRA", "alpha2": "FR", "name": "France", "continent": "Europe" },
       { "alpha3": "DEU", "alpha2": "DE", "name": "Germany", "continent": "Europe" },
       { "alpha3": "GRC", "alpha2": "GR", "name": "Greece", "continent": "Europe" },
